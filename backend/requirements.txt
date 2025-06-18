@@ -1,0 +1,4 @@
+fastapi[standard] ~= 0.115.13
+geoalchemy2 ~= 0.17.1
+asyncpg ~= 0.30.0
+tipg ~= 1.1.1
