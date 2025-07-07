@@ -1,9 +1,13 @@
+import { Button } from '@radix-ui/themes'
+import styles from './App.module.scss'
+
 function App() {
   return (
-    <div>
-      <div className="container bg-red-500 mx-auto text-center">
-        <h1 className="text-8xl text-sky-500">Hello World!!!</h1>
-      </div>
+    <div className={styles.app}>
+      <h1 className={styles.title}>Coastline Change App</h1>
+      <Button size="3" variant="solid">
+        Get Started
+      </Button>
     </div>
   )
 }
