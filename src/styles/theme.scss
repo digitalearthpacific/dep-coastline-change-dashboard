@@ -1,0 +1,67 @@
+:root {
+  /* ===== TYPOGRAPHY ===== */
+  --font-family-primary: 'Roboto', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-family-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
+
+  /* ===== NEUTRAL (GRAY) ===== */
+  --gray-1: #fcfcfc;
+  --gray-2: #f9f9f9;
+  --gray-3: #f0f0f0;
+  --gray-4: #e8e8e8;
+  --gray-5: #e0e0e0;
+  --gray-6: #d9d9d9;
+  --gray-7: #cecece;
+  --gray-8: #bbbbbb;
+  --gray-9: #8d8d8d;
+  --gray-10: #838383;
+  --gray-11: #646464;
+  --gray-12: #202020;
+
+  /* Gray Alpha (Transparent) */
+  --gray-a1: #00000003;
+  --gray-a2: #00000006;
+  --gray-a3: #0000000f;
+  --gray-a4: #00000017;
+  --gray-a5: #0000001f;
+  --gray-a6: #00000026;
+  --gray-a7: #00000031;
+  --gray-a8: #00000044;
+  --gray-a9: #00000072;
+  --gray-a10: #0000007c;
+  --gray-a11: #0000009b;
+  --gray-a12: #000000df;
+
+  /* ===== ACCENT (BLUE) ===== */
+  --blue-1: #fafdff;
+  --blue-2: #f3fafe;
+  --blue-3: #e2f5ff;
+  --blue-4: #cfeeff;
+  --blue-5: #bce5ff;
+  --blue-6: #a6d9f8;
+  --blue-7: #87c9f0;
+  --blue-8: #53b3e6;
+  --blue-9: #0097d2;
+  --blue-10: #008ac5;
+  --blue-11: #007ab3;
+  --blue-12: #093a51;
+
+  /* Blue Alpha (Transparent) */
+  --blue-a1: #0099ff05;
+  --blue-a2: #0095ea0c;
+  --blue-a3: #00a8ff1d;
+  --blue-a4: #00a5ff30;
+  --blue-a5: #009dff43;
+  --blue-a6: #0093eb59;
+  --blue-a7: #008de078;
+  --blue-a8: #008fdaac;
+  --blue-a9: #0097d2;
+  --blue-a10: #008ac5;
+  --blue-a11: #007ab3;
+  --blue-a12: #00334bf6;
+
+  /* Blue Semantic Colors */
+  --blue-contrast: #fff;
+  --blue-surface: #f0f9fecc;
+  --blue-indicator: #0097d2;
+  --blue-track: #0097d2;
+}

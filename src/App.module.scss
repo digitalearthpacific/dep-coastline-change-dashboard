@@ -1,0 +1,18 @@
+.app {
+  padding: var(--space-4, 2rem);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4, 1.5rem);
+}
+
+.title {
+  font-family: var(--font-family-primary);
+  font-size: 2.5rem;
+  font-weight: 600;
+  color: var(--blue-9);
+  margin: 0;
+  text-align: center;
+}
