@@ -1,9 +1,9 @@
 :root {
-  /* Typography */
+  /* ===== TYPOGRAPHY ===== */
   --font-family-primary: 'Roboto', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   --font-family-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
 
-  /* Neutral (Gray) */
+  /* ===== NEUTRAL (GRAY) ===== */
   --gray-1: #fcfcfc;
   --gray-2: #f9f9f9;
   --gray-3: #f0f0f0;
@@ -17,23 +17,21 @@
   --gray-11: #646464;
   --gray-12: #202020;
 
-  /* Neutral (GrayA) */
-  .grayA {
-    --gray-a1: 00000003;
-    --gray-a2: 00000006;
-    --gray-a3: #0000000f;
-    --gray-a4: 00000017;
-    --gray-a5: #0000001f;
-    --gray-a6: 00000026;
-    --gray-a7: #00000031;
-    --gray-a8: #00000044;
-    --gray-a9: #00000072;
-    --gray-a10: #0000007c;
-    --gray-a11: #0000009b;
-    --gray-a12: #000000df;
-    }
+  /* Gray Alpha (Transparent) */
+  --gray-a1: #00000003;
+  --gray-a2: #00000006;
+  --gray-a3: #0000000f;
+  --gray-a4: #00000017;
+  --gray-a5: #0000001f;
+  --gray-a6: #00000026;
+  --gray-a7: #00000031;
+  --gray-a8: #00000044;
+  --gray-a9: #00000072;
+  --gray-a10: #0000007c;
+  --gray-a11: #0000009b;
+  --gray-a12: #000000df;
 
-  /* Accent (Blue) */
+  /* ===== ACCENT (BLUE) ===== */
   --blue-1: #fafdff;
   --blue-2: #f3fafe;
   --blue-3: #e2f5ff;
@@ -47,7 +45,7 @@
   --blue-11: #007ab3;
   --blue-12: #093a51;
 
-  /* Accent {BlueA} */
+  /* Blue Alpha (Transparent) */
   --blue-a1: #0099ff05;
   --blue-a2: #0095ea0c;
   --blue-a3: #00a8ff1d;
@@ -61,6 +59,7 @@
   --blue-a11: #007ab3;
   --blue-a12: #00334bf6;
 
+  /* Blue Semantic Colors */
   --blue-contrast: #fff;
   --blue-surface: #f0f9fecc;
   --blue-indicator: #0097d2;
