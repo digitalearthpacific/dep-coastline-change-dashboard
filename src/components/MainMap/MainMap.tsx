@@ -28,15 +28,14 @@ export const MainMap = () => {
   const handleMapLoad = () => {
     // Remove native tooltips after map loads
     const removeNativeTooltips = () => {
-      const zoomInBtn = document.querySelector('.maplibregl-ctrl-zoom-in')
-      const zoomOutBtn = document.querySelector('.maplibregl-ctrl-zoom-out')
-
-      if (zoomInBtn) zoomInBtn.removeAttribute('title')
-      if (zoomOutBtn) zoomOutBtn.removeAttribute('title')
+      const controls = document.querySelectorAll(
+        '.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out',
+      )
+      controls.forEach((control) => control.removeAttribute('title'))
     }
 
-    // Use setTimeout to ensure controls are rendered
-    setTimeout(removeNativeTooltips, 100)
+    // Use requestAnimationFrame for next paint cycle
+    requestAnimationFrame(removeNativeTooltips)
   }
 
   const handleFullscreen = () => {
