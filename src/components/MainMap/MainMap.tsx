@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useRef } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -25,8 +25,8 @@ const NAVIGATION_CONTROL_STYLE = {
 export const MainMap = () => {
   const mapRef = useRef<MapRef>(null)
 
-  // Remove native tooltips after map loads
-  useEffect(() => {
+  const handleMapLoad = () => {
+    // Remove native tooltips after map loads
     const removeNativeTooltips = () => {
       const zoomInBtn = document.querySelector('.maplibregl-ctrl-zoom-in')
       const zoomOutBtn = document.querySelector('.maplibregl-ctrl-zoom-out')
@@ -35,9 +35,9 @@ export const MainMap = () => {
       if (zoomOutBtn) zoomOutBtn.removeAttribute('title')
     }
 
-    const timer = setTimeout(removeNativeTooltips, 100)
-    return () => clearTimeout(timer)
-  }, [])
+    // Use setTimeout to ensure controls are rendered
+    setTimeout(removeNativeTooltips, 100)
+  }
 
   const handleFullscreen = () => {
     // TODO: This is a basic full screen, Will implement fullscreen toggle full functionality
@@ -60,6 +60,7 @@ export const MainMap = () => {
         style={MAP_STYLE}
         initialViewState={INITIAL_VIEW_STATE}
         mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY}`}
+        onLoad={handleMapLoad}
         attributionControl={false}
       >
         <AttributionControl position="bottom-left" compact={true} />
