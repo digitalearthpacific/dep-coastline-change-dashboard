@@ -1,0 +1,86 @@
+.mapContainer {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Custom tooltips for NavigationControl zoom buttons */
+.mapContainer :global(.maplibregl-ctrl-zoom-in),
+.mapContainer :global(.maplibregl-ctrl-zoom-out) {
+  position: relative;
+
+  &:hover::after {
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--gray-12);
+    color: var(--gray-1);
+    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+    border-radius: var(--radius-2, 4px);
+    font-size: var(--font-size-xs, 0.75rem);
+    white-space: nowrap;
+    margin-right: 11px;
+    z-index: 999;
+    pointer-events: none;
+  }
+
+  &:hover::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-right: 0px;
+    border: 6px solid transparent;
+    border-left-color: var(--gray-12);
+    z-index: 1000;
+    pointer-events: none;
+  }
+}
+
+/* Specific tooltip content */
+.mapContainer :global(.maplibregl-ctrl-zoom-in):hover::after {
+  content: 'Zoom In';
+}
+
+.mapContainer :global(.maplibregl-ctrl-zoom-out):hover::after {
+  content: 'Zoom Out';
+}
+
+/* Custom control buttons */
+.fullScreenIconButton,
+.stackIconButton {
+  position: absolute;
+  right: 0.6rem;
+  background: var(--gray-1);
+  border: 1px solid var(--gray-6);
+  border-radius: var(--radius-2, 4px);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
+  z-index: 10;
+
+  &:hover {
+    background: var(--gray-3);
+    border-color: var(--gray-7);
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.fullScreenIconButton {
+  bottom: 2.75rem;
+}
+
+.stackIconButton {
+  bottom: 0.5rem;
+}
