@@ -1,12 +1,6 @@
-.mapContainer {
-  position: relative;
-  width: 100%;
-  height: 100vh;
-}
-
 /* Custom tooltips for NavigationControl zoom buttons */
-.mapContainer :global(.maplibregl-ctrl-zoom-in),
-.mapContainer :global(.maplibregl-ctrl-zoom-out) {
+:global(.maplibregl-ctrl-zoom-in),
+:global(.maplibregl-ctrl-zoom-out) {
   position: relative;
 
   &:hover::after {
@@ -40,11 +34,11 @@
 }
 
 /* Specific tooltip content */
-.mapContainer :global(.maplibregl-ctrl-zoom-in):hover::after {
+:global(.maplibregl-ctrl-zoom-in):hover::after {
   content: 'Zoom In';
 }
 
-.mapContainer :global(.maplibregl-ctrl-zoom-out):hover::after {
+:global(.maplibregl-ctrl-zoom-out):hover::after {
   content: 'Zoom Out';
 }
 

@@ -52,7 +52,7 @@ export const MainMap = () => {
   }
 
   return (
-    <div className={styles.mapContainer}>
+    <>
       <Map
         id="main-map"
         ref={mapRef}
@@ -91,6 +91,6 @@ export const MainMap = () => {
           <StackIcon />
         </button>
       </Tooltip>
-    </div>
+    </>
   )
 }
