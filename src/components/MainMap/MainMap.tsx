@@ -2,11 +2,11 @@ import { useRef } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { StackIcon, EnterFullScreenIcon } from '@radix-ui/react-icons'
-import { Tooltip } from '@radix-ui/themes'
+import { EnterFullScreenIcon } from '@radix-ui/react-icons'
+import { IconButton, Tooltip } from '@radix-ui/themes'
 import styles from './MainMap.module.scss'
+import BaseMapIcon from '../../assets/basemap.svg'
 
-// Constants
 const INITIAL_VIEW_STATE = {
   longitude: 160,
   latitude: -10,
@@ -19,7 +19,8 @@ const MAP_STYLE = {
 }
 
 const NAVIGATION_CONTROL_STYLE = {
-  marginBottom: '5rem',
+  marginBottom: '106px',
+  marginRight: '24px',
 }
 
 export const MainMap = () => {
@@ -47,7 +48,7 @@ export const MainMap = () => {
     }
   }
 
-  const handleBasemapChange = () => {
+  const handleBaseMapChange = () => {
     // TODO: Implement basemap switching functionality
   }
 
@@ -70,27 +71,30 @@ export const MainMap = () => {
         />
       </Map>
 
-      <Tooltip content="Fullscreen" side="left">
-        <button
-          className={styles.fullScreenIconButton}
-          onClick={handleFullscreen}
-          aria-label="Toggle Fullscreen"
-          type="button"
-        >
-          <EnterFullScreenIcon />
-        </button>
-      </Tooltip>
-
-      <Tooltip content="Basemap" side="left">
-        <button
-          className={styles.stackIconButton}
-          onClick={handleBasemapChange}
-          aria-label="Change Basemap"
-          type="button"
-        >
-          <StackIcon />
-        </button>
-      </Tooltip>
+      <div className={styles.customMapTools}>
+        <Tooltip content="Fullscreen" side="left">
+          <IconButton
+            size="2"
+            variant="solid"
+            onClick={handleFullscreen}
+            aria-label="Toggle Fullscreen"
+            className={styles.customMapToolIconButton}
+          >
+            <EnterFullScreenIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip content="Base Map" side="left">
+          <IconButton
+            size="2"
+            variant="solid"
+            onClick={handleBaseMapChange}
+            aria-label="Change Base Map"
+            className={styles.customMapToolIconButton}
+          >
+            <img src={BaseMapIcon} alt="Basemap" />
+          </IconButton>
+        </Tooltip>
+      </div>
     </>
   )
 }

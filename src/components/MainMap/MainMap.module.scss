@@ -1,6 +1,8 @@
 /* Custom tooltips for NavigationControl zoom buttons */
 :global(.maplibregl-ctrl-zoom-in),
 :global(.maplibregl-ctrl-zoom-out) {
+  width: var(--space-6, 32px) !important;
+  height: var(--space-6, 32px) !important;
   position: relative;
 
   &:hover::after {
@@ -43,38 +45,43 @@
 }
 
 /* Custom control buttons */
-.fullScreenIconButton,
-.stackIconButton {
+.customMapTools {
   position: absolute;
-  right: 0.6rem;
-  background: var(--gray-1);
-  border: 1px solid var(--gray-6);
-  border-radius: var(--radius-2, 4px);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  right: 0px;
+  bottom: 0px;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
-  z-index: 10;
+  padding: var(--space-5, 24px);
+  gap: var(--space-2, 8px);
 
-  &:hover {
-    background: var(--gray-3);
-    border-color: var(--gray-7);
-    transform: scale(1.05);
+  /* Target IconButton elements within this container */
+  .customMapToolIconButton {
+    --accent-9: var(--white);
+    --accent-10: var(--gray-3);
+    --accent-contrast: var(--gray-12);
+    cursor: pointer;
+
+    /* Box shadow without !important */
+    box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
+
+    /* Transition without !important */
+    transition: all 0.2s ease;
+
+    &:hover {
+      /* Hover shadow without !important */
+      box-shadow: var(
+        --shadow-3,
+        0 4px 6px -1px rgb(0 0 0 / 0.1),
+        0 2px 4px -1px rgb(0 0 0 / 0.06)
+      );
+      transform: scale(1.05);
+    }
+
+    &:active {
+      /* Active shadow without !important */
+      box-shadow: var(--shadow-1, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+      transform: scale(0.95);
+    }
   }
-
-  &:active {
-    transform: scale(0.95);
-  }
-}
-
-.fullScreenIconButton {
-  bottom: 2.75rem;
-}
-
-.stackIconButton {
-  bottom: 0.5rem;
 }
