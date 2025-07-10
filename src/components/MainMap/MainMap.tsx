@@ -29,10 +29,11 @@ export const MainMap = () => {
   const handleMapLoad = () => {
     // Remove native tooltips after map loads
     const removeNativeTooltips = () => {
-      const controls = document.querySelectorAll(
-        '.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out',
-      )
-      controls.forEach((control) => control.removeAttribute('title'))
+      const controls = mapRef.current
+        ?.getContainer()
+        .querySelectorAll('.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out')
+
+      controls?.forEach((control) => control.removeAttribute('title'))
     }
 
     // Use requestAnimationFrame for next paint cycle
@@ -55,7 +56,7 @@ export const MainMap = () => {
   return (
     <>
       <Map
-        id="main-map"
+        id='main-map'
         ref={mapRef}
         style={MAP_STYLE}
         initialViewState={INITIAL_VIEW_STATE}
@@ -63,35 +64,35 @@ export const MainMap = () => {
         onLoad={handleMapLoad}
         attributionControl={false}
       >
-        <AttributionControl position="bottom-left" compact={true} />
+        <AttributionControl position='bottom-left' compact={true} />
         <NavigationControl
-          position="bottom-right"
+          position='bottom-right'
           showCompass={false}
           style={NAVIGATION_CONTROL_STYLE}
         />
       </Map>
 
       <div className={styles.customMapTools}>
-        <Tooltip content="Fullscreen" side="left">
+        <Tooltip content='Fullscreen' side='left'>
           <IconButton
-            size="2"
-            variant="solid"
+            size='2'
+            variant='solid'
             onClick={handleFullscreen}
-            aria-label="Toggle Fullscreen"
+            aria-label='Toggle Fullscreen'
             className={styles.customMapToolIconButton}
           >
             <EnterFullScreenIcon />
           </IconButton>
         </Tooltip>
-        <Tooltip content="Base Map" side="left">
+        <Tooltip content='Base Map' side='left'>
           <IconButton
-            size="2"
-            variant="solid"
+            size='2'
+            variant='solid'
             onClick={handleBaseMapChange}
-            aria-label="Change Base Map"
+            aria-label='Change Base Map'
             className={styles.customMapToolIconButton}
           >
-            <img src={BaseMapIcon} alt="Basemap" />
+            <img src={BaseMapIcon} alt='Basemap' />
           </IconButton>
         </Tooltip>
       </div>
