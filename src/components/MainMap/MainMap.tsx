@@ -31,8 +31,8 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
     if (flyToLocation && mapRef.current) {
       mapRef.current.flyTo({
         center: flyToLocation.center as [number, number],
-        zoom: flyToLocation.zoom || FLY_TO_ZOOM,
-        duration: flyToLocation.duration || FLY_TO_DURATION,
+        zoom: flyToLocation.zoom ?? FLY_TO_ZOOM,
+        duration: flyToLocation.duration ?? FLY_TO_DURATION,
       })
     }
   }, [flyToLocation])
