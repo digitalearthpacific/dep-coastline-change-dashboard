@@ -109,7 +109,7 @@ export const PACIFIC_COUNTRIES: readonly PacificCountry[] = [
   },
   {
     id: 'wallis-and-futuna',
-    name: 'Wallis And Futuna',
+    name: 'Wallis and Futuna',
     coordinates: [-177.1562, -13.7687] as [number, number],
   },
 ] as const
