@@ -1,3 +1,5 @@
+@use '../../styles' as *;
+
 .dashboardContainer {
   display: flex;
   width: 100%;
@@ -49,10 +51,12 @@
   }
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
+/* Mobile View design */
+@include mobile-only {
   .dashboardContainer {
     flex-direction: column;
+    height: 100vh; /* Fallback for browsers without dvh support */
+    height: 100dvh; /* Modern browsers with dynamic viewport support */
   }
 
   .mapSection,

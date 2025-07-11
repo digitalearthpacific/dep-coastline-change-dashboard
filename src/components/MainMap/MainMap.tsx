@@ -16,12 +16,12 @@ const INITIAL_VIEW_STATE = {
 
 const MAP_STYLE = {
   width: '100%',
-  height: '100vh',
+  height: '100%',
 }
 
 const NAVIGATION_CONTROL_STYLE = {
-  marginBottom: '106px',
-  marginRight: '24px',
+  marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
+  marginRight: 'var(--navigation-control-margin-right, 24px)',
 }
 
 export const MainMap = () => {
