@@ -15,7 +15,7 @@ export const SearchBar = ({ selectedCountry, onCountrySelect }: SearchBarProps) 
             <DropdownMenu.TriggerIcon />
           </Button>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content size='2' style={{ maxHeight: '300px', overflowY: 'auto' }}>
+        <DropdownMenu.Content size='2' style={{ maxHeight: '230px', overflowY: 'auto' }}>
           {PACIFIC_COUNTRIES.map((country) => (
             <DropdownMenu.Item key={country.id} onSelect={() => onCountrySelect(country)}>
               {country.name}
