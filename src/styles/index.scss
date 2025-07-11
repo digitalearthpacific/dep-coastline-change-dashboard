@@ -1,3 +1,4 @@
 // Main stylesheet - imports all global styles using modern @use syntax
 @use './theme.scss';
 @use './base.scss';
+@forward './mixins.scss';
