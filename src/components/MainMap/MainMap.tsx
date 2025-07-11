@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import { IconButton, Tooltip } from '@radix-ui/themes'
@@ -7,12 +7,8 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
-
-const INITIAL_VIEW_STATE = {
-  longitude: 160,
-  latitude: -10,
-  zoom: 4,
-}
+import { INITIAL_VIEW_STATE, FLY_TO_ZOOM, FLY_TO_DURATION } from '../../library/constants'
+import type { MainMapProps } from '../../library/types'
 
 const MAP_STYLE = {
   width: '100%',
@@ -24,8 +20,18 @@ const NAVIGATION_CONTROL_STYLE = {
   marginRight: 'var(--navigation-control-margin-right, 24px)',
 }
 
-export const MainMap = () => {
+export const MainMap = ({ flyToLocation }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
+
+  useEffect(() => {
+    if (flyToLocation && mapRef.current) {
+      mapRef.current.flyTo({
+        center: flyToLocation.center as [number, number],
+        zoom: flyToLocation.zoom ?? FLY_TO_ZOOM,
+        duration: flyToLocation.duration ?? FLY_TO_DURATION,
+      })
+    }
+  }, [flyToLocation])
 
   const handleMapLoad = () => {
     // Remove native tooltips after map loads
@@ -50,7 +56,7 @@ export const MainMap = () => {
   }
 
   const handleBaseMapChange = () => {
-    // TODO: Implement basemap switching functionality
+    // TODO: Implement base map switching functionality
   }
 
   return (
