@@ -69,3 +69,36 @@
     height: 40vh;
   }
 }
+
+.searchBar {
+  position: absolute;
+  left: 24px;
+  top: 24px;
+  display: flex;
+  padding: var(--space-4, 16px) var(--space-5, 24px);
+  align-items: center;
+  gap: var(--space-5, 24px);
+  border-radius: 99999px;
+  background: var(--white, #fff);
+  z-index: 1;
+
+  /* Shadows/shadow-5 */
+  box-shadow:
+    0px 12px 32px -16px var(--Colors-Neutral-Neutral-Alpha-5, rgba(0, 0, 0, 0.12)),
+    0px 12px 60px 0px var(--Overlays-Black-Alpha-3, rgba(0, 0, 0, 0.15));
+
+  .appLogo {
+    width: 174px;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
+  }
+
+  .dropdownButton {
+    --accent-9: var(--white);
+    --accent-10: var(--gray-3);
+    --accent-contrast: var(--gray-11);
+
+    border: 1px solid var(--gray-6);
+  }
+}
