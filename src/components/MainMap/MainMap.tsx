@@ -8,11 +8,7 @@ import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import { INITIAL_VIEW_STATE, FLY_TO_ZOOM, FLY_TO_DURATION } from '../../library/constants'
-import type { FlyToLocation } from '../../library/types'
-
-interface MainMapProps {
-  flyToLocation?: FlyToLocation | null
-}
+import type { MainMapProps } from '../../library/types'
 
 const MAP_STYLE = {
   width: '100%',
