@@ -1,14 +1,14 @@
-import { Button } from '@radix-ui/themes'
-import styles from './App.module.scss'
+import { MapProvider } from 'react-map-gl/maplibre'
+import { Routes, Route } from 'react-router-dom'
+import { Dashboard } from './components'
 
-function App() {
+const App = () => {
   return (
-    <div className={styles.app}>
-      <h1 className={styles.title}>Coastline Change App</h1>
-      <Button size="3" variant="solid">
-        Get Started
-      </Button>
-    </div>
+    <MapProvider>
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+      </Routes>
+    </MapProvider>
   )
 }
 

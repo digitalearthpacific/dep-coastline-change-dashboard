@@ -1,4 +1,3 @@
-// Main stylesheet - imports all global styles
-@import '@radix-ui/themes/styles.css';
-@import './theme.scss';
-@import './base.scss';
+// Main stylesheet - imports all global styles using modern @use syntax
+@use './theme.scss';
+@use './base.scss';
