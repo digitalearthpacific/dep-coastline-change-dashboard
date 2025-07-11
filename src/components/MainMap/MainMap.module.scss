@@ -1,75 +1,96 @@
-/* Custom tooltips for NavigationControl zoom buttons */
+@use '../../styles/mixins' as *;
+
+/* ===== MAPLIBRE ZOOM CONTROLS ===== */
+:root {
+  --navigation-control-margin-right: 24px;
+  --navigation-control-margin-bottom: 106px;
+
+  @include mobile-only {
+    --navigation-control-margin-right: 16px;
+    --navigation-control-margin-bottom: 98px;
+  }
+}
+
 :global(.maplibregl-ctrl-zoom-in),
 :global(.maplibregl-ctrl-zoom-out) {
   width: var(--space-6, 32px) !important;
   height: var(--space-6, 32px) !important;
   position: relative;
+}
 
-  &:hover::after {
-    position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--gray-12);
-    color: var(--gray-1);
-    padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
-    border-radius: var(--radius-2, 4px);
-    font-size: var(--font-size-xs, 0.75rem);
-    white-space: nowrap;
-    margin-right: 11px;
-    z-index: 999;
-    pointer-events: none;
+/* Desktop-only tooltips */
+@include desktop-only {
+  :global(.maplibregl-ctrl-zoom-in),
+  :global(.maplibregl-ctrl-zoom-out) {
+    /* Tooltip arrow */
+    &:hover::before {
+      content: '';
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-right: 0;
+      border: 6px solid transparent;
+      border-left-color: var(--gray-12);
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* Tooltip content */
+    &:hover::after {
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--gray-12);
+      color: var(--gray-1);
+      padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+      border-radius: var(--radius-2, 4px);
+      font-size: var(--font-size-xs, 0.75rem);
+      white-space: nowrap;
+      margin-right: 11px;
+      z-index: 999;
+      pointer-events: none;
+    }
   }
 
-  &:hover::before {
-    content: '';
-    position: absolute;
-    right: 100%;
-    top: 50%;
-    transform: translateY(-50%);
-    margin-right: 0px;
-    border: 6px solid transparent;
-    border-left-color: var(--gray-12);
-    z-index: 1000;
-    pointer-events: none;
+  /* Tooltip text content */
+  :global(.maplibregl-ctrl-zoom-in):hover::after {
+    content: 'Zoom In';
+  }
+
+  :global(.maplibregl-ctrl-zoom-out):hover::after {
+    content: 'Zoom Out';
   }
 }
 
-/* Specific tooltip content */
-:global(.maplibregl-ctrl-zoom-in):hover::after {
-  content: 'Zoom In';
-}
-
-:global(.maplibregl-ctrl-zoom-out):hover::after {
-  content: 'Zoom Out';
-}
-
-/* Custom control buttons */
+/* ===== CUSTOM MAP TOOLS ===== */
 .customMapTools {
   position: absolute;
-  right: 0px;
-  bottom: 0px;
+  right: 0;
+  bottom: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   padding: var(--space-5, 24px);
   gap: var(--space-2, 8px);
 
-  /* Target IconButton elements within this container */
+  @include mobile-only {
+    padding: var(--space-4, 16px);
+  }
+
   .customMapToolIconButton {
+    /* Radix UI theme overrides */
     --accent-9: var(--white);
     --accent-10: var(--gray-3);
     --accent-contrast: var(--gray-12);
+
     cursor: pointer;
-
-    /* Box shadow without !important */
     box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
-
-    /* Transition without !important */
     transition: all 0.2s ease;
 
+    /* Hover state */
     &:hover {
-      /* Hover shadow without !important */
       box-shadow: var(
         --shadow-3,
         0 4px 6px -1px rgb(0 0 0 / 0.1),
@@ -78,8 +99,8 @@
       transform: scale(1.05);
     }
 
+    /* Active state */
     &:active {
-      /* Active shadow without !important */
       box-shadow: var(--shadow-1, 0 1px 2px 0 rgb(0 0 0 / 0.05));
       transform: scale(0.95);
     }
