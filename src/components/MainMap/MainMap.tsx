@@ -1,11 +1,12 @@
 import { useRef } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
-import 'maplibre-gl/dist/maplibre-gl.css'
-import { EnterFullScreenIcon } from '@radix-ui/react-icons'
 import { IconButton, Tooltip } from '@radix-ui/themes'
+import 'maplibre-gl/dist/maplibre-gl.css'
+
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
+import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 
 const INITIAL_VIEW_STATE = {
   longitude: 160,
@@ -36,7 +37,6 @@ export const MainMap = () => {
       controls?.forEach((control) => control.removeAttribute('title'))
     }
 
-    // Use requestAnimationFrame for next paint cycle
     requestAnimationFrame(removeNativeTooltips)
   }
 
@@ -81,7 +81,7 @@ export const MainMap = () => {
             aria-label='Toggle Fullscreen'
             className={styles.customMapToolIconButton}
           >
-            <EnterFullScreenIcon />
+            <img src={EnterFullScreenIcon} alt='Toggle fullscreen' />
           </IconButton>
         </Tooltip>
         <Tooltip content='Base Map' side='left'>
@@ -92,7 +92,7 @@ export const MainMap = () => {
             aria-label='Change Base Map'
             className={styles.customMapToolIconButton}
           >
-            <img src={BaseMapIcon} alt='Basemap' />
+            <img src={BaseMapIcon} alt='Change base map' />
           </IconButton>
         </Tooltip>
       </div>
