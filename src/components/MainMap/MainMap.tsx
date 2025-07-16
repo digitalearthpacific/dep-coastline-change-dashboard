@@ -89,8 +89,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
       <div className={styles.customMapTools}>
         <Tooltip content='Fullscreen' side='left'>
           <IconButton
-            size='2'
-            variant='solid'
             onClick={handleFullscreen}
             aria-label='Toggle Fullscreen'
             className={styles.customMapToolIconButton}
@@ -100,8 +98,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
         </Tooltip>
         <Tooltip content='Base Map' side='left'>
           <IconButton
-            size='2'
-            variant='solid'
             onClick={handleBaseMapChange}
             aria-label='Change Base Map'
             className={styles.customMapToolIconButton}

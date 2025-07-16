@@ -51,6 +51,7 @@
     width: 270px;
 
     @include mobile-only {
+      height: var(--space-7, 40px);
       width: 100%;
     }
   }
