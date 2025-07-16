@@ -12,7 +12,6 @@ export type CountryCoordinates = PacificCountry['coordinates']
 // Responsive types
 export interface ResponsiveState {
   isMobileWidth: boolean
-  isDesktopWidth: boolean
 }
 
 export interface ResponsiveConfig {

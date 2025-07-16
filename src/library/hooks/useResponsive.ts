@@ -9,10 +9,6 @@ const useResponsive = (): ResponsiveState => {
     return isClient ? window.innerWidth <= DEFAULT_MOBILE_WIDTH_THRESHOLD : false
   })
 
-  const [isDesktopWidth, setIsDesktopWidth] = useState<boolean>(() => {
-    return isClient ? window.innerWidth > DEFAULT_MOBILE_WIDTH_THRESHOLD : true
-  })
-
   useEffect(() => {
     if (!isClient) return
 
@@ -20,7 +16,6 @@ const useResponsive = (): ResponsiveState => {
       const width = window.innerWidth
 
       setIsMobileWidth(width <= DEFAULT_MOBILE_WIDTH_THRESHOLD)
-      setIsDesktopWidth(width > DEFAULT_MOBILE_WIDTH_THRESHOLD)
     }
 
     window.addEventListener('resize', handleResize)
@@ -30,7 +25,7 @@ const useResponsive = (): ResponsiveState => {
     }
   }, [])
 
-  return { isMobileWidth, isDesktopWidth }
+  return { isMobileWidth }
 }
 
 export default useResponsive
