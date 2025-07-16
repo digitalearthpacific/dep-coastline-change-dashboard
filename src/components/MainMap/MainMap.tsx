@@ -29,17 +29,18 @@ const NAVIGATION_CONTROL_STYLE = {
 export const MainMap = ({ flyToLocation }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
-  const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
 
   useEffect(() => {
     if (flyToLocation && mapRef.current) {
+      const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
+
       mapRef.current.flyTo({
         center: flyToLocation.center as [number, number],
         zoom: flyToLocation.zoom ?? defaultFlyToZoom,
         duration: flyToLocation.duration ?? FLY_TO_DURATION,
       })
     }
-  }, [flyToLocation])
+  }, [flyToLocation, isMobileWidth])
 
   const handleMapLoad = () => {
     // Remove native tooltips after map loads

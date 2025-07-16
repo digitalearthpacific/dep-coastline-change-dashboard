@@ -28,7 +28,7 @@ const useResponsive = (): ResponsiveState => {
     return (): void => {
       window.removeEventListener('resize', handleResize)
     }
-  }, [isClient])
+  }, [])
 
   return { isMobileWidth, isDesktopWidth }
 }
