@@ -1,3 +1,5 @@
+@use '../../styles/mixins' as *;
+
 .searchBar {
   position: absolute;
   left: 24px;
@@ -14,11 +16,28 @@
     0px 12px 32px -16px var(--gray-a5, rgba(0, 0, 0, 0.12)),
     0px 12px 60px 0px var(--gray-a3, rgba(0, 0, 0, 0.15));
 
+  @include mobile-only {
+    position: relative;
+    left: 0;
+    top: 0;
+    width: 100%;
+    flex-direction: column;
+    gap: var(--space-3, 12px);
+    padding: var(--space-4, 16px);
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+
   .logo {
-    width: 174px;
+    width: 175px;
     height: auto;
     object-fit: contain;
     flex-shrink: 0;
+
+    @include mobile-only {
+      width: 220px;
+      align-self: center;
+    }
   }
 
   .dropdownButton {
@@ -29,6 +48,21 @@
     border: 1px solid var(--gray-6);
     display: flex;
     justify-content: space-between;
-    min-width: 260px;
+    width: 270px;
+
+    @include mobile-only {
+      height: var(--space-7, 40px);
+      width: 100%;
+    }
+  }
+}
+
+.dropdownContent {
+  width: 270px;
+  height: 230px;
+  overflow-y: auto;
+
+  @include mobile-only {
+    width: calc(100vw - 32px);
   }
 }

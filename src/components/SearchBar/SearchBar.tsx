@@ -10,15 +10,12 @@ export const SearchBar = ({ selectedCountry, onCountrySelect }: SearchBarProps) 
       <img src={DEPLogo} alt='Digital Earth Pacific' className={styles.logo} />
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Button variant='solid' size='2' className={styles.dropdownButton}>
+          <Button className={styles.dropdownButton}>
             {selectedCountry?.name || 'Select location for coastline data'}
             <DropdownMenu.TriggerIcon />
           </Button>
         </DropdownMenu.Trigger>
-        <DropdownMenu.Content
-          size='2'
-          style={{ minWidth: '260px', maxHeight: '230px', overflowY: 'auto' }}
-        >
+        <DropdownMenu.Content className={styles.dropdownContent}>
           {PACIFIC_COUNTRIES.map((country) => (
             <DropdownMenu.Item key={country.id} onSelect={() => onCountrySelect(country)}>
               {country.name}

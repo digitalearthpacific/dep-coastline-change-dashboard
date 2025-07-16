@@ -8,5 +8,6 @@ export const INITIAL_VIEW_STATE: MapViewState = {
 } as const
 
 // Map interaction constants
-export const FLY_TO_ZOOM = 8
+export const FLY_TO_DESKTOP_ZOOM = 8
+export const FLY_TO_MOBILE_ZOOM = 6
 export const FLY_TO_DURATION = 2000

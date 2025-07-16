@@ -7,8 +7,14 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
-import { INITIAL_VIEW_STATE, FLY_TO_ZOOM, FLY_TO_DURATION } from '../../library/constants'
+import {
+  INITIAL_VIEW_STATE,
+  FLY_TO_DESKTOP_ZOOM,
+  FLY_TO_MOBILE_ZOOM,
+  FLY_TO_DURATION,
+} from '../../library/constants'
 import type { MainMapProps } from '../../library/types'
+import useResponsive from '../../library/hooks/useResponsive'
 
 const MAP_STYLE = {
   width: '100%',
@@ -22,16 +28,19 @@ const NAVIGATION_CONTROL_STYLE = {
 
 export const MainMap = ({ flyToLocation }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
+  const { isMobileWidth } = useResponsive()
 
   useEffect(() => {
     if (flyToLocation && mapRef.current) {
+      const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
+
       mapRef.current.flyTo({
         center: flyToLocation.center as [number, number],
-        zoom: flyToLocation.zoom ?? FLY_TO_ZOOM,
+        zoom: flyToLocation.zoom ?? defaultFlyToZoom,
         duration: flyToLocation.duration ?? FLY_TO_DURATION,
       })
     }
-  }, [flyToLocation])
+  }, [flyToLocation, isMobileWidth])
 
   const handleMapLoad = () => {
     // Remove native tooltips after map loads
@@ -81,8 +90,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
       <div className={styles.customMapTools}>
         <Tooltip content='Fullscreen' side='left'>
           <IconButton
-            size='2'
-            variant='solid'
             onClick={handleFullscreen}
             aria-label='Toggle Fullscreen'
             className={styles.customMapToolIconButton}
@@ -92,8 +99,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
         </Tooltip>
         <Tooltip content='Base Map' side='left'>
           <IconButton
-            size='2'
-            variant='solid'
             onClick={handleBaseMapChange}
             aria-label='Change Base Map'
             className={styles.customMapToolIconButton}
