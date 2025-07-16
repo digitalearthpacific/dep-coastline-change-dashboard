@@ -1,6 +1,6 @@
 import type { PacificCountry } from '../types'
 
-// Pacific Island Countries with coordinates (sorted alphabetically by name)
+// Pacific Island Countries with coordinates (sorted alphabetically by name) constants
 export const PACIFIC_COUNTRIES: readonly PacificCountry[] = [
   {
     id: 'american-samoa',
@@ -113,3 +113,6 @@ export const PACIFIC_COUNTRIES: readonly PacificCountry[] = [
     coordinates: [-177.1562, -13.7687] as [number, number],
   },
 ] as const
+
+// Responsive constants
+export const DEFAULT_MOBILE_WIDTH_THRESHOLD = 768
