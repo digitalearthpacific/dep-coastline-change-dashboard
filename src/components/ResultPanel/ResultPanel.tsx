@@ -2,6 +2,7 @@ import { Card, Flex, Text } from '@radix-ui/themes'
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import styles from './Result.module.scss'
 import type { PacificCountry } from '../../library/types'
+import useResponsive from '../../library/hooks/useResponsive'
 
 const ResultHeaderCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => (
   <Card>
@@ -20,9 +21,11 @@ const ResultHeaderCard = ({ selectedCountry }: { selectedCountry: PacificCountry
 )
 
 export const ResultPanel = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
-  return selectedCountry ? (
+  const { isMobileWidth } = useResponsive()
+
+  return selectedCountry && !isMobileWidth ? (
     <div className={styles.resultContainer}>
-      {<ResultHeaderCard selectedCountry={selectedCountry} />}
+      <ResultHeaderCard selectedCountry={selectedCountry} />
     </div>
   ) : null
 }

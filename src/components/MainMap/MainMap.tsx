@@ -106,7 +106,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   return (
     <div
       className={clsx(styles.mapContainer, {
-        [styles.fullWidth]: !selectedCountry,
+        [styles.fullWidth]: !selectedCountry || isMobileWidth,
         [styles.withPanel]: selectedCountry,
       })}
     >
