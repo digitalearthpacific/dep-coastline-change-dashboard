@@ -3,6 +3,7 @@ import { MainMap } from '../MainMap'
 import { SearchBar } from '../SearchBar'
 import type { PacificCountry, FlyToLocation } from '../../library/types'
 import styles from './Dashboard.module.scss'
+import { ResultPanel } from '../ResultPanel'
 
 export const Dashboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<PacificCountry | null>(null)
@@ -20,7 +21,8 @@ export const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       <SearchBar selectedCountry={selectedCountry} onCountrySelect={handleCountrySelect} />
-      <MainMap flyToLocation={flyToLocation} />
+      <MainMap flyToLocation={flyToLocation} selectedCountry={selectedCountry} />
+      <ResultPanel selectedCountry={selectedCountry} />
     </div>
   )
 }
