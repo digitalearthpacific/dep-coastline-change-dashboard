@@ -1,0 +1,29 @@
+.resultContainer {
+  width: 50%;
+  height: 100%;
+  background: var(--white, #fff);
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-5, 16px);
+  gap: var(--space-5, 16px);
+  overflow: hidden;
+  position: relative;
+
+  /* Left-focused shadow */
+  box-shadow:
+    -16px 0px 40px -12px var(--gray-a5, rgba(0, 0, 0, 0.12)),
+    -8px 0px 16px -4px var(--gray-a3, rgba(0, 0, 0, 0.15));
+}
+
+.errorCard {
+  background-color: var(--red-3, #ffebee); /* Light red fallback */
+  color: var(--red-11, #d32f2f); /* Dark red fallback */
+}
+
+.errorIcon {
+  background-color: var(--red-11, #d32f2f); /* Dark red fallback */
+  mask: url('../../assets/info-circled.svg') no-repeat center;
+  mask-size: contain;
+  width: 16px;
+  height: 16px;
+}

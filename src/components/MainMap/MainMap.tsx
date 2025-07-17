@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import { IconButton, Tooltip } from '@radix-ui/themes'
@@ -12,9 +12,11 @@ import {
   FLY_TO_DESKTOP_ZOOM,
   FLY_TO_MOBILE_ZOOM,
   FLY_TO_DURATION,
+  FLY_TO_PRESETS,
 } from '../../library/constants'
 import type { MainMapProps } from '../../library/types'
 import useResponsive from '../../library/hooks/useResponsive'
+import clsx from 'clsx'
 
 const MAP_STYLE = {
   width: '100%',
@@ -26,24 +28,58 @@ const NAVIGATION_CONTROL_STYLE = {
   marginRight: 'var(--navigation-control-margin-right, 24px)',
 }
 
-export const MainMap = ({ flyToLocation }: MainMapProps) => {
+export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
+  const [shouldAnimate, setShouldAnimate] = useState(false)
+
+  const createFlyToOptions = (preset: keyof typeof FLY_TO_PRESETS) => {
+    const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
+
+    return {
+      center: flyToLocation!.center as [number, number],
+      zoom: flyToLocation!.zoom ?? defaultFlyToZoom,
+      duration: flyToLocation!.duration ?? FLY_TO_DURATION,
+      ...FLY_TO_PRESETS[preset],
+    }
+  }
 
   useEffect(() => {
     if (flyToLocation && mapRef.current) {
-      const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
+      const isFirstSelection = !shouldAnimate && selectedCountry
 
-      mapRef.current.flyTo({
-        center: flyToLocation.center as [number, number],
-        zoom: flyToLocation.zoom ?? defaultFlyToZoom,
-        duration: flyToLocation.duration ?? FLY_TO_DURATION,
-      })
+      if (isFirstSelection) {
+        // Disable transition temporarily
+        const mapContainer = mapRef.current.getContainer().parentElement
+        if (mapContainer) {
+          mapContainer.style.transition = 'none'
+
+          // Force immediate resize
+          mapRef.current.resize()
+
+          // Re-enable transition
+          mapContainer.style.transition = ''
+
+          // Smooth flyTo with first selection preset
+          mapRef.current.flyTo(createFlyToOptions('firstSelection'))
+
+          setShouldAnimate(true)
+        }
+      } else {
+        // Enhanced flyTo for subsequent selections
+        mapRef.current.flyTo(createFlyToOptions('subsequentSelection'))
+      }
     }
-  }, [flyToLocation, isMobileWidth])
+  }, [flyToLocation, selectedCountry, isMobileWidth, shouldAnimate])
+
+  // Reset animation state when no country is selected
+  useEffect(() => {
+    if (!selectedCountry) {
+      setShouldAnimate(false)
+    }
+  }, [selectedCountry])
 
   const handleMapLoad = () => {
-    // Remove native tooltips after map loads
     const removeNativeTooltips = () => {
       const controls = mapRef.current
         ?.getContainer()
@@ -56,7 +92,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
   }
 
   const handleFullscreen = () => {
-    // TODO: This is a basic full screen, Will implement fullscreen toggle full functionality
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen()
     } else {
@@ -69,7 +104,12 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
   }
 
   return (
-    <>
+    <div
+      className={clsx(styles.mapContainer, {
+        [styles.fullWidth]: !selectedCountry || isMobileWidth,
+        [styles.withPanel]: selectedCountry,
+      })}
+    >
       <Map
         id='main-map'
         ref={mapRef}
@@ -107,6 +147,6 @@ export const MainMap = ({ flyToLocation }: MainMapProps) => {
           </IconButton>
         </Tooltip>
       </div>
-    </>
+    </div>
   )
 }

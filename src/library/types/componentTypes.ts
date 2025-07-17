@@ -10,6 +10,7 @@ export type DashboardState = {
 // Component prop types
 export type MainMapProps = {
   flyToLocation?: FlyToLocation | null
+  selectedCountry?: PacificCountry | null
 }
 
 export type SearchBarProps = {

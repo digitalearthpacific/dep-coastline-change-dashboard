@@ -1,5 +1,19 @@
 @use '../../styles/mixins' as *;
 
+.mapContainer {
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  position: relative;
+
+  &.withPanel {
+    width: 50%;
+  }
+
+  &.fullWidth {
+    width: 100%;
+  }
+}
+
 /* ===== MAPLIBRE ZOOM CONTROLS ===== */
 :root {
   --navigation-control-margin-right: 24px;
