@@ -112,6 +112,12 @@ export const PACIFIC_COUNTRIES: readonly PacificCountry[] = [
     name: 'Wallis and Futuna',
     coordinates: [-177.1562, -13.7687] as [number, number],
   },
+  // Error country for testing purposes, remove in production
+  {
+    id: 'error-country',
+    name: 'Error Country',
+    coordinates: [0, 0] as [number, number],
+  },
 ] as const
 
 // Responsive constants

@@ -13,3 +13,16 @@
     0px 12px 32px -16px var(--gray-a5, rgba(0, 0, 0, 0.12)),
     0px 12px 60px 0px var(--gray-a3, rgba(0, 0, 0, 0.15));
 }
+
+.errorCard {
+  background-color: var(--red-3, #ffebee); /* Light red fallback */
+  color: var(--red-11, #d32f2f); /* Dark red fallback */
+}
+
+.errorIcon {
+  background-color: var(--red-11, #d32f2f); /* Dark red fallback */
+  mask: url('../../assets/info-circled.svg') no-repeat center;
+  mask-size: contain;
+  width: 16px;
+  height: 16px;
+}

@@ -20,12 +20,24 @@ const ResultHeaderCard = ({ selectedCountry }: { selectedCountry: PacificCountry
   </Card>
 )
 
+const ErrorCard = () => (
+  <Card className={styles.errorCard} variant='ghost'>
+    <Flex align='center' gap='1'>
+      <div className={styles.errorIcon} role='img' aria-label='Error information' />
+      <Text as='div' size='2'>
+        Unable to load data, please try again.
+      </Text>
+    </Flex>
+  </Card>
+)
 export const ResultPanel = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
   const { isMobileWidth } = useResponsive()
+  const isErrorCountry = selectedCountry?.name === 'Error Country' // Error country for testing purposes, remove in production
 
   return selectedCountry && !isMobileWidth ? (
     <div className={styles.resultContainer}>
-      <ResultHeaderCard selectedCountry={selectedCountry} />
+      {!isErrorCountry && <ResultHeaderCard selectedCountry={selectedCountry} />}
+      {isErrorCountry && <ErrorCard />}
     </div>
   ) : null
 }
