@@ -1,28 +1,22 @@
 import { useState } from 'react'
+
 import { MainMap } from '../MainMap'
-import { SearchBar } from '../SearchBar'
-import type { PacificCountry, FlyToLocation } from '../../library/types'
-import styles from './Dashboard.module.scss'
 import { ResultPanel } from '../ResultPanel'
-import useResponsive from '../../library/hooks/useResponsive'
+import { SearchBar } from '../SearchBar'
+import type { FlyToLocation, PacificCountry } from '../../library/types'
+import styles from './Dashboard.module.scss'
 
 export const Dashboard = () => {
-  const { isMobileWidth } = useResponsive()
   const [selectedCountry, setSelectedCountry] = useState<PacificCountry | null>(null)
   const [flyToLocation, setFlyToLocation] = useState<FlyToLocation | null>(null)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
   const handleCountrySelect = (country: PacificCountry) => {
-    const { coordinates } = country
-
     setSelectedCountry(country)
     setFlyToLocation({
-      center: coordinates,
+      center: country.coordinates,
     })
-
-    if (isMobileWidth) {
-      setIsMobilePanelOpen(true)
-    }
+    setIsMobilePanelOpen(true)
   }
 
   return (

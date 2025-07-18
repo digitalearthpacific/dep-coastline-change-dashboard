@@ -33,6 +33,9 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   const { isMobileWidth } = useResponsive()
   const [shouldAnimate, setShouldAnimate] = useState(false)
 
+  // Add a key that changes when screen size changes to force re-render
+  const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
+
   const createFlyToOptions = (preset: keyof typeof FLY_TO_PRESETS) => {
     const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
 
@@ -108,6 +111,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
       className={clsx(styles.mapContainer, {
         [styles.withPanel]: selectedCountry && !isMobileWidth,
         [styles.fullWidth]: !selectedCountry || isMobileWidth,
+        [styles.withBottomSheet]: isMobileWidth && selectedCountry,
       })}
     >
       <Map
@@ -121,6 +125,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
       >
         <AttributionControl position='bottom-left' compact={true} />
         <NavigationControl
+          key={navigationControlKey} // This forces re-render when screen size changes
           position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
           style={NAVIGATION_CONTROL_STYLE}
