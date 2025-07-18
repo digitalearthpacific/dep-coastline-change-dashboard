@@ -6,25 +6,66 @@ import styles from './MobileResultBottomPanel.module.scss'
 import type { PanInfo } from 'framer-motion'
 import type { BottomPanelProps } from '../../library/types'
 
-// Fixed height for collapsed state, percentage for expanded
-const COLLAPSED_HEIGHT_PX = 140 // Fixed 140px from bottom
-const EXPANDED_HEIGHT = 0.85 // 85vh from bottom (expanded state)
+// Use percentage-based heights for better mobile compatibility
+const COLLAPSED_HEIGHT_PERCENT = 0.15 // 15% of actual viewport height
+const MINI_COLLAPSED_HEIGHT_PERCENT = 0.05 // 5% of actual viewport height
+const EXPANDED_HEIGHT = 0.85 // 85% of viewport height
 
 export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) => {
-  const y = useMotionValue(window.innerHeight) // initially off-screen
+  const y = useMotionValue(window.innerHeight)
   const panelRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
+  const [viewportHeight, setViewportHeight] = useState(window.innerHeight)
 
-  // Calculate positions - fixed height for collapsed, viewport-based for expanded
-  const getCollapsedPosition = () => window.innerHeight - COLLAPSED_HEIGHT_PX
-  const getExpandedPosition = () => window.innerHeight * (1 - EXPANDED_HEIGHT)
-  const getHiddenPosition = () => window.innerHeight
+  // Track real viewport changes for mobile browsers
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      // Use visualViewport API for more accurate mobile measurements
+      const height = window.visualViewport?.height || window.innerHeight
+      setViewportHeight(height)
+    }
+
+    // Listen for viewport changes (handles mobile browser UI)
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', updateViewportHeight)
+    } else {
+      window.addEventListener('resize', updateViewportHeight)
+    }
+
+    // Also listen for orientation changes
+    window.addEventListener('orientationchange', () => {
+      setTimeout(updateViewportHeight, 100) // Delay to ensure accurate measurement
+    })
+
+    return () => {
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', updateViewportHeight)
+      } else {
+        window.removeEventListener('resize', updateViewportHeight)
+      }
+      window.removeEventListener('orientationchange', updateViewportHeight)
+    }
+  }, [])
+
+  // Calculate positions using actual viewport height
+  const getCollapsedPosition = () => {
+    const collapsedHeight = viewportHeight * COLLAPSED_HEIGHT_PERCENT
+    return viewportHeight - collapsedHeight
+  }
+
+  const getMiniCollapsedPosition = () => {
+    const miniHeight = viewportHeight * MINI_COLLAPSED_HEIGHT_PERCENT
+    return viewportHeight - miniHeight
+  }
+
+  const getExpandedPosition = () => viewportHeight * (1 - EXPANDED_HEIGHT)
+  const getHiddenPosition = () => viewportHeight
 
   // Animate in/out when open state changes
   useEffect(() => {
     if (open) {
-      // Animate to fixed collapsed position when opening
+      // Animate to normal collapsed position when opening
       animate(y, getCollapsedPosition(), {
         type: 'spring',
         stiffness: 400,
@@ -51,8 +92,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
 
     if (!open) return
 
-    const collapsedPos = getCollapsedPosition()
     const expandedPos = getExpandedPosition()
+    const collapsedPos = getCollapsedPosition()
+    const miniCollapsedPos = getMiniCollapsedPosition()
     const currentY = y.get()
     const velocity = info.velocity.y
 
@@ -60,18 +102,35 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
 
     // High velocity override - fast gestures snap based on direction
     if (Math.abs(velocity) > 800) {
-      targetPosition = velocity > 0 ? collapsedPos : expandedPos
-    } else {
-      // Distance-based logic for slow/medium gestures
-      const totalRange = collapsedPos - expandedPos
-      const halfwayPoint = expandedPos + totalRange / 2
-
-      if (currentY <= halfwayPoint) {
-        // Closer to expanded position - snap to expanded
+      if (velocity < 0) {
+        // Dragging up fast - go to expanded
         targetPosition = expandedPos
       } else {
-        // Closer to collapsed position - snap to collapsed
+        // Dragging down fast - determine between collapsed and mini-collapsed
+        if (currentY > collapsedPos) {
+          targetPosition = miniCollapsedPos
+        } else {
+          targetPosition = collapsedPos
+        }
+      }
+    } else {
+      // Distance-based logic for slow/medium gestures
+      const expandedToCollapsed = collapsedPos - expandedPos
+      const collapsedToMini = miniCollapsedPos - collapsedPos
+
+      // Create three zones with thresholds
+      const expandedThreshold = expandedPos + expandedToCollapsed * 0.3
+      const collapsedThreshold = collapsedPos + collapsedToMini * 0.5
+
+      if (currentY <= expandedThreshold) {
+        // Upper zone - snap to expanded
+        targetPosition = expandedPos
+      } else if (currentY <= collapsedThreshold) {
+        // Middle zone - snap to normal collapsed
         targetPosition = collapsedPos
+      } else {
+        // Lower zone - snap to mini collapsed
+        targetPosition = miniCollapsedPos
       }
     }
 
@@ -104,7 +163,7 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       dragElastic={0.3}
       dragConstraints={{
         top: getExpandedPosition() - 50,
-        bottom: getCollapsedPosition() + 50,
+        bottom: getMiniCollapsedPosition() + 50,
       }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
@@ -115,11 +174,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
         ref={contentRef}
         className={styles.content}
         style={{
-          // Disable drag when scrolling content
           pointerEvents: isDragging ? 'none' : 'auto',
         }}
         onTouchStart={(e) => {
-          // Only allow dragging from drag handle area
           const target = e.target as HTMLElement
           if (!target.closest(`.${styles.dragHandle}`)) {
             e.stopPropagation()

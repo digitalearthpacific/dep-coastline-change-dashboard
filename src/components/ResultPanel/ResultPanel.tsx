@@ -15,10 +15,10 @@ const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry 
         <Flex justify='between' align='start'>
           {isMobileWidth ? (
             <Flex direction='column' gap='1'>
-              <Text as='div' size='6' weight='bold'>
+              <Text as='div' size='5' weight='bold'>
                 Coastline Change:
               </Text>
-              <Text as='div' size='6' weight='bold'>
+              <Text as='div' size='5' weight='bold'>
                 {selectedCountry?.name}
               </Text>
             </Flex>
