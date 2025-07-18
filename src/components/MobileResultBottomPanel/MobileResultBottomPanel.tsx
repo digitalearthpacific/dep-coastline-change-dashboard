@@ -46,7 +46,7 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
   }
 
   // Handle drag end - determine final position based on distance and velocity
-  const handleDragEnd = (event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+  const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false)
 
     if (!open) return
