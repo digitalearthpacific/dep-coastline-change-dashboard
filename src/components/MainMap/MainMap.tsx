@@ -106,8 +106,8 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   return (
     <div
       className={clsx(styles.mapContainer, {
+        [styles.withPanel]: selectedCountry && !isMobileWidth,
         [styles.fullWidth]: !selectedCountry || isMobileWidth,
-        [styles.withPanel]: selectedCountry,
       })}
     >
       <Map
@@ -121,7 +121,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
       >
         <AttributionControl position='bottom-left' compact={true} />
         <NavigationControl
-          position='bottom-right'
+          position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
           style={NAVIGATION_CONTROL_STYLE}
         />
