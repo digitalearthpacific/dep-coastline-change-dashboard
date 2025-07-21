@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import { IconButton, Tooltip } from '@radix-ui/themes'
@@ -36,16 +36,19 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   // Add a key that changes when screen size changes to force re-render
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
 
-  const createFlyToOptions = (preset: keyof typeof FLY_TO_PRESETS) => {
-    const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
+  const createFlyToOptions = useCallback(
+    (preset: keyof typeof FLY_TO_PRESETS) => {
+      const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
 
-    return {
-      center: flyToLocation!.center as [number, number],
-      zoom: flyToLocation!.zoom ?? defaultFlyToZoom,
-      duration: flyToLocation!.duration ?? FLY_TO_DURATION,
-      ...FLY_TO_PRESETS[preset],
-    }
-  }
+      return {
+        center: flyToLocation!.center as [number, number],
+        zoom: flyToLocation!.zoom ?? defaultFlyToZoom,
+        duration: flyToLocation!.duration ?? FLY_TO_DURATION,
+        ...FLY_TO_PRESETS[preset],
+      }
+    },
+    [flyToLocation, isMobileWidth],
+  )
 
   useEffect(() => {
     if (flyToLocation && mapRef.current) {
@@ -73,7 +76,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
         mapRef.current.flyTo(createFlyToOptions('subsequentSelection'))
       }
     }
-  }, [flyToLocation, selectedCountry, isMobileWidth, shouldAnimate])
+  }, [flyToLocation, selectedCountry, isMobileWidth, shouldAnimate, createFlyToOptions])
 
   // Reset animation state when no country is selected
   useEffect(() => {

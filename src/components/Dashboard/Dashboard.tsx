@@ -11,12 +11,15 @@ export const Dashboard = () => {
   const [flyToLocation, setFlyToLocation] = useState<FlyToLocation | null>(null)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
-  const handleCountrySelect = (country: PacificCountry) => {
+  const handleCountrySelect = (country: PacificCountry | null) => {
     setSelectedCountry(country)
-    setFlyToLocation({
-      center: country.coordinates,
-    })
-    setIsMobilePanelOpen(true)
+    setIsMobilePanelOpen(!!country)
+
+    if (country) {
+      setFlyToLocation({ center: country.coordinates })
+    } else {
+      setFlyToLocation(null)
+    }
   }
 
   return (

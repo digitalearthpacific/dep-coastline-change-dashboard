@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
 import { motion, useMotionValue, animate } from 'framer-motion'
 import clsx from 'clsx'
 import styles from './MobileResultBottomPanel.module.scss'
@@ -26,6 +26,10 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       setViewportHeight(height)
     }
 
+    const orientationChangeHandler = () => {
+      setTimeout(updateViewportHeight, 100)
+    }
+
     // Listen for viewport changes (handles mobile browser UI)
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', updateViewportHeight)
@@ -34,9 +38,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     }
 
     // Also listen for orientation changes
-    window.addEventListener('orientationchange', () => {
-      setTimeout(updateViewportHeight, 100) // Delay to ensure accurate measurement
-    })
+    if (screen.orientation) {
+      screen.orientation.addEventListener('change', orientationChangeHandler)
+    }
 
     return () => {
       if (window.visualViewport) {
@@ -44,44 +48,51 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       } else {
         window.removeEventListener('resize', updateViewportHeight)
       }
-      window.removeEventListener('orientationchange', updateViewportHeight)
+
+      if (screen.orientation) {
+        screen.orientation.removeEventListener('change', orientationChangeHandler)
+      }
     }
   }, [])
 
   // Calculate positions using actual viewport height
-  const getCollapsedPosition = () => {
+  const getCollapsedPosition = useCallback(() => {
     const collapsedHeight = viewportHeight * COLLAPSED_HEIGHT_PERCENT
     return viewportHeight - collapsedHeight
-  }
+  }, [viewportHeight])
 
-  const getMiniCollapsedPosition = () => {
+  const getMiniCollapsedPosition = useCallback(() => {
     const miniHeight = viewportHeight * MINI_COLLAPSED_HEIGHT_PERCENT
     return viewportHeight - miniHeight
-  }
+  }, [viewportHeight])
 
-  const getExpandedPosition = () => viewportHeight * (1 - EXPANDED_HEIGHT)
-  const getHiddenPosition = () => viewportHeight
+  const getExpandedPosition = useCallback(
+    () => viewportHeight * (1 - EXPANDED_HEIGHT),
+    [viewportHeight],
+  )
+
+  const getHiddenPosition = useCallback(() => viewportHeight, [viewportHeight])
+
+  const animateToPosition = useCallback(
+    (position: number) => {
+      animate(y, position, {
+        type: 'spring',
+        stiffness: 400,
+        damping: 30,
+      })
+    },
+    [y],
+  )
 
   // Animate in/out when open state changes
   useEffect(() => {
     if (open) {
-      // Animate to normal collapsed position when opening
-      animate(y, getCollapsedPosition(), {
-        type: 'spring',
-        stiffness: 400,
-        damping: 30,
-      })
+      animateToPosition(getCollapsedPosition())
     } else {
-      // Animate completely off-screen when closing
-      animate(y, getHiddenPosition(), {
-        type: 'spring',
-        stiffness: 400,
-        damping: 30,
-      })
+      animateToPosition(getHiddenPosition())
     }
-  }, [open, y])
+  }, [open, animateToPosition, getCollapsedPosition, getHiddenPosition])
 
-  // Handle drag start
   const handleDragStart = () => {
     setIsDragging(true)
   }
@@ -141,7 +152,6 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     })
   }
 
-  // Don't render if not open
   if (!open) return null
 
   return (
