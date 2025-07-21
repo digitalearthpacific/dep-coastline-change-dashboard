@@ -1,4 +1,4 @@
-.resultContainer {
+.resultSideContainer {
   width: 50%;
   height: 100%;
   background: var(--white, #fff);
@@ -16,12 +16,13 @@
 }
 
 .errorCard {
-  background-color: var(--red-3, #ffebee); /* Light red fallback */
-  color: var(--red-11, #d32f2f); /* Dark red fallback */
+  --margin-top-override: 20px;
+  background-color: var(--red-3, #ffebee);
+  color: var(--red-11, #d32f2f);
 }
 
 .errorIcon {
-  background-color: var(--red-11, #d32f2f); /* Dark red fallback */
+  background-color: var(--red-11, #d32f2f);
   mask: url('../../assets/info-circled.svg') no-repeat center;
   mask-size: contain;
   width: 16px;

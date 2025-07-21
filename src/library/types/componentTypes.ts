@@ -17,3 +17,14 @@ export type SearchBarProps = {
   selectedCountry?: PacificCountry | null
   onCountrySelect: (country: PacificCountry) => void
 }
+
+export type ResultPanelProps = {
+  selectedCountry: PacificCountry | null
+  isMobilePanelOpen: boolean
+}
+
+export type BottomPanelProps = {
+  open: boolean
+  onClose?: () => void
+  children?: React.ReactNode
+}

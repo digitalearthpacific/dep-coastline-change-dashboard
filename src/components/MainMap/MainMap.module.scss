@@ -21,7 +21,6 @@
 
   @include mobile-only {
     --navigation-control-margin-right: 16px;
-    --navigation-control-margin-bottom: 98px;
   }
 }
 
@@ -82,7 +81,7 @@
 .customMapTools {
   position: absolute;
   right: 0;
-  bottom: 0;
+  bottom: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,10 +90,10 @@
 
   @include mobile-only {
     padding: var(--space-4, 16px);
+    top: 67px;
   }
 
   .customMapToolIconButton {
-    /* Radix UI theme overrides */
     --accent-9: var(--white);
     --accent-10: var(--gray-3);
     --accent-contrast: var(--gray-12);
@@ -103,7 +102,6 @@
     box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
     transition: all 0.2s ease;
 
-    /* Hover state */
     &:hover {
       box-shadow: var(
         --shadow-3,
@@ -113,7 +111,6 @@
       transform: scale(1.05);
     }
 
-    /* Active state */
     &:active {
       box-shadow: var(--shadow-1, 0 1px 2px 0 rgb(0 0 0 / 0.05));
       transform: scale(0.95);

@@ -1,43 +1,72 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import InfoCircledIcon from '../../assets/info-circled.svg'
-import styles from './Result.module.scss'
-import type { PacificCountry } from '../../library/types'
-import useResponsive from '../../library/hooks/useResponsive'
 
-const ResultHeaderCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => (
-  <Card>
-    <Flex direction='column' gap='2'>
-      <Flex justify='between' align='start'>
-        <Text as='div' size='6' weight='bold'>
-          Coastline Change: {selectedCountry?.name}
-        </Text>
-        <img src={InfoCircledIcon} alt='Information about coastline change' />
+import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
+import InfoCircledIcon from '../../assets/info-circled.svg'
+import useResponsive from '../../library/hooks/useResponsive'
+import type { PacificCountry, ResultPanelProps } from '../../library/types'
+import styles from './Result.module.scss'
+
+const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
+  const { isMobileWidth } = useResponsive()
+
+  return (
+    <Card>
+      <Flex direction='column' gap='2' justify='between'>
+        <Flex justify='between' align='start'>
+          {isMobileWidth ? (
+            <Flex direction='column' gap='1'>
+              <Text as='div' size='5' weight='bold'>
+                Coastline Change:
+              </Text>
+              <Text as='div' size='5' weight='bold'>
+                {selectedCountry?.name}
+              </Text>
+            </Flex>
+          ) : (
+            <Text as='div' size='6' weight='bold'>
+              Coastline Change: {selectedCountry?.name}
+            </Text>
+          )}
+          <img src={InfoCircledIcon} alt='Information about coastline change' />
+        </Flex>
+        <Flex>
+          <Text as='div' size='2' color='gray'>
+            Estimated coastline change from 2000 to 2020
+          </Text>
+        </Flex>
       </Flex>
-      <Text as='div' size='2' color='gray'>
-        Estimated coastline change from 2000 to 2020
-      </Text>
-    </Flex>
-  </Card>
-)
+    </Card>
+  )
+}
 
 const ErrorCard = () => (
-  <Card className={styles.errorCard} variant='ghost'>
-    <Flex align='center' gap='1'>
-      <div className={styles.errorIcon} role='img' aria-label='Error information' />
-      <Text as='div' size='2'>
-        Unable to load data, please try again.
-      </Text>
-    </Flex>
-  </Card>
+  <div style={{ padding: '16px' }}>
+    <Card className={styles.errorCard} variant='ghost'>
+      <Flex align='center' gap='1'>
+        <div className={styles.errorIcon} role='img' aria-label='Error information' />
+        <Text as='div' size='2'>
+          Unable to load data, please try again.
+        </Text>
+      </Flex>
+    </Card>
+  </div>
 )
-export const ResultPanel = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
-  const { isMobileWidth } = useResponsive()
-  const isErrorCountry = selectedCountry?.name === 'Error Country' // Error country for testing purposes, remove in production
 
-  return selectedCountry && !isMobileWidth ? (
-    <div className={styles.resultContainer}>
-      {!isErrorCountry && <ResultHeaderCard selectedCountry={selectedCountry} />}
-      {isErrorCountry && <ErrorCard />}
-    </div>
-  ) : null
+export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelProps) => {
+  const { isMobileWidth } = useResponsive()
+  const isErrorCountry = selectedCountry?.name === 'Error Country'
+
+  if (!selectedCountry) return null
+
+  const content = isErrorCountry ? (
+    <ErrorCard />
+  ) : (
+    <CountryInfoCard selectedCountry={selectedCountry} />
+  )
+
+  if (isMobileWidth) {
+    return <MobileResultBottomPanel open={isMobilePanelOpen}>{content}</MobileResultBottomPanel>
+  }
+
+  return <div className={styles.resultSideContainer}>{content}</div>
 }

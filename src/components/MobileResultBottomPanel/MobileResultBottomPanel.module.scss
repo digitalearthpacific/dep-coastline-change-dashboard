@@ -1,0 +1,78 @@
+.mobileResultBottomContainer {
+  background-color: var(--color-panel-solid, #ffffff);
+  border-radius: var(--radius-4) var(--radius-4) 0 0;
+  box-shadow:
+    0 -4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 -2px 4px -1px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--gray-a6);
+  border-bottom: none;
+  overflow: hidden;
+  will-change: transform;
+  cursor: grab;
+
+  // Remove touch-action from wrapper to allow content scrolling
+  user-select: none;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.dragHandle {
+  width: 40px;
+  height: 4px;
+  background: var(--gray-a8);
+  border-radius: 99px;
+  margin: var(--space-3) auto var(--space-4);
+  flex-shrink: 0;
+  cursor: grab; // Make sure drag handle is grabbable
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: 0 var(--space-4) var(--space-4);
+
+  // Fixed height for the container
+  height: calc(100vh - 140px - 60px); // viewport height - collapsed height - drag handle space
+  min-height: 200px;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Enhanced mobile scrolling - MOVED ABOVE NESTED RULES
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-y: contain;
+
+  // Scrollbar styling - MOVED ABOVE NESTED RULES
+  scrollbar-width: thin;
+  scrollbar-color: var(--gray-a6) transparent;
+
+  // IMPORTANT: Prevent flex items from shrinking
+  & > * {
+    flex-shrink: 0; // This prevents items from being compressed
+    min-height: fit-content; // Ensure items maintain their content height
+  }
+
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: var(--gray-a6);
+    border-radius: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb:hover {
+    background: var(--gray-a8);
+  }
+}

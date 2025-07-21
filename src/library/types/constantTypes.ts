@@ -10,10 +10,6 @@ export type CountryName = PacificCountry['name']
 export type CountryCoordinates = PacificCountry['coordinates']
 
 // Responsive types
-export interface ResponsiveState {
+export type ResponsiveState = {
   isMobileWidth: boolean
-}
-
-export interface ResponsiveConfig {
-  mobileWidthThreshold?: number
 }
