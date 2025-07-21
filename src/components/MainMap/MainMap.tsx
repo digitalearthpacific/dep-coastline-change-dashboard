@@ -7,6 +7,10 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
+import StreetMapStyleThumbNail from '../../assets/street-thumbnail.png'
+import SatelliteMapStyleThumbNail from '../../assets/satellite-thumbnail.png'
+import LightMapStyleThumbNail from '../../assets/light-thumbnail.png'
+import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import {
   INITIAL_VIEW_STATE,
   FLY_TO_DESKTOP_ZOOM,
@@ -14,9 +18,11 @@ import {
   FLY_TO_DURATION,
   FLY_TO_PRESETS,
 } from '../../library/constants'
-import type { MainMapProps } from '../../library/types'
+import type { MainMapProps, MapStyleType } from '../../library/types'
 import useResponsive from '../../library/hooks/useResponsive'
 import clsx from 'clsx'
+
+const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
 const MAP_STYLE = {
   width: '100%',
@@ -28,10 +34,44 @@ const NAVIGATION_CONTROL_STYLE = {
   marginRight: 'var(--navigation-control-margin-right, 24px)',
 }
 
+const BASE_MAPS = [
+  {
+    key: 'default',
+    label: 'Default',
+    thumbnail: StreetMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'satellite',
+    label: 'Satellite',
+    thumbnail: SatelliteMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'light',
+    label: 'Light',
+    thumbnail: LightMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/dataviz-light/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'dark',
+    label: 'Dark',
+    thumbnail: DarkMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+]
+
+const getBaseMapStyle = (baseMap: string) => {
+  const map = BASE_MAPS.find((bm) => bm.key === baseMap)
+  return map ? map.styleUrl : BASE_MAPS[0].styleUrl
+}
+
 export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
   const [shouldAnimate, setShouldAnimate] = useState(false)
+  const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
+  const [baseMap, setBaseMap] = useState<MapStyleType>('default')
 
   // Add a key that changes when screen size changes to force re-render
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
@@ -106,7 +146,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   }
 
   const handleBaseMapChange = () => {
-    // TODO: Implement base map switching functionality
+    setIsBaseMapPopupOpen((prev) => !prev)
   }
 
   return (
@@ -122,7 +162,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
         ref={mapRef}
         style={MAP_STYLE}
         initialViewState={INITIAL_VIEW_STATE}
-        mapStyle={`https://api.maptiler.com/maps/streets/style.json?key=${import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY}`}
+        mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
       >
@@ -154,6 +194,23 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
             <img src={BaseMapIcon} alt='Change base map' />
           </IconButton>
         </Tooltip>
+        {isBaseMapPopupOpen && (
+          <div className={styles.baseMapPopup}>
+            {BASE_MAPS.map((bm) => (
+              <button
+                key={bm.key}
+                className={baseMap === bm.key ? styles.selected : ''}
+                onClick={() => {
+                  setBaseMap(bm.key as MapStyleType)
+                  setIsBaseMapPopupOpen(false)
+                }}
+              >
+                <img src={bm.thumbnail} alt={bm.label} />
+                <div>{bm.label}</div>
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   )

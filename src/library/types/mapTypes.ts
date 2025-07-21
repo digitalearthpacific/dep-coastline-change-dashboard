@@ -9,3 +9,5 @@ export type MapViewState = {
   latitude: number
   zoom: number
 }
+
+export type MapStyleType = 'default' | 'satellite' | 'light' | 'dark'

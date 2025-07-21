@@ -80,17 +80,53 @@
 /* ===== CUSTOM MAP TOOLS ===== */
 .customMapTools {
   position: absolute;
-  right: 0;
-  bottom: 0px;
+  right: var(--space-5, 24px);
+  bottom: var(--space-5, 24px);
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: var(--space-5, 24px);
   gap: var(--space-2, 8px);
 
   @include mobile-only {
-    padding: var(--space-4, 16px);
-    top: 67px;
+    top: 82px;
+    bottom: auto;
+    right: var(--space-4, 16px);
+  }
+
+  .baseMapPopup {
+    position: absolute;
+    right: 40px;
+    bottom: 0px;
+    display: flex;
+    background: var(--white, #fff);
+    border-radius: var(--radius-4, 8px);
+    border: 1px solid var(--grey-a6, #00000026);
+    padding: var(--space-3, 12px);
+    gap: var(--space-2, 8px);
+    z-index: 10;
+
+    button {
+      border: none;
+      background: none;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-1, 4px);
+      padding: 0;
+
+      img {
+        width: var(--space-8, 48px);
+        height: var(--space-8, 48px);
+        border-radius: var(--radius-2, 4px);
+        object-fit: cover;
+      }
+
+      &.selected img {
+        outline: 2px solid var(--blue-10, #008ac5);
+        border-radius: var(--radius-2, 4px);
+      }
+    }
   }
 
   .customMapToolIconButton {
