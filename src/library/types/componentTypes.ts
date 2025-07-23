@@ -9,12 +9,15 @@ export type DashboardState = {
 
 // Component prop types
 export type MainMapProps = {
-  flyToLocation?: FlyToLocation | null
-  selectedCountry?: PacificCountry | null
+  flyToLocation: FlyToLocation | null
+  selectedCountry: PacificCountry | null
+  isFullscreen: boolean
+  onFullscreenToggle: () => void
+  onFullscreenExit: () => void
 }
 
 export type SearchBarProps = {
-  selectedCountry?: PacificCountry | null
+  selectedCountry: PacificCountry | null
   onCountrySelect: (country: PacificCountry) => void
 }
 

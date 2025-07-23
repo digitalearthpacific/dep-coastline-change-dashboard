@@ -11,3 +11,23 @@ $mobile-breakpoint: 768px;
     @content;
   }
 }
+
+@mixin button-styles {
+  --accent-9: var(--white);
+  --accent-10: var(--gray-3);
+  --accent-contrast: var(--gray-12);
+
+  cursor: pointer;
+  box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: var(--shadow-3, 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -1px rgb(0 0 0 / 0.06));
+    transform: scale(1.05);
+  }
+
+  &:active {
+    box-shadow: var(--shadow-1, 0 1px 2px 0 rgb(0 0 0 / 0.05));
+    transform: scale(0.95);
+  }
+}

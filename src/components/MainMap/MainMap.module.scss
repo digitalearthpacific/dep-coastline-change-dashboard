@@ -5,7 +5,7 @@
   transition: width 0.3s ease-in-out;
   position: relative;
 
-  &.withPanel {
+  &.withResultPanel {
     width: 50%;
   }
 
@@ -21,6 +21,7 @@
 
   @include mobile-only {
     --navigation-control-margin-right: 16px;
+    --navigation-control-margin-bottom: 96px;
   }
 }
 
@@ -93,6 +94,10 @@
     right: var(--space-4, 16px);
   }
 
+  button {
+    @include button-styles;
+  }
+
   .baseMapPopup {
     position: absolute;
     right: 40px;
@@ -129,28 +134,20 @@
       }
     }
   }
+}
 
-  .customMapToolIconButton {
-    --accent-9: var(--white);
-    --accent-10: var(--gray-3);
-    --accent-contrast: var(--gray-12);
+.exitFullscreenContainer {
+  position: absolute;
+  top: var(--space-4, 16px);
+  right: var(--space-4, 16px);
+  z-index: 1000;
 
-    cursor: pointer;
-    box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
-    transition: all 0.2s ease;
+  @include mobile-only {
+    top: var(--space-3, 12px);
+    right: var(--space-3, 12px);
+  }
 
-    &:hover {
-      box-shadow: var(
-        --shadow-3,
-        0 4px 6px -1px rgb(0 0 0 / 0.1),
-        0 2px 4px -1px rgb(0 0 0 / 0.06)
-      );
-      transform: scale(1.05);
-    }
-
-    &:active {
-      box-shadow: var(--shadow-1, 0 1px 2px 0 rgb(0 0 0 / 0.05));
-      transform: scale(0.95);
-    }
+  button {
+    @include button-styles;
   }
 }

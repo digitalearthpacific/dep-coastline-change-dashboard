@@ -10,6 +10,7 @@ export const Dashboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<PacificCountry | null>(null)
   const [flyToLocation, setFlyToLocation] = useState<FlyToLocation | null>(null)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const handleCountrySelect = (country: PacificCountry | null) => {
     setSelectedCountry(country)
@@ -22,11 +23,27 @@ export const Dashboard = () => {
     }
   }
 
+  const handleFullscreenToggle = () => {
+    setIsFullscreen((prev) => !prev)
+  }
+
+  const handleFullscreenExit = () => setIsFullscreen(false)
+
   return (
     <div className={styles.dashboardContainer}>
-      <SearchBar selectedCountry={selectedCountry} onCountrySelect={handleCountrySelect} />
-      <MainMap flyToLocation={flyToLocation} selectedCountry={selectedCountry} />
-      <ResultPanel selectedCountry={selectedCountry} isMobilePanelOpen={isMobilePanelOpen} />
+      {!isFullscreen && (
+        <SearchBar selectedCountry={selectedCountry} onCountrySelect={handleCountrySelect} />
+      )}
+      <MainMap
+        flyToLocation={flyToLocation}
+        selectedCountry={selectedCountry}
+        isFullscreen={isFullscreen}
+        onFullscreenToggle={handleFullscreenToggle}
+        onFullscreenExit={handleFullscreenExit}
+      />
+      {!isFullscreen && (
+        <ResultPanel selectedCountry={selectedCountry} isMobilePanelOpen={isMobilePanelOpen} />
+      )}
     </div>
   )
 }

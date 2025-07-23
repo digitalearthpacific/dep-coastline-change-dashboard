@@ -2,11 +2,13 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapRef } from 'react-map-gl/maplibre'
 import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Cross1Icon } from '@radix-ui/react-icons'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
+import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import {
   INITIAL_VIEW_STATE,
   FLY_TO_DESKTOP_ZOOM,
@@ -34,7 +36,13 @@ const getBaseMapStyle = (baseMap: MapStyleType) => {
   return map ? map.styleUrl : BASE_MAPS[0].styleUrl
 }
 
-export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
+export const MainMap = ({
+  flyToLocation,
+  selectedCountry,
+  isFullscreen,
+  onFullscreenToggle,
+  onFullscreenExit,
+}: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
   const [shouldAnimate, setShouldAnimate] = useState(false)
@@ -105,14 +113,6 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
     requestAnimationFrame(removeNativeTooltips)
   }
 
-  const handleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen()
-    } else {
-      document.exitFullscreen()
-    }
-  }
-
   const handleBaseMapChange = () => {
     setIsBaseMapPopupOpen((prev) => !prev)
   }
@@ -120,9 +120,8 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
   return (
     <div
       className={clsx(styles.mapContainer, {
-        [styles.withPanel]: selectedCountry && !isMobileWidth,
-        [styles.fullWidth]: !selectedCountry || isMobileWidth,
-        [styles.withBottomSheet]: isMobileWidth && selectedCountry,
+        [styles.withResultPanel]: selectedCountry && !isMobileWidth && !isFullscreen,
+        [styles.fullWidth]: !selectedCountry || isMobileWidth || isFullscreen,
       })}
     >
       <Map
@@ -143,25 +142,35 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
         />
       </Map>
 
+      {isFullscreen && !isMobileWidth && (
+        <div className={styles.exitFullscreenContainer}>
+          <Tooltip content='Exit Fullscreen' side='left'>
+            <IconButton onClick={onFullscreenExit} aria-label='Exit Fullscreen' radius='full'>
+              <Cross1Icon />
+            </IconButton>
+          </Tooltip>
+        </div>
+      )}
+
       <div className={styles.customMapTools}>
-        <Tooltip content='Fullscreen' side='left'>
+        <Tooltip content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} side='left'>
           <IconButton
-            onClick={handleFullscreen}
-            aria-label='Toggle Fullscreen'
-            className={styles.customMapToolIconButton}
+            onClick={onFullscreenToggle}
+            aria-label={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
           >
-            <img src={EnterFullScreenIcon} alt='Toggle fullscreen' />
+            <img
+              src={isFullscreen ? ExitFullScreenIcon : EnterFullScreenIcon}
+              alt={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+            />
           </IconButton>
         </Tooltip>
+
         <Tooltip content='Base Map' side='left'>
-          <IconButton
-            onClick={handleBaseMapChange}
-            aria-label='Change Base Map'
-            className={styles.customMapToolIconButton}
-          >
+          <IconButton onClick={handleBaseMapChange} aria-label='Change Base Map'>
             <img src={BaseMapIcon} alt='Change base map' />
           </IconButton>
         </Tooltip>
+
         {isBaseMapPopupOpen && (
           <div className={styles.baseMapPopup}>
             {BASE_MAPS.map((bm) => (
