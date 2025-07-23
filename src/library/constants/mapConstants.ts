@@ -1,4 +1,10 @@
 import type { MapViewState } from '../types'
+import StreetMapStyleThumbNail from '../../assets/street-thumbnail.png'
+import SatelliteMapStyleThumbNail from '../../assets/satellite-thumbnail.png'
+import LightMapStyleThumbNail from '../../assets/light-thumbnail.png'
+import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
+
+const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
 // Map view state configuration
 export const INITIAL_VIEW_STATE: MapViewState = {
@@ -36,3 +42,30 @@ export const FLY_TO_PRESETS = {
     maxDuration: 3000,
   },
 } as const
+
+export const BASE_MAPS = [
+  {
+    key: 'default',
+    label: 'Default',
+    thumbnail: StreetMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'satellite',
+    label: 'Satellite',
+    thumbnail: SatelliteMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'light',
+    label: 'Light',
+    thumbnail: LightMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/dataviz-light/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'dark',
+    label: 'Dark',
+    thumbnail: DarkMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+] as const
