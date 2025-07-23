@@ -7,22 +7,17 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
-import StreetMapStyleThumbNail from '../../assets/street-thumbnail.png'
-import SatelliteMapStyleThumbNail from '../../assets/satellite-thumbnail.png'
-import LightMapStyleThumbNail from '../../assets/light-thumbnail.png'
-import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import {
   INITIAL_VIEW_STATE,
   FLY_TO_DESKTOP_ZOOM,
   FLY_TO_MOBILE_ZOOM,
   FLY_TO_DURATION,
   FLY_TO_PRESETS,
+  BASE_MAPS,
 } from '../../library/constants'
 import type { MainMapProps, MapStyleType } from '../../library/types'
 import useResponsive from '../../library/hooks/useResponsive'
 import clsx from 'clsx'
-
-const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
 const MAP_STYLE = {
   width: '100%',
@@ -33,33 +28,6 @@ const NAVIGATION_CONTROL_STYLE = {
   marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
   marginRight: 'var(--navigation-control-margin-right, 24px)',
 }
-
-const BASE_MAPS = [
-  {
-    key: 'default',
-    label: 'Default',
-    thumbnail: StreetMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_TILER_API_KEY}`,
-  },
-  {
-    key: 'satellite',
-    label: 'Satellite',
-    thumbnail: SatelliteMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
-  },
-  {
-    key: 'light',
-    label: 'Light',
-    thumbnail: LightMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/dataviz-light/style.json?key=${MAP_TILER_API_KEY}`,
-  },
-  {
-    key: 'dark',
-    label: 'Dark',
-    thumbnail: DarkMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/dataviz-dark/style.json?key=${MAP_TILER_API_KEY}`,
-  },
-]
 
 const getBaseMapStyle = (baseMap: MapStyleType) => {
   const map = BASE_MAPS.find((bm) => bm.key === baseMap)
@@ -202,7 +170,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
                 aria-label={`Select ${bm.label} base map`}
                 className={baseMap === bm.key ? styles.selected : ''}
                 onClick={() => {
-                  setBaseMap(bm.key as MapStyleType)
+                  setBaseMap(bm.key)
                   setIsBaseMapPopupOpen(false)
                 }}
               >
