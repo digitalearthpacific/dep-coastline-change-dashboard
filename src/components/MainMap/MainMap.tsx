@@ -61,7 +61,7 @@ const BASE_MAPS = [
   },
 ]
 
-const getBaseMapStyle = (baseMap: string) => {
+const getBaseMapStyle = (baseMap: MapStyleType) => {
   const map = BASE_MAPS.find((bm) => bm.key === baseMap)
   return map ? map.styleUrl : BASE_MAPS[0].styleUrl
 }
@@ -199,6 +199,7 @@ export const MainMap = ({ flyToLocation, selectedCountry }: MainMapProps) => {
             {BASE_MAPS.map((bm) => (
               <button
                 key={bm.key}
+                aria-label={`Select ${bm.label} base map`}
                 className={baseMap === bm.key ? styles.selected : ''}
                 onClick={() => {
                   setBaseMap(bm.key as MapStyleType)
