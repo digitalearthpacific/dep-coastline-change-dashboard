@@ -17,7 +17,7 @@ export type MainMapProps = {
 }
 
 export type SearchBarProps = {
-  selectedCountry?: PacificCountry | null
+  selectedCountry: PacificCountry | null
   onCountrySelect: (country: PacificCountry) => void
 }
 

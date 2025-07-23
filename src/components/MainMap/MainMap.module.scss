@@ -88,15 +88,10 @@
   align-items: center;
   gap: var(--space-2, 8px);
 
-  &.mobileScreen {
+  @include mobile-only {
     top: 82px;
     bottom: auto;
     right: var(--space-4, 16px);
-  }
-
-  &.mobileFullScreen {
-    right: var(--space-4, 16px);
-    bottom: var(--space-4, 16px);
   }
 
   button {

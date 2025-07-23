@@ -49,10 +49,8 @@ export const MainMap = ({
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('default')
 
-  const isMobileFullScreen = isMobileWidth && isFullscreen
-  const isMobileScreen = isMobileWidth && !isFullscreen
   // Add a key that changes when screen size changes to force re-render
-  const navigationControlKey = `nav-control-${isMobileScreen ? 'mobile' : 'desktop'}`
+  const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
 
   const createFlyToOptions = useCallback(
     (preset: keyof typeof FLY_TO_PRESETS) => {
@@ -138,13 +136,13 @@ export const MainMap = ({
         <AttributionControl position='bottom-left' compact={true} />
         <NavigationControl
           key={navigationControlKey} // This forces re-render when screen size changes
-          position={isMobileScreen ? 'top-right' : 'bottom-right'}
+          position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
           style={NAVIGATION_CONTROL_STYLE}
         />
       </Map>
 
-      {isFullscreen && (
+      {isFullscreen && !isMobileWidth && (
         <div className={styles.exitFullscreenContainer}>
           <Tooltip content='Exit Fullscreen' side='left'>
             <IconButton onClick={onFullscreenExit} aria-label='Exit Fullscreen' radius='full'>
@@ -154,12 +152,7 @@ export const MainMap = ({
         </div>
       )}
 
-      <div
-        className={clsx(styles.customMapTools, {
-          [styles.mobileScreen]: isMobileScreen,
-          [styles.mobileFullScreen]: isMobileFullScreen,
-        })}
-      >
+      <div className={styles.customMapTools}>
         <Tooltip content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} side='left'>
           <IconButton
             onClick={onFullscreenToggle}
