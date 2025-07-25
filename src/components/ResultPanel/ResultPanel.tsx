@@ -6,6 +6,52 @@ import useResponsive from '../../library/hooks/useResponsive'
 import type { PacificCountry, ResultPanelProps } from '../../library/types'
 import styles from './Result.module.scss'
 
+// Mock data generation for coastline change statistics, WILL REMOVE LATER
+type MockCoastLineChangeData = {
+  shorelineChange: {
+    retreat: number
+    growth: number
+    stable: number
+  }
+  hotSpots: {
+    highChange: number
+    moderateChange: number
+    lowChange: number
+  }
+  population: number
+  buildings: number
+  mangroves: number
+}
+
+function generateRandomNumber(length: number, maxTo?: number): number {
+  if (length < 1) return 0
+  const min = Math.pow(10, length - 1)
+  let max = Math.pow(10, length) - 1
+  if (maxTo !== undefined && maxTo < max) {
+    max = Math.max(min, maxTo)
+  }
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
+function getMockData(): MockCoastLineChangeData {
+  return {
+    shorelineChange: {
+      retreat: generateRandomNumber(2, 100),
+      growth: generateRandomNumber(2, 100),
+      stable: generateRandomNumber(2, 100),
+    },
+    hotSpots: {
+      highChange: generateRandomNumber(3, 1000),
+      moderateChange: generateRandomNumber(3, 1000),
+      lowChange: generateRandomNumber(3, 1000),
+    },
+    population: generateRandomNumber(7, 10000000),
+    buildings: generateRandomNumber(5, 100000),
+    mangroves: generateRandomNumber(5, 100000),
+  }
+}
+// End of mock data generation
+
 const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
   const { isMobileWidth } = useResponsive()
 
@@ -31,7 +77,7 @@ const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | n
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
-            Estimated coastline change from 2000 to 2020
+            Estimated coastline change from 1999 to 2023
           </Text>
         </Flex>
       </Flex>
@@ -39,7 +85,11 @@ const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | n
   )
 }
 
-const ShorelineChangeCard = () => (
+const ShorelineChangeCard = ({
+  shorelineChange,
+}: {
+  shorelineChange: MockCoastLineChangeData['shorelineChange'] | undefined
+}) => (
   <Card>
     <Flex direction='column' gap='3'>
       <Flex direction='column' align='stretch' style={{ height: '80px' }}>
@@ -56,7 +106,7 @@ const ShorelineChangeCard = () => (
       <Flex direction='column' gap='1'>
         <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
-            -%
+            {shorelineChange?.retreat}%
           </Text>
           <Text size='3' color='gray'>
             Retreat
@@ -64,7 +114,7 @@ const ShorelineChangeCard = () => (
         </Flex>
         <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
-            100%
+            {shorelineChange?.growth}%
           </Text>
           <Text size='3' color='gray'>
             Growth
@@ -72,7 +122,7 @@ const ShorelineChangeCard = () => (
         </Flex>
         <Flex>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
-            28%
+            {shorelineChange?.stable}%
           </Text>
           <Text size='3' color='gray'>
             Stable
@@ -83,7 +133,11 @@ const ShorelineChangeCard = () => (
   </Card>
 )
 
-const HotSpotsCard = () => (
+const HotSpotsCard = ({
+  hotSpots,
+}: {
+  hotSpots: MockCoastLineChangeData['hotSpots'] | undefined
+}) => (
   <Card>
     <Flex direction='column' gap='3'>
       <Flex direction='column' align='stretch' style={{ height: '80px' }}>
@@ -100,7 +154,8 @@ const HotSpotsCard = () => (
       <Flex direction='column' gap='1'>
         <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
           <Text size='4' weight='bold'>
-            - km
+            {typeof hotSpots?.highChange === 'number' ? hotSpots.highChange.toLocaleString() : '-'}{' '}
+            km
           </Text>
           <Badge size='1' color='crimson'>
             High Change (&gt;5m)
@@ -108,7 +163,10 @@ const HotSpotsCard = () => (
         </Flex>
         <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
           <Text size='4' weight='bold'>
-            100 km
+            {typeof hotSpots?.moderateChange === 'number'
+              ? hotSpots.moderateChange.toLocaleString()
+              : '-'}{' '}
+            km
           </Text>
           <Badge size='1' color='orange'>
             Moderate Change (3-5m)
@@ -116,7 +174,7 @@ const HotSpotsCard = () => (
         </Flex>
         <Flex justify='between' align='start'>
           <Text size='4' weight='bold'>
-            28 km
+            {typeof hotSpots?.lowChange === 'number' ? hotSpots.lowChange.toLocaleString() : '-'} km
           </Text>
           <Badge size='1' color='cyan'>
             Low Change (2-3m)
@@ -127,7 +185,11 @@ const HotSpotsCard = () => (
   </Card>
 )
 
-const PopulationCard = () => (
+const PopulationCard = ({
+  population,
+}: {
+  population: MockCoastLineChangeData['population'] | null
+}) => (
   <Card>
     <Flex direction='column' gap='5'>
       <Flex direction='column' align='stretch' style={{ height: '80px' }}>
@@ -142,13 +204,17 @@ const PopulationCard = () => (
         </Text>
       </Flex>
       <Text as='div' size='8' weight='bold'>
-        1,234,567
+        {population ? population.toLocaleString() : '-'}
       </Text>
     </Flex>
   </Card>
 )
 
-const BuildingCard = () => (
+const BuildingCard = ({
+  buildings,
+}: {
+  buildings: MockCoastLineChangeData['buildings'] | null
+}) => (
   <Card>
     <Flex direction='column' gap='5'>
       <Flex direction='column' align='stretch' style={{ height: '80px' }}>
@@ -163,13 +229,17 @@ const BuildingCard = () => (
         </Text>
       </Flex>
       <Text as='div' size='8' weight='bold'>
-        4,567
+        {buildings ? buildings.toLocaleString() : '-'}
       </Text>
     </Flex>
   </Card>
 )
 
-const MangrovesCard = () => (
+const MangrovesCard = ({
+  mangroves,
+}: {
+  mangroves: MockCoastLineChangeData['mangroves'] | null
+}) => (
   <Card>
     <Flex direction='column' gap='5'>
       <Flex direction='column' align='stretch' style={{ height: '80px' }}>
@@ -184,7 +254,7 @@ const MangrovesCard = () => (
         </Text>
       </Flex>
       <Text as='div' size='8' weight='bold'>
-        98,765 m&sup2;
+        {mangroves ? mangroves.toLocaleString() : '-'} m&sup2;
       </Text>
     </Flex>
   </Card>
@@ -206,6 +276,13 @@ const ErrorCard = () => (
 export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelProps) => {
   const { isMobileWidth } = useResponsive()
   const isErrorCountry = selectedCountry?.name === 'Error Country'
+  const mockData = isErrorCountry ? null : getMockData()
+  const shorelineChange: MockCoastLineChangeData['shorelineChange'] | undefined =
+    mockData?.shorelineChange ?? undefined
+  const hotSpots: MockCoastLineChangeData['hotSpots'] | undefined = mockData?.hotSpots ?? undefined
+  const population: number | null = mockData?.population ?? null
+  const buildings: number | null = mockData?.buildings ?? null
+  const mangroves: number | null = mockData?.mangroves ?? null
 
   if (!selectedCountry) return null
 
@@ -215,13 +292,13 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
     <>
       <LocationCard selectedCountry={selectedCountry} />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard />
-        <HotSpotsCard />
+        <ShorelineChangeCard shorelineChange={shorelineChange} />
+        <HotSpotsCard hotSpots={hotSpots} />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard />
-        <BuildingCard />
-        <MangrovesCard />
+        <PopulationCard population={population} />
+        <BuildingCard buildings={buildings} />
+        <MangrovesCard mangroves={mangroves} />
       </Grid>
     </>
   )
