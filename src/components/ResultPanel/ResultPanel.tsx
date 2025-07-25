@@ -138,11 +138,32 @@ const PopulationCard = () => (
           <img src={InfoCircledIcon} alt='Information about population' />
         </Flex>
         <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
-          Estimated population in hot spots coastal areas
+          Estimated population in hot spot coastal areas
         </Text>
       </Flex>
       <Text as='div' size='8' weight='bold'>
         1,234,567
+      </Text>
+    </Flex>
+  </Card>
+)
+
+const BuildingCard = () => (
+  <Card>
+    <Flex direction='column' gap='5'>
+      <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <Flex justify='between' align='start'>
+          <Text as='div' size='4' weight='bold'>
+            Buildings
+          </Text>
+          <img src={InfoCircledIcon} alt='Information about buildings' />
+        </Flex>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+          Estimated number of buildings in hot spot coastal areas
+        </Text>
+      </Flex>
+      <Text as='div' size='8' weight='bold'>
+        4,567
       </Text>
     </Flex>
   </Card>
@@ -178,6 +199,7 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
         <PopulationCard />
+        <BuildingCard />
       </Grid>
     </>
   )
