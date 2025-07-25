@@ -127,6 +127,27 @@ const HotSpotsCard = () => (
   </Card>
 )
 
+const PopulationCard = () => (
+  <Card>
+    <Flex direction='column' gap='5'>
+      <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <Flex justify='between' align='start'>
+          <Text as='div' size='4' weight='bold'>
+            Population
+          </Text>
+          <img src={InfoCircledIcon} alt='Information about population' />
+        </Flex>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+          Estimated population in hot spots coastal areas
+        </Text>
+      </Flex>
+      <Text as='div' size='8' weight='bold'>
+        1,234,567
+      </Text>
+    </Flex>
+  </Card>
+)
+
 const ErrorCard = () => (
   <div style={{ padding: '16px' }}>
     <Card className={styles.errorCard} variant='ghost'>
@@ -154,6 +175,9 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <ShorelineChangeCard />
         <HotSpotsCard />
+      </Grid>
+      <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
+        <PopulationCard />
       </Grid>
     </>
   )
