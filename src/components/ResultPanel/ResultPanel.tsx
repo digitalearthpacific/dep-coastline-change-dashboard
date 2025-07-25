@@ -169,6 +169,27 @@ const BuildingCard = () => (
   </Card>
 )
 
+const MangrovesCard = () => (
+  <Card>
+    <Flex direction='column' gap='5'>
+      <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <Flex justify='between' align='start'>
+          <Text as='div' size='4' weight='bold'>
+            Mangroves
+          </Text>
+          <img src={InfoCircledIcon} alt='Information about mangroves' />
+        </Flex>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+          Estimated square area of mangroves in hot spot coastal areas
+        </Text>
+      </Flex>
+      <Text as='div' size='8' weight='bold'>
+        98,765 m&sup2;
+      </Text>
+    </Flex>
+  </Card>
+)
+
 const ErrorCard = () => (
   <div style={{ padding: '16px' }}>
     <Card className={styles.errorCard} variant='ghost'>
@@ -200,6 +221,7 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
         <PopulationCard />
         <BuildingCard />
+        <MangrovesCard />
       </Grid>
     </>
   )
