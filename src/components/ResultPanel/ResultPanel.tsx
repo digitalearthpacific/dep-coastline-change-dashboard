@@ -1,4 +1,4 @@
-import { Card, Flex, Grid, Text } from '@radix-ui/themes'
+import { Badge, Card, Flex, Grid, Text } from '@radix-ui/themes'
 
 import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
 import InfoCircledIcon from '../../assets/info-circled.svg'
@@ -40,17 +40,19 @@ const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry 
 }
 
 const ShorelineChangeCard = () => (
-  <Card className={styles.shorelineChangeCard}>
-    <Flex direction='column'>
-      <Flex justify='between' align='start'>
-        <Text as='div' size='4' weight='bold'>
-          Shoreline Change
+  <Card>
+    <Flex direction='column' gap='3'>
+      <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <Flex justify='between' align='start'>
+          <Text as='div' size='4' weight='bold'>
+            Shoreline Change
+          </Text>
+          <img src={InfoCircledIcon} alt='Information about shoreline change' />
+        </Flex>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+          The average annual rate of shoreline change
         </Text>
-        <img src={InfoCircledIcon} alt='Information about shoreline change' />
       </Flex>
-      <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
-        The average annual rate of shoreline change
-      </Text>
       <Flex direction='column' gap='1'>
         <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
@@ -81,6 +83,50 @@ const ShorelineChangeCard = () => (
   </Card>
 )
 
+const HotSpotsCard = () => (
+  <Card>
+    <Flex direction='column' gap='3'>
+      <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <Flex justify='between' align='start'>
+          <Text as='div' size='4' weight='bold'>
+            Hot Spots
+          </Text>
+          <img src={InfoCircledIcon} alt='Information about hot spots' />
+        </Flex>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+          Identifies coastal regions experiencing high levels of change
+        </Text>
+      </Flex>
+      <Flex direction='column' gap='1'>
+        <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
+          <Text size='4' weight='bold'>
+            - km
+          </Text>
+          <Badge size='1' color='crimson'>
+            High Change (&gt;5m)
+          </Badge>
+        </Flex>
+        <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
+          <Text size='4' weight='bold'>
+            100 km
+          </Text>
+          <Badge size='1' color='orange'>
+            Moderate Change (3-5m)
+          </Badge>
+        </Flex>
+        <Flex justify='between' align='start'>
+          <Text size='4' weight='bold'>
+            28 km
+          </Text>
+          <Badge size='1' color='cyan'>
+            Low Change (2-3m)
+          </Badge>
+        </Flex>
+      </Flex>
+    </Flex>
+  </Card>
+)
+
 const ErrorCard = () => (
   <div style={{ padding: '16px' }}>
     <Card className={styles.errorCard} variant='ghost'>
@@ -105,8 +151,9 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   ) : (
     <>
       <CountryInfoCard selectedCountry={selectedCountry} />
-      <Grid columns='2' gap='4'>
+      <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <ShorelineChangeCard />
+        <HotSpotsCard />
       </Grid>
     </>
   )
