@@ -6,7 +6,7 @@ import useResponsive from '../../library/hooks/useResponsive'
 import type { PacificCountry, ResultPanelProps } from '../../library/types'
 import styles from './Result.module.scss'
 
-const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
+const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
   const { isMobileWidth } = useResponsive()
 
   return (
@@ -213,7 +213,7 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
     <ErrorCard />
   ) : (
     <>
-      <CountryInfoCard selectedCountry={selectedCountry} />
+      <LocationCard selectedCountry={selectedCountry} />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <ShorelineChangeCard />
         <HotSpotsCard />
