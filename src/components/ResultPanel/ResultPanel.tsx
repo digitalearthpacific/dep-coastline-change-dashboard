@@ -15,22 +15,22 @@ const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry 
         <Flex justify='between' align='start'>
           {isMobileWidth ? (
             <Flex direction='column' gap='1'>
-              <Text as='div' size='5' weight='bold'>
+              <Text as='div' size='6' weight='bold'>
                 Coastline Change:
               </Text>
-              <Text as='div' size='5' weight='bold'>
+              <Text as='div' size='6' weight='bold'>
                 {selectedCountry?.name}
               </Text>
             </Flex>
           ) : (
-            <Text as='div' size='6' weight='bold'>
+            <Text as='div' size='7' weight='bold'>
               Coastline Change: {selectedCountry?.name}
             </Text>
           )}
           <img src={InfoCircledIcon} alt='Information about coastline change' />
         </Flex>
         <Flex>
-          <Text as='div' size='2' color='gray'>
+          <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
             Estimated coastline change from 2000 to 2020
           </Text>
         </Flex>
