@@ -1,4 +1,4 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
+import { Card, Flex, Grid, Text } from '@radix-ui/themes'
 
 import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
 import InfoCircledIcon from '../../assets/info-circled.svg'
@@ -27,7 +27,7 @@ const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry 
               Coastline Change: {selectedCountry?.name}
             </Text>
           )}
-          <img src={InfoCircledIcon} alt='Information about coastline change' />
+          <img src={InfoCircledIcon} alt='Information about location' />
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
@@ -38,6 +38,48 @@ const CountryInfoCard = ({ selectedCountry }: { selectedCountry: PacificCountry 
     </Card>
   )
 }
+
+const ShorelineChangeCard = () => (
+  <Card className={styles.shorelineChangeCard}>
+    <Flex direction='column'>
+      <Flex justify='between' align='start'>
+        <Text as='div' size='4' weight='bold'>
+          Shoreline Change
+        </Text>
+        <img src={InfoCircledIcon} alt='Information about shoreline change' />
+      </Flex>
+      <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        The average annual rate of shoreline change
+      </Text>
+      <Flex direction='column' gap='1'>
+        <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
+          <Text size='4' weight='bold' style={{ width: '60px' }}>
+            -%
+          </Text>
+          <Text size='3' color='gray'>
+            Retreat
+          </Text>
+        </Flex>
+        <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
+          <Text size='4' weight='bold' style={{ width: '60px' }}>
+            100%
+          </Text>
+          <Text size='3' color='gray'>
+            Growth
+          </Text>
+        </Flex>
+        <Flex>
+          <Text size='4' weight='bold' style={{ width: '60px' }}>
+            28%
+          </Text>
+          <Text size='3' color='gray'>
+            Stable
+          </Text>
+        </Flex>
+      </Flex>
+    </Flex>
+  </Card>
+)
 
 const ErrorCard = () => (
   <div style={{ padding: '16px' }}>
@@ -61,7 +103,12 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   const content = isErrorCountry ? (
     <ErrorCard />
   ) : (
-    <CountryInfoCard selectedCountry={selectedCountry} />
+    <>
+      <CountryInfoCard selectedCountry={selectedCountry} />
+      <Grid columns='2' gap='4'>
+        <ShorelineChangeCard />
+      </Grid>
+    </>
   )
 
   if (isMobileWidth) {
