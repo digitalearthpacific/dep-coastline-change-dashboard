@@ -4,6 +4,17 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* ===== RADIX THEMES FONT OVERRIDES ===== */
+  /* Override Radix Themes default font variables */
+  --default-font-family: var(--font-family-primary);
+  --heading-font-family: var(--font-family-primary);
+  --body-font-family: var(--font-family-primary);
+  --code-font-family: var(--font-family-mono);
+
+  /* Radix specific font family variables */
+  --rt-font-family-default: var(--font-family-primary);
+  --rt-font-family-mono: var(--font-family-mono);
 }
 
 body {
@@ -12,6 +23,34 @@ body {
   padding: 0;
 }
 
+/* ===== GLOBAL FONT APPLICATION ===== */
+/* Apply font family to all elements */
+* {
+  font-family: var(--font-family-primary);
+}
+
+/* Ensure Radix components use the custom font */
+.rt-Theme,
+.rt-BaseButton,
+.rt-Text,
+.rt-Heading,
+.rt-TextField,
+.rt-TextArea,
+.rt-Select,
+.rt-Card,
+.rt-Badge,
+.rt-Button {
+  font-family: var(--font-family-primary) !important;
+}
+
+/* Code elements should use monospace */
+code,
+pre,
+.rt-Code {
+  font-family: var(--font-family-mono) !important;
+}
+
+/* ===== SCROLLBAR STYLES ===== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
