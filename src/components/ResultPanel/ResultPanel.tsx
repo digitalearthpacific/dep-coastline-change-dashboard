@@ -151,8 +151,12 @@ const HotSpotsCard = ({
           Identifies coastal regions experiencing high levels of change
         </Text>
       </Flex>
-      <Flex direction='column' gap='1'>
-        <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
+      <Flex direction='column'>
+        <Flex
+          justify='between'
+          align='start'
+          style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
+        >
           <Text size='4' weight='bold'>
             {typeof hotSpots?.highChange === 'number' ? hotSpots.highChange.toLocaleString() : '-'}{' '}
             km
@@ -161,7 +165,11 @@ const HotSpotsCard = ({
             High Change (&gt;5m)
           </Badge>
         </Flex>
-        <Flex justify='between' align='start' style={{ borderBottom: '1px solid var(--gray-6)' }}>
+        <Flex
+          justify='between'
+          align='start'
+          style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
+        >
           <Text size='4' weight='bold'>
             {typeof hotSpots?.moderateChange === 'number'
               ? hotSpots.moderateChange.toLocaleString()
@@ -172,7 +180,7 @@ const HotSpotsCard = ({
             Moderate Change (3-5m)
           </Badge>
         </Flex>
-        <Flex justify='between' align='start'>
+        <Flex justify='between' align='start' style={{ paddingTop: 'var(--space-1)' }}>
           <Text size='4' weight='bold'>
             {typeof hotSpots?.lowChange === 'number' ? hotSpots.lowChange.toLocaleString() : '-'} km
           </Text>
