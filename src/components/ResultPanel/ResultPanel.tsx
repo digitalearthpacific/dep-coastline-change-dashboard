@@ -167,7 +167,7 @@ const HotSpotsCard = ({
             {typeof hotSpots?.highChange === 'number' ? hotSpots.highChange.toLocaleString() : '-'}{' '}
             km
           </Text>
-          <Badge size='1' color='crimson'>
+          <Badge size='1' style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}>
             High Change (&gt;5m)
           </Badge>
         </Flex>
@@ -182,7 +182,10 @@ const HotSpotsCard = ({
               : '-'}{' '}
             km
           </Text>
-          <Badge size='1' color='orange'>
+          <Badge
+            size='1'
+            style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}
+          >
             Moderate Change (3-5m)
           </Badge>
         </Flex>
@@ -190,7 +193,13 @@ const HotSpotsCard = ({
           <Text size='4' weight='bold'>
             {typeof hotSpots?.lowChange === 'number' ? hotSpots.lowChange.toLocaleString() : '-'} km
           </Text>
-          <Badge size='1' color='cyan'>
+          <Badge
+            size='1'
+            style={{
+              backgroundColor: 'var(--success-a3)',
+              color: 'var(--success-a11)',
+            }}
+          >
             Low Change (2-3m)
           </Badge>
         </Flex>
