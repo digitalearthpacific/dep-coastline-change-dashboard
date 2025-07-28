@@ -104,7 +104,10 @@ const ShorelineChangeCard = ({
         </Text>
       </Flex>
       <Flex direction='column'>
-        <Flex style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}>
+        <Flex
+          align='center'
+          style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
+        >
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.retreat}%
           </Text>
@@ -112,7 +115,10 @@ const ShorelineChangeCard = ({
             Retreat
           </Text>
         </Flex>
-        <Flex style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}>
+        <Flex
+          align='center'
+          style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
+        >
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.growth}%
           </Text>
@@ -120,7 +126,7 @@ const ShorelineChangeCard = ({
             Growth
           </Text>
         </Flex>
-        <Flex style={{ paddingTop: 'var(--space-1)' }}>
+        <Flex align='center' style={{ paddingTop: 'var(--space-1)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.stable}%
           </Text>
@@ -154,7 +160,7 @@ const HotSpotsCard = ({
       <Flex direction='column'>
         <Flex
           justify='between'
-          align='start'
+          align='center'
           style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
         >
           <Text size='4' weight='bold'>
@@ -167,7 +173,7 @@ const HotSpotsCard = ({
         </Flex>
         <Flex
           justify='between'
-          align='start'
+          align='center'
           style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
         >
           <Text size='4' weight='bold'>
@@ -180,7 +186,7 @@ const HotSpotsCard = ({
             Moderate Change (3-5m)
           </Badge>
         </Flex>
-        <Flex justify='between' align='start' style={{ paddingTop: 'var(--space-1)' }}>
+        <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
           <Text size='4' weight='bold'>
             {typeof hotSpots?.lowChange === 'number' ? hotSpots.lowChange.toLocaleString() : '-'} km
           </Text>
