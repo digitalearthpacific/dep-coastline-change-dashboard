@@ -99,12 +99,12 @@ const ShorelineChangeCard = ({
           </Text>
           <img src={InfoCircledIcon} alt='Information about shoreline change' />
         </Flex>
-        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           The average annual rate of shoreline change
         </Text>
       </Flex>
-      <Flex direction='column' gap='1'>
-        <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
+      <Flex direction='column'>
+        <Flex style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.retreat}%
           </Text>
@@ -112,7 +112,7 @@ const ShorelineChangeCard = ({
             Retreat
           </Text>
         </Flex>
-        <Flex style={{ borderBottom: '1px solid var(--gray-6)' }}>
+        <Flex style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.growth}%
           </Text>
@@ -120,7 +120,7 @@ const ShorelineChangeCard = ({
             Growth
           </Text>
         </Flex>
-        <Flex>
+        <Flex style={{ paddingTop: 'var(--space-1)' }}>
           <Text size='4' weight='bold' style={{ width: '60px' }}>
             {shorelineChange?.stable}%
           </Text>
@@ -147,7 +147,7 @@ const HotSpotsCard = ({
           </Text>
           <img src={InfoCircledIcon} alt='Information about hot spots' />
         </Flex>
-        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           Identifies coastal regions experiencing high levels of change
         </Text>
       </Flex>
@@ -199,7 +199,7 @@ const PopulationCard = ({
           </Text>
           <img src={InfoCircledIcon} alt='Information about population' />
         </Flex>
-        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           Estimated population in hot spot coastal areas
         </Text>
       </Flex>
@@ -224,7 +224,7 @@ const BuildingCard = ({
           </Text>
           <img src={InfoCircledIcon} alt='Information about buildings' />
         </Flex>
-        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           Estimated number of buildings in hot spot coastal areas
         </Text>
       </Flex>
@@ -249,7 +249,7 @@ const MangrovesCard = ({
           </Text>
           <img src={InfoCircledIcon} alt='Information about mangroves' />
         </Flex>
-        <Text as='div' size='2' color='gray' style={{ marginBottom: '12px' }}>
+        <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           Estimated square area of mangroves in hot spot coastal areas
         </Text>
       </Flex>
@@ -261,7 +261,7 @@ const MangrovesCard = ({
 )
 
 const ErrorCard = () => (
-  <div style={{ padding: '16px' }}>
+  <div style={{ padding: 'var(--space-4)' }}>
     <Card className={styles.errorCard} variant='ghost'>
       <Flex align='center' gap='1'>
         <div className={styles.errorIcon} role='img' aria-label='Error information' />
