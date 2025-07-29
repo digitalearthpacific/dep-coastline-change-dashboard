@@ -508,7 +508,7 @@ const ChartCard = ({
               staticPlot: false,
             }}
             useResizeHandler
-            onInitialized={(figure, graphDiv) => {
+            onInitialized={(_, graphDiv) => {
               plotRef.current = graphDiv as PlotlyHTMLElement
             }}
           />
