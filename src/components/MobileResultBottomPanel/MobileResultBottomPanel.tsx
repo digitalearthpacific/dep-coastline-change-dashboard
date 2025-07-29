@@ -232,12 +232,35 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     })
   }
 
+  const handleDragHandleClick = () => {
+    if (isDragging) return
+
+    const expandedPos = getExpandedPosition()
+    const collapsedPos = getCollapsedPosition()
+
+    let targetPosition: number
+
+    if (currentPanelState === 'expanded') {
+      targetPosition = collapsedPos
+    } else if (currentPanelState === 'collapsed' || currentPanelState === 'mini') {
+      targetPosition = expandedPos
+    } else {
+      targetPosition = collapsedPos
+    }
+
+    animate(y, targetPosition, {
+      type: 'spring',
+      stiffness: 600,
+      damping: 45,
+      duration: 0.4,
+    })
+  }
+
   const shouldEnablePanelDrag =
     allowPanelDrag ||
     (!hasOverflowContent && isContentAtTop) ||
     currentPanelState === 'collapsed' ||
     currentPanelState === 'mini' ||
-    // Enable immediately when at top in expanded state
     (currentPanelState === 'expanded' && isContentAtTop && hasOverflowContent)
 
   const shouldDisableContentScroll =
@@ -272,7 +295,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       whileDrag={{ cursor: 'grabbing' }}
       dragPropagation={shouldEnablePanelDrag}
     >
-      <div className={styles.dragHandle} />
+      <div className={styles.dragHandleClickArea} onClick={handleDragHandleClick}>
+        <div className={styles.dragHandle} />
+      </div>
       <div
         ref={contentRef}
         className={styles.content}

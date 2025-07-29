@@ -18,17 +18,25 @@
   }
 }
 
-.dragHandle {
-  width: 40px;
-  height: 4px;
-  background: var(--gray-a8);
-  border-radius: 99px;
-  margin: var(--space-3) auto var(--space-4);
-  flex-shrink: 0;
-  cursor: grab; // Make sure drag handle is grabbable
+.dragHandleClickArea {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
 
-  &:active {
-    cursor: grabbing;
+  .dragHandle {
+    width: 40px;
+    height: 4px;
+    background: var(--gray-a8);
+    border-radius: 99px;
+    margin: var(--space-3) auto var(--space-4);
+    flex-shrink: 0;
+    cursor: grab;
+
+    &:active {
+      cursor: grabbing;
+    }
   }
 }
 
