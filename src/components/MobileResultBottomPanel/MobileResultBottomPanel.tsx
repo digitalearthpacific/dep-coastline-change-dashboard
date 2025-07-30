@@ -136,12 +136,25 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       const isAtTopAndTryingToScrollUp =
         touchStateRef.current.startScrollTop === 0 && currentScrollTop === 0 && deltaY > 0
 
-      // Reduced threshold for immediate response in expanded state
-      const threshold = currentPanelState === 'expanded' ? 3 : 10
+      const threshold = currentPanelState === 'expanded' ? 1 : 3
 
       if (isAtTopAndTryingToScrollUp && deltaY > threshold) {
         setAllowPanelDrag(true)
         e.preventDefault()
+      }
+
+      if (allowPanelDrag || currentPanelState === 'collapsed' || currentPanelState === 'mini') {
+        const currentPosition = y.get()
+        const newPosition = currentPosition + deltaY * 0.5 // Add damping factor
+        const expandedPos = getExpandedPosition()
+        const miniPos = getMiniCollapsedPosition()
+
+        // Constrain within bounds
+        const constrainedPosition = Math.max(expandedPos, Math.min(miniPos, newPosition))
+        y.set(constrainedPosition)
+
+        // Update start position for next calculation
+        touchStateRef.current.startY = touch.clientY
       }
     }
 
@@ -168,10 +181,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
   const animateToPosition = useCallback(
     (position: number) => {
       animate(y, position, {
-        type: 'spring',
-        stiffness: 600,
-        damping: 40,
-        duration: 0.4,
+        type: 'tween',
+        duration: 0.3,
+        ease: [0.4, 0.0, 0.2, 1],
       })
     },
     [y],
@@ -203,7 +215,7 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
 
     let targetPosition: number
 
-    if (Math.abs(velocity) > 800) {
+    if (Math.abs(velocity) > 300) {
       if (velocity < 0) {
         targetPosition = expandedPos
       } else {
@@ -213,7 +225,7 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       const expandedToCollapsed = collapsedPos - expandedPos
       const collapsedToMini = miniCollapsedPos - collapsedPos
       const expandedThreshold = expandedPos + expandedToCollapsed * 0.3
-      const collapsedThreshold = collapsedPos + collapsedToMini * 0.5
+      const collapsedThreshold = collapsedPos + collapsedToMini * 0.4
 
       if (currentY <= expandedThreshold) {
         targetPosition = expandedPos
@@ -225,10 +237,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     }
 
     animate(y, targetPosition, {
-      type: 'spring',
-      stiffness: 600,
-      damping: 45,
-      duration: 0.4,
+      type: 'tween',
+      duration: 0.25,
+      ease: [0.4, 0.0, 0.2, 1],
     })
   }
 
@@ -249,10 +260,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     }
 
     animate(y, targetPosition, {
-      type: 'spring',
-      stiffness: 600,
-      damping: 45,
-      duration: 0.4,
+      type: 'tween',
+      duration: 0.3,
+      ease: [0.4, 0.0, 0.2, 1],
     })
   }
 
@@ -285,10 +295,10 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       }}
       drag='y'
       dragMomentum={false}
-      dragElastic={0.3}
+      dragElastic={0.1}
       dragConstraints={{
-        top: getExpandedPosition() - 50,
-        bottom: getMiniCollapsedPosition() + 50,
+        top: getExpandedPosition() - 20,
+        bottom: getMiniCollapsedPosition() + 20,
       }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
