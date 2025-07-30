@@ -201,7 +201,7 @@ const HotSpotsCard = ({
           </Badge>
         </Flex>
         <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
-          <Text size='4' weight='bold' style={{ width: '60px' }}>
+          <Text size='4' weight='bold'>
             {typeof hotSpots?.lowChange === 'number' ? hotSpots.lowChange.toLocaleString() : '-'} km
           </Text>
           <Badge
