@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { Badge, Card, Flex, Grid, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import Plot from 'react-plotly.js'
 import Plotly from 'plotly.js-basic-dist'
@@ -14,24 +14,25 @@ import useResponsive from '../../library/hooks/useResponsive'
 import type { PacificCountry, ResultPanelProps } from '../../library/types'
 import { RATES_OF_CHANGE_YEARS } from '../../library/constants'
 import styles from './Result.module.scss'
-import { requestFullscreen } from '../../library/utils/requestFullscreen'
 import { capitalize } from '../../library/utils/capitalize'
+import { Cross1Icon } from '@radix-ui/react-icons'
+import { useFullscreen } from '../../library/hooks/useFullscreen'
 
 // Mock data generation for coastline change statistics, WILL REMOVE LATER
 type MockCoastLineChangeData = {
-  shorelineChange: {
-    retreat: number
-    growth: number
-    stable: number
+  shorelineChange?: {
+    retreat?: number
+    growth?: number
+    stable?: number
   }
-  hotSpots: {
-    highChange: number
-    moderateChange: number
-    lowChange: number
+  hotSpots?: {
+    highChange?: number
+    moderateChange?: number
+    lowChange?: number
   }
-  population: number
-  buildings: number
-  mangroves: number
+  population?: number
+  buildings?: number
+  mangroves?: number
 }
 
 function generateRandomNumber(length: number, maxTo?: number): number {
@@ -313,6 +314,12 @@ const ChartCard = ({
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)
   const plotRef = useRef<PlotlyHTMLElement | null>(null)
+  const {
+    ref: chartContainerRef,
+    isFullscreen,
+    enterFullscreen,
+    exitFullscreen,
+  } = useFullscreen<HTMLDivElement>()
 
   const startDateOptions = endDate
     ? RATES_OF_CHANGE_YEARS.filter((year) => year.value <= endDate)
@@ -322,28 +329,27 @@ const ChartCard = ({
     : RATES_OF_CHANGE_YEARS
 
   // Mock data for the chart with proper typing
-  const chartData: PlotData[] = [
-    {
-      x: [1999, 2000, 2005, 2010, 2015, 2020, 2023],
-      y: [-22, 24, 13, 30, 3, -18, 11],
-      type: selectedChartType === 'line' ? 'scatter' : 'bar',
-      mode: selectedChartType === 'line' ? 'lines+markers' : undefined,
-      name: 'Coastline Change (m)',
-      line: selectedChartType === 'line' ? { color: '#0097d2', width: 3 } : undefined,
-      marker: {
-        color: '#0097d2',
-        size: selectedChartType === 'line' ? 8 : undefined,
-      },
-    } as PlotData,
-  ]
+  const chartData: PlotData[] =
+    startDate && endDate
+      ? [
+          {
+            x: [1999, 2000, 2005, 2010, 2015, 2020, 2023],
+            y: [-22, 24, 13, 30, 3, -18, 11],
+            type: selectedChartType === 'line' ? 'scatter' : 'bar',
+            mode: selectedChartType === 'line' ? 'lines+markers' : undefined,
+            name: 'Coastline Change (m)',
+            line: selectedChartType === 'line' ? { color: '#0097d2', width: 3 } : undefined,
+            marker: {
+              color: '#0097d2',
+              size: selectedChartType === 'line' ? 8 : undefined,
+            },
+          } as PlotData,
+        ]
+      : []
 
   const handleDownload = useCallback(async () => {
     try {
       if (plotRef.current) {
-        console.log('Downloading chart as PNG...')
-        console.log(capitalize(selectedChartType))
-        console.log(selectedCountry)
-        console.log(startDate)
         await new Promise((resolve) => setTimeout(resolve, 100))
 
         await Plotly.downloadImage(plotRef.current as PlotlyHTMLElement, {
@@ -361,16 +367,12 @@ const ChartCard = ({
     }
   }, [plotRef, selectedChartType, selectedCountry, startDate, endDate])
 
-  const handleFullscreen = () => {
-    requestFullscreen(plotRef.current)
-  }
-
   return (
     <Card>
-      <Flex direction='column' style={{ height: '400px' }}>
+      <Flex gap='2' direction='column' style={{ height: '400px' }}>
         <Flex justify='between' align='start' style={{ marginBottom: 'var(--space-2, 8px)' }}>
           <Text as='div' size='4' weight='bold'>
-            Rates of Change
+            Shoreline Position
           </Text>
           <img src={InfoCircledIcon} alt='Information Icon About Rates of Change' />
         </Flex>
@@ -464,8 +466,8 @@ const ChartCard = ({
                 </IconButton>
               </Tooltip>
               {!isMobileWidth && (
-                <Tooltip content='Fullscreen chart' side='top'>
-                  <IconButton onClick={handleFullscreen} aria-label='Fullscreen Chart'>
+                <Tooltip content='View fullscreen' side='top'>
+                  <IconButton onClick={enterFullscreen} aria-label='View Fullscreen'>
                     <img src={ChartFullscreenIcon} alt='Fullscreen Icon' />
                   </IconButton>
                 </Tooltip>
@@ -473,7 +475,23 @@ const ChartCard = ({
             </Flex>
           </Flex>
         </Flex>
-        <div style={{ flexGrow: 1, minHeight: '250px' }}>
+        <div
+          ref={chartContainerRef}
+          style={{
+            flexGrow: 1,
+            minHeight: '250px',
+            position: 'relative',
+            ...(isFullscreen && {
+              position: 'fixed',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              zIndex: 9999,
+              backgroundColor: '#ffffff',
+            }),
+          }}
+        >
           <Plot
             data={chartData}
             layout={{
@@ -498,10 +516,14 @@ const ChartCard = ({
               margin: {
                 l: 50,
                 r: 10,
-                t: 20,
+                t: 10,
+                b: undefined,
               },
             }}
-            style={{ width: '100%', height: '100%' }}
+            style={{
+              width: '100%',
+              height: '100%',
+            }}
             config={{
               displayModeBar: false,
               responsive: true,
@@ -512,6 +534,13 @@ const ChartCard = ({
               plotRef.current = graphDiv as PlotlyHTMLElement
             }}
           />
+
+          {isFullscreen && (
+            <button onClick={exitFullscreen} className={styles.exitFullscreenButton}>
+              <Cross1Icon />
+              Exit Fullscreen
+            </button>
+          )}
         </div>
       </Flex>
     </Card>
@@ -536,15 +565,16 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   const [startDate, setStartDate] = useState<string | undefined>(undefined)
   const [endDate, setEndDate] = useState<string | undefined>(undefined)
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'line'>('line')
+  const [resultData, setResultData] = useState<MockCoastLineChangeData>({})
 
   const isErrorCountry = selectedCountry?.name === 'Error Country'
-  const mockData = isErrorCountry ? null : getMockData()
-  const shorelineChange: MockCoastLineChangeData['shorelineChange'] | undefined =
-    mockData?.shorelineChange ?? undefined
-  const hotSpots: MockCoastLineChangeData['hotSpots'] | undefined = mockData?.hotSpots ?? undefined
-  const population: number | null = mockData?.population ?? null
-  const buildings: number | null = mockData?.buildings ?? null
-  const mangroves: number | null = mockData?.mangroves ?? null
+
+  useEffect(() => {
+    if (selectedCountry) {
+      const mockData = isErrorCountry ? null : getMockData()
+      setResultData(mockData ?? {})
+    }
+  }, [selectedCountry])
 
   if (!selectedCountry) return null
 
@@ -566,13 +596,13 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
     <>
       <LocationCard selectedCountry={selectedCountry} />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard shorelineChange={shorelineChange} />
-        <HotSpotsCard hotSpots={hotSpots} />
+        <ShorelineChangeCard shorelineChange={resultData?.shorelineChange} />
+        <HotSpotsCard hotSpots={resultData?.hotSpots} />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard population={population} />
-        <BuildingCard buildings={buildings} />
-        <MangrovesCard mangroves={mangroves} />
+        <PopulationCard population={resultData?.population} />
+        <BuildingCard buildings={resultData?.buildings} />
+        <MangrovesCard mangroves={resultData?.mangroves} />
       </Grid>
       <ChartCard
         startDate={startDate}
