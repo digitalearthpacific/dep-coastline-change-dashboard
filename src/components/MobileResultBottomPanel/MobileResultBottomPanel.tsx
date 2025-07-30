@@ -6,10 +6,9 @@ import styles from './MobileResultBottomPanel.module.scss'
 import type { PanInfo } from 'framer-motion'
 import type { BottomPanelProps } from '../../library/types'
 
-// Use percentage-based heights for better mobile compatibility
-const COLLAPSED_HEIGHT_PERCENT = 0.15 // 15% of actual viewport height
-const MINI_COLLAPSED_HEIGHT_PERCENT = 0.05 // 5% of actual viewport height
-const EXPANDED_HEIGHT = 0.85 // 85% of viewport height
+const COLLAPSED_HEIGHT_PERCENT = 0.15
+const MINI_COLLAPSED_HEIGHT_PERCENT = 0.05
+const EXPANDED_HEIGHT = 0.85
 
 export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) => {
   const y = useMotionValue(window.innerHeight)
@@ -17,11 +16,21 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
   const contentRef = useRef<HTMLDivElement>(null)
   const [isDragging, setIsDragging] = useState(false)
   const [viewportHeight, setViewportHeight] = useState(window.innerHeight)
+  const [isContentAtTop, setIsContentAtTop] = useState(true)
+  const [hasOverflowContent, setHasOverflowContent] = useState(false)
+  const [allowPanelDrag, setAllowPanelDrag] = useState(false)
+  const [currentPanelState, setCurrentPanelState] = useState<
+    'expanded' | 'collapsed' | 'mini' | 'hidden'
+  >('hidden')
 
-  // Track real viewport changes for mobile browsers
+  const touchStateRef = useRef({
+    startY: 0,
+    startScrollTop: 0,
+    isTracking: false,
+  })
+
   useEffect(() => {
     const updateViewportHeight = () => {
-      // Use visualViewport API for more accurate mobile measurements
       const height = window.visualViewport?.height || window.innerHeight
       setViewportHeight(height)
     }
@@ -30,14 +39,12 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       setTimeout(updateViewportHeight, 100)
     }
 
-    // Listen for viewport changes (handles mobile browser UI)
     if (window.visualViewport) {
       window.visualViewport.addEventListener('resize', updateViewportHeight)
     } else {
       window.addEventListener('resize', updateViewportHeight)
     }
 
-    // Also listen for orientation changes
     if (screen.orientation) {
       screen.orientation.addEventListener('change', orientationChangeHandler)
     }
@@ -55,7 +62,6 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     }
   }, [])
 
-  // Calculate positions using actual viewport height
   const getCollapsedPosition = useCallback(() => {
     const collapsedHeight = viewportHeight * COLLAPSED_HEIGHT_PERCENT
     return viewportHeight - collapsedHeight
@@ -73,18 +79,116 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
 
   const getHiddenPosition = useCallback(() => viewportHeight, [viewportHeight])
 
+  useEffect(() => {
+    const unsubscribe = y.on('change', (currentY) => {
+      const expandedPos = getExpandedPosition()
+      const collapsedPos = getCollapsedPosition()
+      const miniCollapsedPos = getMiniCollapsedPosition()
+      const hiddenPos = getHiddenPosition()
+      const tolerance = 20
+
+      if (Math.abs(currentY - expandedPos) < tolerance) {
+        setCurrentPanelState('expanded')
+      } else if (Math.abs(currentY - collapsedPos) < tolerance) {
+        setCurrentPanelState('collapsed')
+      } else if (Math.abs(currentY - miniCollapsedPos) < tolerance) {
+        setCurrentPanelState('mini')
+      } else if (Math.abs(currentY - hiddenPos) < tolerance) {
+        setCurrentPanelState('hidden')
+      }
+    })
+
+    return unsubscribe
+  }, [y, getExpandedPosition, getCollapsedPosition, getMiniCollapsedPosition, getHiddenPosition])
+
+  useEffect(() => {
+    const content = contentRef.current
+    if (!content) return
+
+    const checkScrollAndOverflow = () => {
+      const isAtTop = content.scrollTop === 0
+      const hasOverflow = content.scrollHeight > content.clientHeight
+
+      setIsContentAtTop(isAtTop)
+      setHasOverflowContent(hasOverflow)
+    }
+
+    checkScrollAndOverflow()
+    content.addEventListener('scroll', checkScrollAndOverflow, { passive: true })
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0]
+      touchStateRef.current = {
+        startY: touch.clientY,
+        startScrollTop: content.scrollTop,
+        isTracking: true,
+      }
+      setAllowPanelDrag(false)
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStateRef.current.isTracking) return
+
+      const touch = e.touches[0]
+      const deltaY = touch.clientY - touchStateRef.current.startY
+      const currentScrollTop = content.scrollTop
+
+      const isAtTopAndTryingToScrollUp =
+        touchStateRef.current.startScrollTop === 0 && currentScrollTop === 0 && deltaY > 0
+
+      const threshold = currentPanelState === 'expanded' ? 1 : 3
+
+      if (isAtTopAndTryingToScrollUp && deltaY > threshold) {
+        setAllowPanelDrag(true)
+        e.preventDefault()
+      }
+
+      if (allowPanelDrag || currentPanelState === 'collapsed' || currentPanelState === 'mini') {
+        const currentPosition = y.get()
+        const newPosition = currentPosition + deltaY * 0.5 // Add damping factor
+        const expandedPos = getExpandedPosition()
+        const miniPos = getMiniCollapsedPosition()
+
+        // Constrain within bounds
+        const constrainedPosition = Math.max(expandedPos, Math.min(miniPos, newPosition))
+        y.set(constrainedPosition)
+
+        // Update start position for next calculation
+        touchStateRef.current.startY = touch.clientY
+      }
+    }
+
+    const handleTouchEnd = () => {
+      touchStateRef.current.isTracking = false
+    }
+
+    content.addEventListener('touchstart', handleTouchStart, { passive: true })
+    content.addEventListener('touchmove', handleTouchMove, { passive: false })
+    content.addEventListener('touchend', handleTouchEnd, { passive: true })
+
+    const resizeObserver = new ResizeObserver(checkScrollAndOverflow)
+    resizeObserver.observe(content)
+
+    return () => {
+      content.removeEventListener('scroll', checkScrollAndOverflow)
+      content.removeEventListener('touchstart', handleTouchStart)
+      content.removeEventListener('touchmove', handleTouchMove)
+      content.removeEventListener('touchend', handleTouchEnd)
+      resizeObserver.disconnect()
+    }
+  }, [children])
+
   const animateToPosition = useCallback(
     (position: number) => {
       animate(y, position, {
-        type: 'spring',
-        stiffness: 400,
-        damping: 30,
+        type: 'tween',
+        duration: 0.3,
+        ease: [0.4, 0.0, 0.2, 1],
       })
     },
     [y],
   )
 
-  // Animate in/out when open state changes
   useEffect(() => {
     if (open) {
       animateToPosition(getCollapsedPosition())
@@ -97,9 +201,9 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
     setIsDragging(true)
   }
 
-  // Handle drag end - determine final position based on distance and velocity
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     setIsDragging(false)
+    setAllowPanelDrag(false)
 
     if (!open) return
 
@@ -111,46 +215,66 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
 
     let targetPosition: number
 
-    // High velocity override - fast gestures snap based on direction
-    if (Math.abs(velocity) > 800) {
+    if (Math.abs(velocity) > 300) {
       if (velocity < 0) {
-        // Dragging up fast - go to expanded
         targetPosition = expandedPos
       } else {
-        // Dragging down fast - determine between collapsed and mini-collapsed
-        if (currentY > collapsedPos) {
-          targetPosition = miniCollapsedPos
-        } else {
-          targetPosition = collapsedPos
-        }
+        targetPosition = currentY > collapsedPos ? miniCollapsedPos : collapsedPos
       }
     } else {
-      // Distance-based logic for slow/medium gestures
       const expandedToCollapsed = collapsedPos - expandedPos
       const collapsedToMini = miniCollapsedPos - collapsedPos
-
-      // Create three zones with thresholds
       const expandedThreshold = expandedPos + expandedToCollapsed * 0.3
-      const collapsedThreshold = collapsedPos + collapsedToMini * 0.5
+      const collapsedThreshold = collapsedPos + collapsedToMini * 0.4
 
       if (currentY <= expandedThreshold) {
-        // Upper zone - snap to expanded
         targetPosition = expandedPos
       } else if (currentY <= collapsedThreshold) {
-        // Middle zone - snap to normal collapsed
         targetPosition = collapsedPos
       } else {
-        // Lower zone - snap to mini collapsed
         targetPosition = miniCollapsedPos
       }
     }
 
     animate(y, targetPosition, {
-      type: 'spring',
-      stiffness: 400,
-      damping: 35,
+      type: 'tween',
+      duration: 0.25,
+      ease: [0.4, 0.0, 0.2, 1],
     })
   }
+
+  const handleDragHandleClick = () => {
+    if (isDragging) return
+
+    const expandedPos = getExpandedPosition()
+    const collapsedPos = getCollapsedPosition()
+
+    let targetPosition: number
+
+    if (currentPanelState === 'expanded') {
+      targetPosition = collapsedPos
+    } else if (currentPanelState === 'collapsed' || currentPanelState === 'mini') {
+      targetPosition = expandedPos
+    } else {
+      targetPosition = collapsedPos
+    }
+
+    animate(y, targetPosition, {
+      type: 'tween',
+      duration: 0.3,
+      ease: [0.4, 0.0, 0.2, 1],
+    })
+  }
+
+  const shouldEnablePanelDrag =
+    allowPanelDrag ||
+    (!hasOverflowContent && isContentAtTop) ||
+    currentPanelState === 'collapsed' ||
+    currentPanelState === 'mini' ||
+    (currentPanelState === 'expanded' && isContentAtTop && hasOverflowContent)
+
+  const shouldDisableContentScroll =
+    currentPanelState === 'collapsed' || currentPanelState === 'mini'
 
   if (!open) return null
 
@@ -167,30 +291,32 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
         height: '100vh',
         zIndex: 1000,
         pointerEvents: 'auto',
+        touchAction: shouldEnablePanelDrag ? 'pan-y' : 'none',
       }}
       drag='y'
       dragMomentum={false}
-      dragElastic={0.3}
+      dragElastic={0.1}
       dragConstraints={{
-        top: getExpandedPosition() - 50,
-        bottom: getMiniCollapsedPosition() + 50,
+        top: getExpandedPosition() - 20,
+        bottom: getMiniCollapsedPosition() + 20,
       }}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       whileDrag={{ cursor: 'grabbing' }}
+      dragPropagation={shouldEnablePanelDrag}
     >
-      <div className={styles.dragHandle} />
+      <div className={styles.dragHandleClickArea} onClick={handleDragHandleClick}>
+        <div className={styles.dragHandle} />
+      </div>
       <div
         ref={contentRef}
         className={styles.content}
         style={{
           pointerEvents: isDragging ? 'none' : 'auto',
-        }}
-        onTouchStart={(e) => {
-          const target = e.target as HTMLElement
-          if (!target.closest(`.${styles.dragHandle}`)) {
-            e.stopPropagation()
-          }
+          touchAction: shouldDisableContentScroll ? 'none' : 'auto',
+          overflowY: shouldDisableContentScroll ? 'hidden' : 'auto',
+          overscrollBehavior: 'contain',
+          WebkitOverflowScrolling: 'touch',
         }}
       >
         {children}

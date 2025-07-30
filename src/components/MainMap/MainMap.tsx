@@ -160,14 +160,14 @@ export const MainMap = ({
           >
             <img
               src={isFullscreen ? ExitFullScreenIcon : EnterFullScreenIcon}
-              alt={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}
+              alt={isFullscreen ? 'Exit Fullscreen Icon' : 'Fullscreen Icon'}
             />
           </IconButton>
         </Tooltip>
 
         <Tooltip content='Base Map' side='left'>
           <IconButton onClick={handleBaseMapChange} aria-label='Change Base Map'>
-            <img src={BaseMapIcon} alt='Change base map' />
+            <img src={BaseMapIcon} alt='Change Base Map' />
           </IconButton>
         </Tooltip>
 

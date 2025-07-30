@@ -13,3 +13,8 @@ export type CountryCoordinates = PacificCountry['coordinates']
 export type ResponsiveState = {
   isMobileWidth: boolean
 }
+
+export type RatesOfChangeYear = {
+  readonly id: string
+  readonly value: string
+}
