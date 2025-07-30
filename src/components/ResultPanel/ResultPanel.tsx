@@ -1,9 +1,9 @@
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { Badge, Card, Flex, Grid, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import Plot from 'react-plotly.js'
 import Plotly from 'plotly.js-basic-dist'
 import type { PlotData, PlotlyHTMLElement } from 'plotly.js'
 
+import { Badge, Card, Flex, Grid, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
@@ -346,6 +346,30 @@ const ChartCard = ({
           } as PlotData,
         ]
       : []
+
+  // Resize plot when container size changes
+  useEffect(() => {
+    if (!chartContainerRef.current) return
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
+          // Container has dimensions, resize the plot
+          if (plotRef.current) {
+            setTimeout(() => {
+              Plotly.Plots.resize(plotRef.current!)
+            }, 100)
+          }
+        }
+      }
+    })
+
+    resizeObserver.observe(chartContainerRef.current)
+
+    return () => {
+      resizeObserver.disconnect()
+    }
+  }, [])
 
   const handleDownload = useCallback(async () => {
     try {
