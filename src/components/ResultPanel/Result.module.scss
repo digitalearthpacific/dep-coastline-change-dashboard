@@ -50,7 +50,14 @@
 
     &:disabled {
       cursor: not-allowed;
-      background-color: var(--gray-a2, #00000006);
+      color: var(--gray-a2, #00000006);
+      background-color: var(--gray-a5, #0000001f);
+      opacity: 0.5;
+
+      &:hover {
+        background-color: var(--gray-a3, #0000000f);
+        color: var(--gray-a6, #00000026);
+      }
     }
   }
 }

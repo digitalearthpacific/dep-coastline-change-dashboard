@@ -567,13 +567,12 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'line'>('line')
   const [resultData, setResultData] = useState<MockCoastLineChangeData>({})
 
-  const isErrorCountry = selectedCountry?.name === 'Error Country'
-
   useEffect(() => {
-    if (selectedCountry) {
-      const mockData = isErrorCountry ? null : getMockData()
-      setResultData(mockData ?? {})
-    }
+    const mockData = selectedCountry?.name === 'Error Country' ? null : getMockData()
+    setResultData(mockData ?? {})
+    setStartDate('')
+    setEndDate('')
+    setSelectedChartType('line')
   }, [selectedCountry])
 
   if (!selectedCountry) return null
@@ -590,30 +589,31 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
     setSelectedChartType(type)
   }
 
-  const content = isErrorCountry ? (
-    <ErrorCard />
-  ) : (
-    <>
-      <LocationCard selectedCountry={selectedCountry} />
-      <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard shorelineChange={resultData?.shorelineChange} />
-        <HotSpotsCard hotSpots={resultData?.hotSpots} />
-      </Grid>
-      <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard population={resultData?.population} />
-        <BuildingCard buildings={resultData?.buildings} />
-        <MangrovesCard mangroves={resultData?.mangroves} />
-      </Grid>
-      <ChartCard
-        startDate={startDate}
-        endDate={endDate}
-        onDateChange={handleDateChange}
-        selectedCountry={selectedCountry}
-        selectedChartType={selectedChartType}
-        onChartTypeChange={handleChartTypeChange}
-      />
-    </>
-  )
+  const content =
+    selectedCountry?.name === 'Error Country' ? (
+      <ErrorCard />
+    ) : (
+      <>
+        <LocationCard selectedCountry={selectedCountry} />
+        <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
+          <ShorelineChangeCard shorelineChange={resultData?.shorelineChange} />
+          <HotSpotsCard hotSpots={resultData?.hotSpots} />
+        </Grid>
+        <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
+          <PopulationCard population={resultData?.population} />
+          <BuildingCard buildings={resultData?.buildings} />
+          <MangrovesCard mangroves={resultData?.mangroves} />
+        </Grid>
+        <ChartCard
+          startDate={startDate}
+          endDate={endDate}
+          onDateChange={handleDateChange}
+          selectedCountry={selectedCountry}
+          selectedChartType={selectedChartType}
+          onChartTypeChange={handleChartTypeChange}
+        />
+      </>
+    )
 
   if (isMobileWidth) {
     return <MobileResultBottomPanel open={isMobilePanelOpen}>{content}</MobileResultBottomPanel>
