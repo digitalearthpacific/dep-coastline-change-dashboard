@@ -380,7 +380,7 @@ const ChartCard = ({
           format: 'png',
           width: 1200,
           height: 800,
-          filename: `ROC-${capitalize(selectedChartType)}-${selectedCountry?.name}-${startDate}-${endDate}`,
+          filename: `SP-${capitalize(selectedChartType)}-${selectedCountry?.name}-${startDate}-${endDate}`,
         })
       } else {
         console.error('Chart reference not found')
