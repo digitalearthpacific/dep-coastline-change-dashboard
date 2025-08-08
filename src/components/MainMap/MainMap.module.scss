@@ -151,3 +151,77 @@
     @include button-styles;
   }
 }
+
+.mapLegend {
+  position: absolute;
+  bottom: 40px;
+  left: var(--space-5, 24px);
+  background: var(--white, #fff);
+  border-radius: var(--radius-4, 8px);
+  padding: var(--space-3, 16px);
+  box-shadow:
+    0 12px 32px -16px var(--gray-a5, rgba(0, 0, 0, 0.12)),
+    0 12px 60px 0 var(--black-a3, rgba(0, 0, 0, 0.15));
+  z-index: 1000;
+
+  @include mobile-only {
+    top: 10px;
+    bottom: auto;
+    left: var(--space-4, 16px);
+  }
+}
+
+.legendTitle {
+  font-size: var(--font-size-2, 14px);
+  font-weight: 700;
+  color: var(--gray-12, #202020);
+}
+
+.legendSubtitle {
+  font-size: var(--font-size-1, 12px);
+  font-weight: 400;
+  color: var(--gray-11, #646464);
+  margin-bottom: var(--space-2, 8px);
+}
+
+.legendItems {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  @include mobile-only {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.highChange {
+    background-color: var(--error-a8, rgba(210, 0, 5, 0.44)); // Red/coral color
+  }
+
+  &.moderateChange {
+    background-color: var(--warning-a9, rgba(255, 179, 0, 0.76)); // Orange/yellow color
+  }
+
+  &.lowChange {
+    background-color: var(--success-a8, rgba(0, 146, 75, 0.64)); // Green color
+  }
+}
+
+.legendText {
+  font-size: var(--font-size-1, 12px);
+  color: var(--gray-a12, rgba(0, 0, 0, 0.87));
+  font-weight: 500;
+}
