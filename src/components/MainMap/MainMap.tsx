@@ -135,12 +135,38 @@ export const MainMap = ({
       >
         <AttributionControl position='bottom-left' compact={true} />
         <NavigationControl
-          key={navigationControlKey} // This forces re-render when screen size changes
+          key={navigationControlKey}
           position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
           style={NAVIGATION_CONTROL_STYLE}
         />
       </Map>
+
+      {/* Map Legend */}
+      <div className={styles.mapLegend}>
+        <div className={styles.legendTitle}>Hot Spots</div>
+        <div className={styles.legendSubtitle}>Levels of change</div>
+        <div className={styles.legendItems}>
+          <div className={styles.legendItem}>
+            <div className={clsx(styles.legendCircle, styles.highChange)}></div>
+            <span className={styles.legendText}>
+              <strong>5 m</strong> High
+            </span>
+          </div>
+          <div className={styles.legendItem}>
+            <div className={clsx(styles.legendCircle, styles.moderateChange)}></div>
+            <span className={styles.legendText}>
+              <strong>3-5 m</strong> Moderate
+            </span>
+          </div>
+          <div className={styles.legendItem}>
+            <div className={clsx(styles.legendCircle, styles.lowChange)}></div>
+            <span className={styles.legendText}>
+              <strong>2-3 m</strong> Low
+            </span>
+          </div>
+        </div>
+      </div>
 
       {isFullscreen && !isMobileWidth && (
         <div className={styles.exitFullscreenContainer}>
