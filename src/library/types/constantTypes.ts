@@ -31,7 +31,7 @@ export type MockCoastLineChangeData = {
     moderateChange?: number
     lowChange?: number
   }
-  individualHotSpot?: number
+  hotSpotIndicator?: number
   population?: number
   buildings?: number
   mangroves?: number

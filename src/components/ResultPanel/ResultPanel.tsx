@@ -45,7 +45,7 @@ function getMockHotSpotData(): MockCoastLineChangeData {
       growth: generateRandomNumber(2, 100),
       stable: generateRandomNumber(2, 100),
     },
-    individualHotSpot: generateRandomNumber(1, 10),
+    hotSpotIndicator: generateRandomNumber(1, 10),
     population: generateRandomNumber(7, 10000000),
     buildings: generateRandomNumber(5, 100000),
     mangroves: generateRandomNumber(5, 100000),

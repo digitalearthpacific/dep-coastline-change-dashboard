@@ -46,7 +46,7 @@ export const CountryResultView = ({
 
   return (
     <>
-      <Flex direction='row-reverse' gap='4' py='3'>
+      <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
         <TextButton
           ariaLabel='View Background Information'
           disabled
