@@ -14,12 +14,14 @@ type CountryResultViewProps = {
   selectedCountry: PacificCountry | null
   countryData: MockCoastLineChangeData | null
   goToHotSpotView: () => void
+  goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
   selectedCountry,
   countryData,
   goToHotSpotView,
+  goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
   const [startDate, setStartDate] = useState<string | undefined>(undefined)
@@ -47,11 +49,7 @@ export const CountryResultView = ({
   return (
     <>
       <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
-        <TextButton
-          ariaLabel='View Background Information'
-          disabled
-          onClick={() => alert('Clicked!')}
-        >
+        <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
           VIEW BACKGROUND INFORMATION
         </TextButton>
         <TextButton ariaLabel='View Hot Spot Information' onClick={goToHotSpotView}>

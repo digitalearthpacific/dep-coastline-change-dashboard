@@ -13,6 +13,7 @@ type HotSpotResultViewProps = {
   selectedCountry: PacificCountry | null
   hotSpotData: MockCoastLineChangeData | null
   goToCountryView: () => void
+  goToBackgroundInfoView: () => void
 }
 
 const HotSpotBadge = ({
@@ -53,6 +54,7 @@ export const HotSpotResultView = ({
   selectedCountry,
   hotSpotData,
   goToCountryView,
+  goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
   const [startDate, setStartDate] = useState<string | undefined>(undefined)
@@ -85,11 +87,7 @@ export const HotSpotResultView = ({
           <TextButton ariaLabel='View Country Information' onClick={goToCountryView}>
             COUNTRY VIEW
           </TextButton>
-          <TextButton
-            ariaLabel='View Background Information'
-            disabled
-            onClick={() => alert('Clicked!')}
-          >
+          <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
             VIEW BACKGROUND INFORMATION
           </TextButton>
         </Flex>
