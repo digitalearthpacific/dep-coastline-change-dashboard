@@ -1,7 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../library/hooks/useResponsive'
 import type { PacificCountry } from '../../library/types'
-import InfoCircledIcon from '../../assets/info-circled.svg'
 
 export const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {
   const { isMobileWidth } = useResponsive()
@@ -24,7 +23,6 @@ export const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCoun
               Coastline Change: {selectedCountry?.name}
             </Text>
           )}
-          <img src={InfoCircledIcon} alt='Information Icon About Location' />
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
