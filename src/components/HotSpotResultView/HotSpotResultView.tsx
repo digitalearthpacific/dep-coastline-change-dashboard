@@ -24,7 +24,7 @@ const HotSpotBadge = ({
 
   if (hotSpotIndicator > 5) {
     return (
-      <Badge size='1' style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}>
+      <Badge size='3' style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}>
         High Change (&gt;5m)
       </Badge>
     )
@@ -32,7 +32,7 @@ const HotSpotBadge = ({
 
   if (hotSpotIndicator >= 3 && hotSpotIndicator <= 5) {
     return (
-      <Badge size='1' style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}>
+      <Badge size='3' style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}>
         Moderate Change (&gt;3m)
       </Badge>
     )
@@ -40,7 +40,7 @@ const HotSpotBadge = ({
 
   if (hotSpotIndicator > 0) {
     return (
-      <Badge size='1' style={{ backgroundColor: 'var(--success-a3)', color: 'var(--success-a11)' }}>
+      <Badge size='3' style={{ backgroundColor: 'var(--success-a3)', color: 'var(--success-a11)' }}>
         Low Change (&gt;1m)
       </Badge>
     )
