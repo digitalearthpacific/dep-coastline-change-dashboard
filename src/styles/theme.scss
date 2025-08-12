@@ -2,6 +2,9 @@
   /* ===== TYPOGRAPHY ===== */
   --font-family-primary: 'Roboto', Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   --font-family-mono: 'Fira Code', 'Consolas', 'Monaco', monospace;
+  --font-size-1: 12px;
+
+  --line-height-1: 16px;
 
   /* ===== BASE COLORS ===== */
   --white: #ffffff;
@@ -81,4 +84,13 @@
   --error-a8: rgba(210, 0, 5, 0.44);
   --warning-a9: rgba(255, 179, 0, 0.76);
   --success-a8: rgba(0, 146, 75, 0.64);
+
+  /* ===== SPACING ===== */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+
+  --radius-1: 4px;
 }

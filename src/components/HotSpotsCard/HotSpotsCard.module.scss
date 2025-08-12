@@ -1,0 +1,18 @@
+.popoverContent {
+  background-color: var(--gray-12, #202020);
+  color: var(--white, #fff);
+  line-height: var(--line-height-1, 16px);
+  border-radius: var(--radius-1, 4px);
+  padding: 2px var(--space-1, 4px);
+  max-width: 200px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: var(--font-size-1, 12px);
+}
+
+.popoverArrow {
+  fill: var(--gray-12, #202020);
+}
+
+.iconStyle {
+  cursor: pointer;
+}
