@@ -4,17 +4,24 @@
   cursor: pointer !important;
   text-decoration: underline !important;
 
-  &:hover,
-  &:focus-visible {
-    color: var(--gray-8, #e0e0e0);
+  // Only apply hover effects on devices that can hover (desktop/laptop)
+  @media (hover: hover) {
+    &:hover,
+    &:focus-visible {
+      color: var(--gray-8, #e0e0e0);
+    }
+
+    &:disabled {
+      &:hover,
+      &:focus-visible {
+        color: var(--gray-6, #999999);
+      }
+    }
   }
 
   &:disabled {
     cursor: not-allowed !important;
-
-    &:hover,
-    &:focus-visible {
-      color: var(--gray-6, #999999);
-    }
+    color: var(--gray-6, #999999);
+    opacity: 0.6;
   }
 }
