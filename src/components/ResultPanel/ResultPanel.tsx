@@ -59,7 +59,7 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   const [countryData, setCountryData] = useState<MockCoastLineChangeData>({})
   const [hotSpotData, setHotSpotData] = useState<MockCoastLineChangeData>({})
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hot spot'>('country')
-  const [viewBackgroundInfo, setViewBackgroundInfo] = useState(true)
+  const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
 
   useEffect(() => {
     const mockData = selectedCountry?.name === 'Error Country' ? null : getMockCountryData()
