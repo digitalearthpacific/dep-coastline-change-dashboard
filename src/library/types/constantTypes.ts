@@ -18,3 +18,22 @@ export type RatesOfChangeYear = {
   readonly id: string
   readonly value: string
 }
+
+/** TODO: Remove Mock data generation for coastline change statistics */
+export type MockCoastLineChangeData = {
+  shorelineChange?: {
+    retreat?: number
+    growth?: number
+    stable?: number
+  }
+  hotSpots?: {
+    highChange?: number
+    moderateChange?: number
+    lowChange?: number
+  }
+  hotSpotIndicator?: number
+  population?: number
+  buildings?: number
+  mangroves?: number
+}
+/** End of Mock data generation for coastline change statistics */
