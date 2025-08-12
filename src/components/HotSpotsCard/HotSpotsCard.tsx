@@ -1,6 +1,6 @@
 import { Badge, Card, Flex, Text } from '@radix-ui/themes'
 import type { MockCoastLineChangeData } from '../../library/types'
-import InfoCircledIcon from '../../assets/info-circled.svg'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
 
 export const HotSpotsCard = ({
   hotSpots,
@@ -14,7 +14,7 @@ export const HotSpotsCard = ({
           <Text as='div' size='4' weight='bold'>
             Hot Spots
           </Text>
-          <img src={InfoCircledIcon} alt='Information Icon About Hot Spots' />
+          <InfoCircledIcon />
         </Flex>
         <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
           Identifies coastal regions experiencing high levels of change
