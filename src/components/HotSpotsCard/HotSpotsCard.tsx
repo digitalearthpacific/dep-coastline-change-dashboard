@@ -18,7 +18,10 @@ export const HotSpotsCard = ({
           </Text>
           <Popover.Root>
             <Popover.Trigger asChild>
-              <InfoCircledIcon className={styles.iconStyle} />
+              <InfoCircledIcon
+                className={styles.iconStyle}
+                aria-label='More information about coastal change hot spots'
+              />
             </Popover.Trigger>
             <Popover.Portal>
               <Popover.Content
