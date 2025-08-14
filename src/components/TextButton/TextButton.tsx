@@ -1,4 +1,3 @@
-// TextButton.tsx
 import React from 'react'
 import { Button } from '@radix-ui/themes'
 import styles from './TextButton.module.scss'

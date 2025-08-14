@@ -8,6 +8,7 @@ import { ErrorCard } from '../ErrorCard/ErrorCard'
 import { CountryResultView } from '../CountryResultView/CountryResultView'
 import { LocationCard } from '../LocationCard/LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView/HotSpotResultView'
+import BackgroundInformationView from '../BackgroundInformationView/BackgroundInformationView'
 
 /** TODO: Remove Mock data generation for coastline change statistics */
 function generateRandomNumber(length: number, maxTo?: number): number {
@@ -58,6 +59,7 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
   const [countryData, setCountryData] = useState<MockCoastLineChangeData>({})
   const [hotSpotData, setHotSpotData] = useState<MockCoastLineChangeData>({})
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hot spot'>('country')
+  const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
 
   useEffect(() => {
     const mockData = selectedCountry?.name === 'Error Country' ? null : getMockCountryData()
@@ -80,27 +82,43 @@ export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelP
     handleResultPanelViewChange('country')
   }
 
+  const goBackToResultView = () => {
+    setViewBackgroundInfo(false)
+  }
+
+  const goToBackgroundInfoView = () => {
+    setViewBackgroundInfo(true)
+  }
+
+  const resultViewContent = (
+    <>
+      <LocationCard selectedCountry={selectedCountry} />
+      {resultPanelView === 'country' ? (
+        <CountryResultView
+          selectedCountry={selectedCountry}
+          countryData={countryData}
+          goToHotSpotView={goToHotSpotView}
+          goToBackgroundInfoView={goToBackgroundInfoView}
+        />
+      ) : (
+        <HotSpotResultView
+          selectedCountry={selectedCountry}
+          hotSpotData={hotSpotData}
+          goToCountryView={goToCountryView}
+          goToBackgroundInfoView={goToBackgroundInfoView}
+        />
+      )}
+    </>
+  )
+
+  const backgroundInfoOrResultView = viewBackgroundInfo ? (
+    <BackgroundInformationView goBackToResultView={goBackToResultView} />
+  ) : (
+    resultViewContent
+  )
+
   const content =
-    selectedCountry?.name === 'Error Country' ? (
-      <ErrorCard />
-    ) : (
-      <>
-        <LocationCard selectedCountry={selectedCountry} />
-        {resultPanelView === 'country' ? (
-          <CountryResultView
-            selectedCountry={selectedCountry}
-            countryData={countryData}
-            goToHotSpotView={goToHotSpotView}
-          />
-        ) : (
-          <HotSpotResultView
-            selectedCountry={selectedCountry}
-            hotSpotData={hotSpotData}
-            goToCountryView={goToCountryView}
-          />
-        )}
-      </>
-    )
+    selectedCountry?.name === 'Error Country' ? <ErrorCard /> : backgroundInfoOrResultView
 
   if (isMobileWidth) {
     return <MobileResultBottomPanel open={isMobilePanelOpen}>{content}</MobileResultBottomPanel>
