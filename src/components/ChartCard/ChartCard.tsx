@@ -7,9 +7,9 @@ import { Cross1Icon } from '@radix-ui/react-icons'
 import useResponsive from '../../library/hooks/useResponsive'
 import { useFullscreen } from '../../library/hooks/useFullscreen'
 import styles from './ChartCard.module.scss'
-import { RATES_OF_CHANGE_YEARS } from '../../library/constants'
+import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 import { capitalize } from '../../library/utils/capitalize'
-import type { PacificCountry } from '../../library/types'
+import type { ChartType, DateType, PacificCountry } from '../../library/types'
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
 import LineChartIcon from '../../assets/line-chart.svg'
@@ -26,10 +26,10 @@ export const ChartCard = ({
 }: {
   startDate: string | null
   endDate: string | null
-  onDateChange: (dateType: 'start' | 'end', value: string) => void
+  onDateChange: (dateType: DateType, value: string) => void
   selectedCountry: PacificCountry | null
-  selectedChartType: 'bar' | 'line'
-  onChartTypeChange: (type: 'bar' | 'line') => void
+  selectedChartType: ChartType
+  onChartTypeChange: (type: ChartType) => void
 }) => {
   const { isMobileWidth } = useResponsive()
   const startDateSelectRef = useRef<HTMLDivElement>(null)
@@ -147,7 +147,7 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
-                  <Select.Item key='none' value='none'>
+                  <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
                     None
                   </Select.Item>
                   <Select.Separator />
@@ -173,7 +173,7 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
-                  <Select.Item key='none' value='none'>
+                  <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
                     None
                   </Select.Item>
                   <Select.Separator />

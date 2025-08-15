@@ -1,7 +1,7 @@
 import { Button, DropdownMenu } from '@radix-ui/themes'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
-import { PACIFIC_COUNTRIES } from '../../library/constants'
+import { NONE_VALUE, PACIFIC_COUNTRIES } from '../../library/constants'
 import type { SearchBarProps } from '../../library/types'
 
 export const SearchBar = ({ selectedCountry, onCountrySelect }: SearchBarProps) => {
@@ -16,7 +16,7 @@ export const SearchBar = ({ selectedCountry, onCountrySelect }: SearchBarProps) 
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className={styles.dropdownContent}>
-          <DropdownMenu.Item key='none' onSelect={() => onCountrySelect(null)}>
+          <DropdownMenu.Item key={NONE_VALUE} onSelect={() => onCountrySelect(null)}>
             None
           </DropdownMenu.Item>
           <DropdownMenu.Separator />
