@@ -57,17 +57,23 @@ export const HotSpotResultView = ({
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const [startDate, setStartDate] = useState<string | undefined>(undefined)
-  const [endDate, setEndDate] = useState<string | undefined>(undefined)
+  const [startDate, setStartDate] = useState<string | null>(null)
+  const [endDate, setEndDate] = useState<string | null>(null)
   const [selectedChartType, setSelectedChartType] = useState<'bar' | 'line'>('line')
 
   useEffect(() => {
-    setStartDate('')
-    setEndDate('')
+    setStartDate(null)
+    setEndDate(null)
     setSelectedChartType('line')
   }, [selectedCountry])
 
-  const handleDateChange = (dateType: 'start' | 'end', value: string | undefined) => {
+  const handleDateChange = (dateType: 'start' | 'end', value: string) => {
+    if (value === 'none') {
+      setStartDate(null)
+      setEndDate(null)
+      return
+    }
+
     if (dateType === 'start') {
       setStartDate(value)
     } else {

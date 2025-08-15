@@ -24,9 +24,9 @@ export const ChartCard = ({
   selectedChartType,
   onChartTypeChange,
 }: {
-  startDate: string | undefined
-  endDate: string | undefined
-  onDateChange: (dateType: 'start' | 'end', value: string | undefined) => void
+  startDate: string | null
+  endDate: string | null
+  onDateChange: (dateType: 'start' | 'end', value: string) => void
   selectedCountry: PacificCountry | null
   selectedChartType: 'bar' | 'line'
   onChartTypeChange: (type: 'bar' | 'line') => void
@@ -133,7 +133,7 @@ export const ChartCard = ({
             </Text>
             <Flex gap='3'>
               <Select.Root
-                value={startDate}
+                value={startDate || ''}
                 onValueChange={(value) => onDateChange('start', value)}
               >
                 <Select.Trigger placeholder='Start Date' style={{ width: '110px' }} />
@@ -147,6 +147,10 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
+                  <Select.Item key='none' value='none'>
+                    None
+                  </Select.Item>
+                  <Select.Separator />
                   {startDateOptions.map((year) => (
                     <Select.Item key={year.id} value={year.value}>
                       {year.value}
@@ -154,7 +158,10 @@ export const ChartCard = ({
                   ))}
                 </Select.Content>
               </Select.Root>
-              <Select.Root value={endDate} onValueChange={(value) => onDateChange('end', value)}>
+              <Select.Root
+                value={endDate || ''}
+                onValueChange={(value) => onDateChange('end', value)}
+              >
                 <Select.Trigger placeholder='End Date' style={{ width: '110px' }} />
                 <Select.Content
                   position='popper'
@@ -166,6 +173,10 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
+                  <Select.Item key='none' value='none'>
+                    None
+                  </Select.Item>
+                  <Select.Separator />
                   {endDateOptions.map((year) => (
                     <Select.Item key={year.id} value={year.id}>
                       {year.value}
