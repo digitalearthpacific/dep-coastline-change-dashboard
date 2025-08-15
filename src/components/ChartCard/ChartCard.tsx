@@ -7,9 +7,9 @@ import { Cross1Icon } from '@radix-ui/react-icons'
 import useResponsive from '../../library/hooks/useResponsive'
 import { useFullscreen } from '../../library/hooks/useFullscreen'
 import styles from './ChartCard.module.scss'
-import { RATES_OF_CHANGE_YEARS } from '../../library/constants'
+import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 import { capitalize } from '../../library/utils/capitalize'
-import type { PacificCountry } from '../../library/types'
+import type { ChartType, DateType, PacificCountry } from '../../library/types'
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
 import LineChartIcon from '../../assets/line-chart.svg'
@@ -24,12 +24,12 @@ export const ChartCard = ({
   selectedChartType,
   onChartTypeChange,
 }: {
-  startDate: string | undefined
-  endDate: string | undefined
-  onDateChange: (dateType: 'start' | 'end', value: string | undefined) => void
+  startDate: string | null
+  endDate: string | null
+  onDateChange: (dateType: DateType, value: string) => void
   selectedCountry: PacificCountry | null
-  selectedChartType: 'bar' | 'line'
-  onChartTypeChange: (type: 'bar' | 'line') => void
+  selectedChartType: ChartType
+  onChartTypeChange: (type: ChartType) => void
 }) => {
   const { isMobileWidth } = useResponsive()
   const startDateSelectRef = useRef<HTMLDivElement>(null)
@@ -133,7 +133,7 @@ export const ChartCard = ({
             </Text>
             <Flex gap='3'>
               <Select.Root
-                value={startDate}
+                value={startDate || ''}
                 onValueChange={(value) => onDateChange('start', value)}
               >
                 <Select.Trigger placeholder='Start Date' style={{ width: '110px' }} />
@@ -147,6 +147,10 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
+                  <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
+                    None
+                  </Select.Item>
+                  <Select.Separator />
                   {startDateOptions.map((year) => (
                     <Select.Item key={year.id} value={year.value}>
                       {year.value}
@@ -154,7 +158,10 @@ export const ChartCard = ({
                   ))}
                 </Select.Content>
               </Select.Root>
-              <Select.Root value={endDate} onValueChange={(value) => onDateChange('end', value)}>
+              <Select.Root
+                value={endDate || ''}
+                onValueChange={(value) => onDateChange('end', value)}
+              >
                 <Select.Trigger placeholder='End Date' style={{ width: '110px' }} />
                 <Select.Content
                   position='popper'
@@ -166,6 +173,10 @@ export const ChartCard = ({
                     overscrollBehaviorY: 'contain',
                   }}
                 >
+                  <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
+                    None
+                  </Select.Item>
+                  <Select.Separator />
                   {endDateOptions.map((year) => (
                     <Select.Item key={year.id} value={year.id}>
                       {year.value}

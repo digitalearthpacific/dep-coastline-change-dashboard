@@ -150,3 +150,5 @@ export const RATES_OF_CHANGE_YEARS: RatesOfChangeYear[] = [
   { id: '2000', value: '2000' },
   { id: '1999', value: '1999' },
 ] as const
+
+export const NONE_VALUE = 'none'
