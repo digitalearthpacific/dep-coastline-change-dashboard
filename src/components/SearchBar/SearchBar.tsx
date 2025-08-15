@@ -16,6 +16,10 @@ export const SearchBar = ({ selectedCountry, onCountrySelect }: SearchBarProps) 
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className={styles.dropdownContent}>
+          <DropdownMenu.Item key='none' onSelect={() => onCountrySelect(null)}>
+            None
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
           {PACIFIC_COUNTRIES.map((country) => (
             <DropdownMenu.Item key={country.id} onSelect={() => onCountrySelect(country)}>
               {country.name}
