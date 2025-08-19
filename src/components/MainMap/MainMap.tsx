@@ -303,19 +303,19 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
         </Tooltip>
 
         <Tooltip content='Change basemap or add layers' side='left'>
-          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change base map or add layers'>
-            <img src={BaseMapIcon} alt='Change base map or add layers' />
+          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
+            <img src={BaseMapIcon} alt='Change basemap or add layers' />
           </IconButton>
         </Tooltip>
 
         {isBaseMapPopupOpen && (
           <div className={styles.baseMapPopup}>
-            <div className={styles.mapTypeTitle}>Base Maps</div>
+            <div className={styles.mapTypeTitle}>Basemaps</div>
             <div className={styles.mapTypeContainer}>
               {BASE_MAPS.map((bm) => (
                 <button
                   key={bm.key}
-                  aria-label={`Select ${bm.label} base map`}
+                  aria-label={`Select ${bm.label} basemap`}
                   className={baseMap === bm.key ? styles.selected : ''}
                   onClick={() => handleBaseMapSelection(bm.key)}
                 >
