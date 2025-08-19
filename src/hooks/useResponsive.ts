@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { DEFAULT_MOBILE_WIDTH_THRESHOLD } from '../constants'
-import type { ResponsiveState } from '../types'
+import { DEFAULT_MOBILE_WIDTH_THRESHOLD } from '../library/constants'
+import type { ResponsiveState } from '../library/types'
 
 const useResponsive = (): ResponsiveState => {
   const isClient = typeof window !== 'undefined'

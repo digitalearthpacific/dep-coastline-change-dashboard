@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import useResponsive from '../../library/hooks/useResponsive'
+import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
 import type {
   ChartType,

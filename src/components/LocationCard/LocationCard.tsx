@@ -1,5 +1,5 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import useResponsive from '../../library/hooks/useResponsive'
+import useResponsive from '../../hooks/useResponsive'
 import type { PacificCountry } from '../../library/types'
 
 export const LocationCard = ({ selectedCountry }: { selectedCountry: PacificCountry | null }) => {

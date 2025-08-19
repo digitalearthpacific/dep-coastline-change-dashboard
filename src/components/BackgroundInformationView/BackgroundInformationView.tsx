@@ -1,6 +1,6 @@
 import { Button, Flex, Link, Separator, Text } from '@radix-ui/themes'
 import { ArrowLeftIcon } from '@radix-ui/react-icons'
-import useResponsive from '../../library/hooks/useResponsive'
+import useResponsive from '../../hooks/useResponsive'
 
 type BackButtonProps = {
   onClick?: () => void

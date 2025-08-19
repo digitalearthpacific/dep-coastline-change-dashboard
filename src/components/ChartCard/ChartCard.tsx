@@ -4,8 +4,8 @@ import Plotly from 'plotly.js-basic-dist'
 import type { PlotData, PlotlyHTMLElement } from 'plotly.js'
 import { Card, Flex, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
-import useResponsive from '../../library/hooks/useResponsive'
-import { useFullscreen } from '../../library/hooks/useFullscreen'
+import useResponsive from '../../hooks/useResponsive'
+import { useFullscreen } from '../../hooks/useFullscreen'
 import styles from './ChartCard.module.scss'
 import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 import { capitalize } from '../../library/utils/capitalize'
@@ -87,7 +87,7 @@ export const ChartCard = ({
     return () => {
       resizeObserver.disconnect()
     }
-  }, [])
+  }, [chartContainerRef])
 
   const handleDownload = useCallback(async () => {
     try {

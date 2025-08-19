@@ -1,14 +1,15 @@
 import { useState, useEffect } from 'react'
 
 import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
-import useResponsive from '../../library/hooks/useResponsive'
-import type { MockCoastLineChangeData, ResultPanelProps } from '../../library/types'
+import useResponsive from '../../hooks/useResponsive'
+import type { MockCoastLineChangeData } from '../../library/types'
 import styles from './ResultPanel.module.scss'
 import { ErrorCard } from '../ErrorCard/ErrorCard'
 import { CountryResultView } from '../CountryResultView/CountryResultView'
 import { LocationCard } from '../LocationCard/LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView/HotSpotResultView'
 import BackgroundInformationView from '../BackgroundInformationView/BackgroundInformationView'
+import { useCountry } from '../../hooks/useCountry'
 
 /** TODO: Remove Mock data generation for coastline change statistics */
 function generateRandomNumber(length: number, maxTo?: number): number {
@@ -54,16 +55,24 @@ function getMockHotSpotData(): MockCoastLineChangeData {
 }
 /** End of Mock data generation for coastline change statistics */
 
-export const ResultPanel = ({ selectedCountry, isMobilePanelOpen }: ResultPanelProps) => {
+export const ResultPanel = () => {
   const { isMobileWidth } = useResponsive()
+  const { selectedCountry } = useCountry()
   const [countryData, setCountryData] = useState<MockCoastLineChangeData>({})
   const [hotSpotData, setHotSpotData] = useState<MockCoastLineChangeData>({})
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hot spot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
   useEffect(() => {
-    const mockData = selectedCountry?.name === 'Error Country' ? null : getMockCountryData()
-    setCountryData(mockData ?? {})
+    if (selectedCountry) {
+      const mockData = selectedCountry.name === 'Error Country' ? null : getMockCountryData()
+      setCountryData(mockData ?? {})
+      setIsMobilePanelOpen(true)
+    } else {
+      setCountryData({})
+      setIsMobilePanelOpen(false)
+    }
   }, [selectedCountry])
 
   if (!selectedCountry) return null

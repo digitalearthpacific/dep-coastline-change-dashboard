@@ -19,8 +19,9 @@ import {
   BASE_MAPS,
 } from '../../library/constants'
 import type { MainMapProps, MapStyleType } from '../../library/types'
-import useResponsive from '../../library/hooks/useResponsive'
+import useResponsive from '../../hooks/useResponsive'
 import clsx from 'clsx'
+import { useCountry } from '../../hooks/useCountry'
 
 const MAP_STYLE = {
   width: '100%',
@@ -66,15 +67,10 @@ const MapLegend = () => {
   )
 }
 
-export const MainMap = ({
-  flyToLocation,
-  selectedCountry,
-  isFullscreen,
-  onFullscreenToggle,
-  onFullscreenExit,
-}: MainMapProps) => {
+export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
+  const { selectedCountry } = useCountry()
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('default')
@@ -89,17 +85,17 @@ export const MainMap = ({
       const defaultFlyToZoom = isMobileWidth ? FLY_TO_MOBILE_ZOOM : FLY_TO_DESKTOP_ZOOM
 
       return {
-        center: flyToLocation!.center as [number, number],
-        zoom: flyToLocation!.zoom ?? defaultFlyToZoom,
-        duration: flyToLocation!.duration ?? FLY_TO_DURATION,
+        center: selectedCountry?.coordinates as [number, number],
+        zoom: defaultFlyToZoom,
+        duration: FLY_TO_DURATION,
         ...FLY_TO_PRESETS[preset],
       }
     },
-    [flyToLocation, isMobileWidth],
+    [selectedCountry, isMobileWidth],
   )
 
   useEffect(() => {
-    if (flyToLocation && mapRef.current) {
+    if (mapRef.current) {
       const isFirstSelection = !shouldAnimate && selectedCountry
 
       if (isFirstSelection) {
@@ -124,7 +120,7 @@ export const MainMap = ({
         mapRef.current.flyTo(createFlyToOptions('subsequentSelection'))
       }
     }
-  }, [flyToLocation, selectedCountry, isMobileWidth, shouldAnimate, createFlyToOptions])
+  }, [selectedCountry, shouldAnimate, createFlyToOptions])
 
   // Reset animation state when no country is selected
   useEffect(() => {
@@ -132,82 +128,6 @@ export const MainMap = ({
       setShouldAnimate(false)
     }
   }, [selectedCountry])
-
-  const addShorelineChangeLayer = (map: MapLibreMap) => {
-    if (!map.getSource('coastlines')) {
-      map.addSource('coastlines', {
-        type: 'vector',
-        url: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
-      })
-    }
-
-    if (!map.getLayer('shorelines-annual-uncertain')) {
-      map.addLayer({
-        id: 'shorelines-annual-uncertain',
-        type: 'line',
-        source: 'coastlines',
-        'source-layer': 'shorelines_annual',
-        minzoom: 0,
-        maxzoom: 22,
-        filter: ['!=', ['get', 'certainty'], 'good'],
-        paint: {
-          'line-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'year'],
-            1999,
-            '#000004',
-            2003,
-            '#2f0a5b',
-            2007,
-            '#801f6c',
-            2012,
-            '#d34743',
-            2017,
-            '#fb9d07',
-            2023,
-            '#fcffa4',
-          ],
-          'line-width': 2,
-          'line-opacity': 0.8,
-          'line-dasharray': [4, 4],
-        },
-      })
-    }
-
-    if (!map.getLayer('annual-shorelines')) {
-      map.addLayer({
-        id: 'annual-shorelines',
-        type: 'line',
-        source: 'coastlines',
-        'source-layer': 'shorelines_annual',
-        minzoom: 0,
-        maxzoom: 22,
-        filter: ['==', ['get', 'certainty'], 'good'],
-        paint: {
-          'line-color': [
-            'interpolate',
-            ['linear'],
-            ['get', 'year'],
-            1999,
-            '#000004',
-            2003,
-            '#2f0a5b',
-            2007,
-            '#801f6c',
-            2012,
-            '#d34743',
-            2017,
-            '#fb9d07',
-            2023,
-            '#fcffa4',
-          ],
-          'line-width': 2.5,
-          'line-opacity': 1,
-        },
-      })
-    }
-  }
 
   const addBuildingsLayer = (map: MapLibreMap) => {
     if (!map.getSource('buildings')) {
@@ -285,7 +205,6 @@ export const MainMap = ({
     const map = mapRef.current?.getMap()
     if (!map) return
 
-    addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
   }
