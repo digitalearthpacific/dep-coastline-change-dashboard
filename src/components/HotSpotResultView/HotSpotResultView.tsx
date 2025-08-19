@@ -1,13 +1,19 @@
 import { useEffect, useState } from 'react'
 import useResponsive from '../../library/hooks/useResponsive'
 import { Badge, Flex, Grid } from '@radix-ui/themes'
-import type { MockCoastLineChangeData, PacificCountry } from '../../library/types'
+import type {
+  ChartType,
+  DateType,
+  MockCoastLineChangeData,
+  PacificCountry,
+} from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
 import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
 import { ChartCard } from '../ChartCard/ChartCard'
 import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
+import { NONE_VALUE } from '../../library/constants'
 
 type HotSpotResultViewProps = {
   selectedCountry: PacificCountry | null
@@ -57,17 +63,23 @@ export const HotSpotResultView = ({
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const [startDate, setStartDate] = useState<string | undefined>(undefined)
-  const [endDate, setEndDate] = useState<string | undefined>(undefined)
-  const [selectedChartType, setSelectedChartType] = useState<'bar' | 'line'>('line')
+  const [startDate, setStartDate] = useState<string | null>(null)
+  const [endDate, setEndDate] = useState<string | null>(null)
+  const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
 
   useEffect(() => {
-    setStartDate('')
-    setEndDate('')
+    setStartDate(null)
+    setEndDate(null)
     setSelectedChartType('line')
   }, [selectedCountry])
 
-  const handleDateChange = (dateType: 'start' | 'end', value: string | undefined) => {
+  const handleDateChange = (dateType: DateType, value: string) => {
+    if (value === NONE_VALUE) {
+      setStartDate(null)
+      setEndDate(null)
+      return
+    }
+
     if (dateType === 'start') {
       setStartDate(value)
     } else {
@@ -75,7 +87,7 @@ export const HotSpotResultView = ({
     }
   }
 
-  const handleChartTypeChange = (type: 'bar' | 'line') => {
+  const handleChartTypeChange = (type: ChartType) => {
     setSelectedChartType(type)
   }
 
