@@ -101,17 +101,15 @@ export const ResultPanel = () => {
 
   const resultViewContent = (
     <>
-      <LocationCard selectedCountry={selectedCountry} />
+      <LocationCard />
       {resultPanelView === 'country' ? (
         <CountryResultView
-          selectedCountry={selectedCountry}
           countryData={countryData}
           goToHotSpotView={goToHotSpotView}
           goToBackgroundInfoView={goToBackgroundInfoView}
         />
       ) : (
         <HotSpotResultView
-          selectedCountry={selectedCountry}
           hotSpotData={hotSpotData}
           goToCountryView={goToCountryView}
           goToBackgroundInfoView={goToBackgroundInfoView}

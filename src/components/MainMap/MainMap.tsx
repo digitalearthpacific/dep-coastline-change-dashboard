@@ -194,6 +194,82 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
     }
   }
 
+  const addShorelineChangeLayer = (map: MapLibreMap) => {
+    if (!map.getSource('coastlines')) {
+      map.addSource('coastlines', {
+        type: 'vector',
+        url: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+      })
+    }
+
+    if (!map.getLayer('shorelines-annual-uncertain')) {
+      map.addLayer({
+        id: 'shorelines-annual-uncertain',
+        type: 'line',
+        source: 'coastlines',
+        'source-layer': 'shorelines_annual',
+        minzoom: 13,
+        maxzoom: 22,
+        filter: ['!=', ['get', 'certainty'], 'good'],
+        paint: {
+          'line-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'year'],
+            1999,
+            '#000004',
+            2003,
+            '#2f0a5b',
+            2007,
+            '#801f6c',
+            2012,
+            '#d34743',
+            2017,
+            '#fb9d07',
+            2023,
+            '#fcffa4',
+          ],
+          'line-width': 2,
+          'line-opacity': 0.8,
+          'line-dasharray': [4, 4],
+        },
+      })
+    }
+
+    if (!map.getLayer('annual-shorelines')) {
+      map.addLayer({
+        id: 'annual-shorelines',
+        type: 'line',
+        source: 'coastlines',
+        'source-layer': 'shorelines_annual',
+        minzoom: 13,
+        maxzoom: 22,
+        filter: ['==', ['get', 'certainty'], 'good'],
+        paint: {
+          'line-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'year'],
+            1999,
+            '#000004',
+            2003,
+            '#2f0a5b',
+            2007,
+            '#801f6c',
+            2012,
+            '#d34743',
+            2017,
+            '#fb9d07',
+            2023,
+            '#fcffa4',
+          ],
+          'line-width': 2.5,
+          'line-opacity': 1,
+        },
+      })
+    }
+  }
+
   const handleMapLoad = () => {
     const removeNativeTooltips = () => {
       const controls = mapRef.current
@@ -208,6 +284,7 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
     const map = mapRef.current?.getMap()
     if (!map) return
 
+    addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
   }

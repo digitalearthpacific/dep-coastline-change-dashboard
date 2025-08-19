@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react'
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
-import type {
-  ChartType,
-  DateType,
-  MockCoastLineChangeData,
-  PacificCountry,
-} from '../../library/types'
+import type { ChartType, DateType, MockCoastLineChangeData } from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard/HotSpotsCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
@@ -15,21 +10,21 @@ import { ChartCard } from '../ChartCard/ChartCard'
 import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
 import { NONE_VALUE } from '../../library/constants'
+import { useCountry } from '../../hooks/useCountry'
 
 type CountryResultViewProps = {
-  selectedCountry: PacificCountry | null
   countryData: MockCoastLineChangeData | null
   goToHotSpotView: () => void
   goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
-  selectedCountry,
   countryData,
   goToHotSpotView,
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
+  const { selectedCountry } = useCountry()
   const [startDate, setStartDate] = useState<string | null>(null)
   const [endDate, setEndDate] = useState<string | null>(null)
   const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
