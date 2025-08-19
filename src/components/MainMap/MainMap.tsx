@@ -162,17 +162,20 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
       map.addSource('mangroves', {
         type: 'raster',
         tiles: [
-          'https://ows.prod.digitalearthpacific.io/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
-            '&LAYER=mangroves' +
-            '&STYLE=style_mangroves' +
+          'https://ows.prod.digitalearthpacific.io/wms?' +
+            'SERVICE=WMS' +
+            '&VERSION=1.3.0' +
+            '&REQUEST=GetMap' +
+            '&LAYERS=mangroves' +
+            '&STYLES=style_mangroves' +
             '&FORMAT=image/png' +
-            '&TILEMATRIXSET=WholeWorld_WebMercator' +
-            '&TILEMATRIX={z}' +
-            '&TILEROW={y}' +
-            '&TILECOL={x}' +
-            '&Time=2024-01-01',
+            '&TRANSPARENT=true' +
+            '&CRS=EPSG:3857' +
+            '&WIDTH=512' +
+            '&HEIGHT=512' +
+            '&BBOX={bbox-epsg-3857}',
         ],
-        tileSize: 256,
+        tileSize: 512,
       })
     }
 
@@ -299,18 +302,15 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
           </IconButton>
         </Tooltip>
 
-        <Tooltip content='Change Base Map or Add Map Layers' side='left'>
-          <IconButton
-            onClick={handleBaseMapPopupToggle}
-            aria-label='Change Base Map or Add Map Layers'
-          >
-            <img src={BaseMapIcon} alt='Change Base Map or Add Map Layers' />
+        <Tooltip content='Change basemap or add layers' side='left'>
+          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change base map or add layers'>
+            <img src={BaseMapIcon} alt='Change base map or add layers' />
           </IconButton>
         </Tooltip>
 
         {isBaseMapPopupOpen && (
           <div className={styles.baseMapPopup}>
-            <div className={styles.mapTypeTitle}>Map Type</div>
+            <div className={styles.mapTypeTitle}>Base Maps</div>
             <div className={styles.mapTypeContainer}>
               {BASE_MAPS.map((bm) => (
                 <button
@@ -324,7 +324,7 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
                 </button>
               ))}
             </div>
-            <div className={styles.mapTypeTitle}>Map Details</div>
+            <div className={styles.mapTypeTitle}>Map Layers</div>
             <Flex gap='2' align='center'>
               <Checkbox
                 size='2'
