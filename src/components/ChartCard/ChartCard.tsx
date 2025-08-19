@@ -68,24 +68,21 @@ export const ChartCard = ({
         ]
       : []
 
-  // Resize plot when container size changes
+  // Resize plot when chart container size changes
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    const chartContainerCurrent = chartContainerRef.current
+    if (!chartContainerCurrent) return
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          // Container has dimensions, resize the plot
-          if (plotRef.current) {
-            setTimeout(() => {
-              Plotly.Plots.resize(plotRef.current!)
-            }, 100)
-          }
+        const { width, height } = entry.contentRect
+        if (width > 0 && height > 0 && plotRef.current) {
+          Plotly.Plots.resize(plotRef.current)
         }
       }
     })
 
-    resizeObserver.observe(chartContainerRef.current)
+    resizeObserver.observe(chartContainerCurrent)
 
     return () => {
       resizeObserver.disconnect()
