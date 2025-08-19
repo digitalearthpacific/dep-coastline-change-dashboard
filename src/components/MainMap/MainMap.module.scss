@@ -103,16 +103,29 @@
     right: 40px;
     bottom: 0px;
     display: flex;
+    flex-direction: column;
     background: var(--white, #fff);
     border-radius: var(--radius-4, 8px);
     border: 1px solid var(--grey-a6, #00000026);
     padding: var(--space-3, 12px);
     gap: var(--space-2, 8px);
     z-index: 1000;
+    gap: var(--space-2, 8px);
+
+    .mapTypeTitle {
+      font-size: var(--font-size-2, 14px);
+      font-weight: 700;
+      color: var(--gray-12, #202020);
+    }
+
+    .mapTypeContainer {
+      display: flex;
+      gap: var(--space-2, 8px);
+    }
 
     @include mobile-only {
       right: 0;
-      bottom: -100px;
+      bottom: -215px;
     }
 
     button {

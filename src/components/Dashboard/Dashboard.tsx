@@ -8,6 +8,7 @@ import styles from './Dashboard.module.scss'
 
 export const Dashboard = () => {
   const [selectedCountry, setSelectedCountry] = useState<PacificCountry | null>(null)
+
   const [flyToLocation, setFlyToLocation] = useState<FlyToLocation | null>(null)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
   const [isFullscreen, setIsFullscreen] = useState(false)

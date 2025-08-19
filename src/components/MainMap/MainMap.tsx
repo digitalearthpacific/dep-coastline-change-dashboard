@@ -1,7 +1,8 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
+import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef } from 'react-map-gl/maplibre'
-import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Checkbox, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -77,6 +78,8 @@ export const MainMap = ({
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('default')
+  const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
+  const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
 
   // Add a key that changes when screen size changes to force re-render
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
@@ -130,6 +133,144 @@ export const MainMap = ({
     }
   }, [selectedCountry])
 
+  const addShorelineChangeLayer = (map: MapLibreMap) => {
+    if (!map.getSource('coastlines')) {
+      map.addSource('coastlines', {
+        type: 'vector',
+        url: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+      })
+    }
+
+    if (!map.getLayer('shorelines-annual-uncertain')) {
+      map.addLayer({
+        id: 'shorelines-annual-uncertain',
+        type: 'line',
+        source: 'coastlines',
+        'source-layer': 'shorelines_annual',
+        minzoom: 0,
+        maxzoom: 22,
+        filter: ['!=', ['get', 'certainty'], 'good'],
+        paint: {
+          'line-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'year'],
+            1999,
+            '#000004',
+            2003,
+            '#2f0a5b',
+            2007,
+            '#801f6c',
+            2012,
+            '#d34743',
+            2017,
+            '#fb9d07',
+            2023,
+            '#fcffa4',
+          ],
+          'line-width': 2,
+          'line-opacity': 0.8,
+          'line-dasharray': [4, 4],
+        },
+      })
+    }
+
+    if (!map.getLayer('annual-shorelines')) {
+      map.addLayer({
+        id: 'annual-shorelines',
+        type: 'line',
+        source: 'coastlines',
+        'source-layer': 'shorelines_annual',
+        minzoom: 0,
+        maxzoom: 22,
+        filter: ['==', ['get', 'certainty'], 'good'],
+        paint: {
+          'line-color': [
+            'interpolate',
+            ['linear'],
+            ['get', 'year'],
+            1999,
+            '#000004',
+            2003,
+            '#2f0a5b',
+            2007,
+            '#801f6c',
+            2012,
+            '#d34743',
+            2017,
+            '#fb9d07',
+            2023,
+            '#fcffa4',
+          ],
+          'line-width': 2.5,
+          'line-opacity': 1,
+        },
+      })
+    }
+  }
+
+  const addBuildingsLayer = (map: MapLibreMap) => {
+    if (!map.getSource('buildings')) {
+      map.addSource('buildings', {
+        type: 'vector',
+        tiles: ['https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf'],
+      })
+    }
+
+    if (!map.getLayer('Buildings')) {
+      map.addLayer({
+        id: 'Buildings',
+        type: 'fill',
+        minzoom: 0,
+        maxzoom: 13,
+        source: 'buildings',
+        'source-layer': 'buildings',
+        layout: {
+          visibility: isBuildingsLayerVisible ? 'visible' : 'none',
+        },
+        paint: {
+          'fill-color': '#eb8730',
+          'fill-outline-color': '#4e4e4e',
+          'fill-opacity': 0.8,
+        },
+      })
+    }
+  }
+
+  const addMangrovesLayer = (map: MapLibreMap) => {
+    if (!map.getSource('mangroves')) {
+      map.addSource('mangroves', {
+        type: 'raster',
+        tiles: [
+          'https://ows.prod.digitalearthpacific.io/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0' +
+            '&LAYER=mangroves' +
+            '&STYLE=style_mangroves' +
+            '&FORMAT=image/png' +
+            '&TILEMATRIXSET=WholeWorld_WebMercator' +
+            '&TILEMATRIX={z}' +
+            '&TILEROW={y}' +
+            '&TILECOL={x}' +
+            '&Time=2024-01-01',
+        ],
+        tileSize: 256,
+      })
+    }
+
+    if (!map.getLayer('Mangroves')) {
+      map.addLayer({
+        id: 'Mangroves',
+        type: 'raster',
+        source: 'mangroves',
+        layout: {
+          visibility: isMangrovesLayerVisible ? 'visible' : 'none',
+        },
+        paint: {
+          'raster-opacity': 0.8,
+        },
+      })
+    }
+  }
+
   const handleMapLoad = () => {
     const removeNativeTooltips = () => {
       const controls = mapRef.current
@@ -140,10 +281,53 @@ export const MainMap = ({
     }
 
     requestAnimationFrame(removeNativeTooltips)
+
+    const map = mapRef.current?.getMap()
+    if (!map) return
+
+    addShorelineChangeLayer(map)
+    addBuildingsLayer(map)
+    addMangrovesLayer(map)
   }
 
-  const handleBaseMapChange = () => {
+  const handleBaseMapPopupToggle = () => {
     setIsBaseMapPopupOpen((prev) => !prev)
+  }
+
+  const handleBaseMapSelection = (mapKey: MapStyleType) => {
+    setBaseMap(mapKey)
+    setIsBaseMapPopupOpen(false)
+
+    // Re-add layers after style change
+    const map = mapRef.current?.getMap()
+    if (map) {
+      map.once('styledata', () => {
+        addBuildingsLayer(map)
+        addMangrovesLayer(map)
+      })
+    }
+  }
+
+  const handleBuildingToggle = () => {
+    const map = mapRef.current?.getMap()
+    if (!map) return
+
+    const newVisibility = !isBuildingsLayerVisible
+    setIsBuildingsLayerVisible(newVisibility)
+
+    // Toggle layer visibility on the map
+    map.setLayoutProperty('Buildings', 'visibility', newVisibility ? 'visible' : 'none')
+  }
+
+  const handleMangroveToggle = () => {
+    const map = mapRef.current?.getMap()
+    if (!map) return
+
+    const newVisibility = !isMangrovesLayerVisible
+    setIsMangrovesLayerVisible(newVisibility)
+
+    // Toggle layer visibility on the map
+    map.setLayoutProperty('Mangroves', 'visibility', newVisibility ? 'visible' : 'none')
   }
 
   return (
@@ -196,28 +380,50 @@ export const MainMap = ({
           </IconButton>
         </Tooltip>
 
-        <Tooltip content='Base Map' side='left'>
-          <IconButton onClick={handleBaseMapChange} aria-label='Change Base Map'>
-            <img src={BaseMapIcon} alt='Change Base Map' />
+        <Tooltip content='Change Base Map or Add Map Layers' side='left'>
+          <IconButton
+            onClick={handleBaseMapPopupToggle}
+            aria-label='Change Base Map or Add Map Layers'
+          >
+            <img src={BaseMapIcon} alt='Change Base Map or Add Map Layers' />
           </IconButton>
         </Tooltip>
 
         {isBaseMapPopupOpen && (
           <div className={styles.baseMapPopup}>
-            {BASE_MAPS.map((bm) => (
-              <button
-                key={bm.key}
-                aria-label={`Select ${bm.label} base map`}
-                className={baseMap === bm.key ? styles.selected : ''}
-                onClick={() => {
-                  setBaseMap(bm.key)
-                  setIsBaseMapPopupOpen(false)
-                }}
-              >
-                <img src={bm.thumbnail} alt={bm.label} />
-                <div>{bm.label}</div>
-              </button>
-            ))}
+            <div className={styles.mapTypeTitle}>Map Type</div>
+            <div className={styles.mapTypeContainer}>
+              {BASE_MAPS.map((bm) => (
+                <button
+                  key={bm.key}
+                  aria-label={`Select ${bm.label} base map`}
+                  className={baseMap === bm.key ? styles.selected : ''}
+                  onClick={() => handleBaseMapSelection(bm.key)}
+                >
+                  <img src={bm.thumbnail} alt={bm.label} />
+                  <div>{bm.label}</div>
+                </button>
+              ))}
+            </div>
+            <div className={styles.mapTypeTitle}>Map Details</div>
+            <Flex gap='2' align='center'>
+              <Checkbox
+                size='2'
+                variant='surface'
+                checked={isBuildingsLayerVisible}
+                onCheckedChange={handleBuildingToggle}
+              />{' '}
+              <Text size='2'>Buildings</Text>
+            </Flex>
+            <Flex gap='2' align='center'>
+              <Checkbox
+                size='2'
+                variant='surface'
+                checked={isMangrovesLayerVisible}
+                onCheckedChange={handleMangroveToggle}
+              />{' '}
+              <Text size='2'>Mangroves</Text>
+            </Flex>
           </div>
         )}
       </div>
