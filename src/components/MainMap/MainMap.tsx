@@ -2,7 +2,7 @@ import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef } from 'react-map-gl/maplibre'
-import type { ExpressionSpecification } from 'maplibre-gl'
+import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 import { Checkbox, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -132,8 +132,8 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
 
   const createDateFilter = useCallback(
-    (certaintyCriteria: ExpressionSpecification) => {
-      const filters = [certaintyCriteria]
+    (certaintyCriteria: FilterSpecification): FilterSpecification => {
+      const filters: FilterSpecification[] = [certaintyCriteria]
 
       if (startDate && endDate) {
         filters.push(
@@ -142,7 +142,7 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
         )
       }
 
-      return filters.length === 1 ? certaintyCriteria : ['all', ...filters]
+      return filters.length === 1 ? certaintyCriteria : (['all', ...filters] as FilterSpecification)
     },
     [startDate, endDate],
   )
@@ -235,8 +235,16 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
 
   const addShorelineChangeLayer = useCallback(
     (map: MapLibreMap) => {
-      const uncertaintyShorelineFFilter = createDateFilter(['!=', ['get', 'certainty'], 'good'])
-      const certaintyShorelineFFilter = createDateFilter(['==', ['get', 'certainty'], 'good'])
+      const uncertaintyShorelineFFilter: FilterSpecification = createDateFilter([
+        '!=',
+        ['get', 'certainty'],
+        'good',
+      ])
+      const certaintyShorelineFFilter: FilterSpecification = createDateFilter([
+        '==',
+        ['get', 'certainty'],
+        'good',
+      ])
       const isShorelineLayerVisible = Boolean(startDate && endDate)
 
       const shorelineColorExpression: ExpressionSpecification = [
