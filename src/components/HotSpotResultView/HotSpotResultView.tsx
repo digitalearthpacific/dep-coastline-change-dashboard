@@ -1,15 +1,12 @@
-import { useEffect, useState } from 'react'
 import useResponsive from '../../hooks/useResponsive'
 import { Badge, Flex, Grid } from '@radix-ui/themes'
-import type { ChartType, DateType, MockCoastLineChangeData } from '../../library/types'
+import type { MockCoastLineChangeData } from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
 import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
 import { ChartCard } from '../ChartCard/ChartCard'
 import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
-import { NONE_VALUE } from '../../library/constants'
-import { useCountry } from '../../hooks/useCountry'
 
 type HotSpotResultViewProps = {
   hotSpotData: MockCoastLineChangeData | null
@@ -57,34 +54,6 @@ export const HotSpotResultView = ({
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountry } = useCountry()
-  const [startDate, setStartDate] = useState<string | null>(null)
-  const [endDate, setEndDate] = useState<string | null>(null)
-  const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
-
-  useEffect(() => {
-    setStartDate(null)
-    setEndDate(null)
-    setSelectedChartType('line')
-  }, [selectedCountry])
-
-  const handleDateChange = (dateType: DateType, value: string) => {
-    if (value === NONE_VALUE) {
-      setStartDate(null)
-      setEndDate(null)
-      return
-    }
-
-    if (dateType === 'start') {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
-
-  const handleChartTypeChange = (type: ChartType) => {
-    setSelectedChartType(type)
-  }
 
   return (
     <>
@@ -107,14 +76,7 @@ export const HotSpotResultView = ({
         <BuildingCard buildings={hotSpotData?.buildings} />
         <MangrovesCard mangroves={hotSpotData?.mangroves} />
       </Grid>
-      <ChartCard
-        startDate={startDate}
-        endDate={endDate}
-        onDateChange={handleDateChange}
-        selectedCountry={selectedCountry}
-        selectedChartType={selectedChartType}
-        onChartTypeChange={handleChartTypeChange}
-      />
+      <ChartCard />
     </>
   )
 }

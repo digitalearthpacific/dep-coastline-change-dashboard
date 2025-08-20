@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
-import { useCountry } from '../../hooks/useCountry'
+import { useCountry } from '../../hooks/useGlobalContext'
 
 export const LocationCard = () => {
   const { isMobileWidth } = useResponsive()

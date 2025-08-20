@@ -2,10 +2,16 @@ import { Button, DropdownMenu } from '@radix-ui/themes'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, PACIFIC_COUNTRIES } from '../../library/constants'
-import { useCountry } from '../../hooks/useCountry'
+import { useChart, useCountry } from '../../hooks/useGlobalContext'
 
 export const SearchBar = () => {
   const { selectedCountry, setSelectedCountry } = useCountry()
+  const { resetChartDefaultSettings } = useChart()
+
+  const handleSelectNone = () => {
+    setSelectedCountry(null)
+    resetChartDefaultSettings()
+  }
 
   return (
     <div className={styles.searchBar}>
@@ -18,7 +24,7 @@ export const SearchBar = () => {
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className={styles.dropdownContent}>
-          <DropdownMenu.Item key={NONE_VALUE} onSelect={() => setSelectedCountry(null)}>
+          <DropdownMenu.Item key={NONE_VALUE} onSelect={handleSelectNone}>
             None
           </DropdownMenu.Item>
           <DropdownMenu.Separator />

@@ -9,7 +9,7 @@ import { CountryResultView } from '../CountryResultView/CountryResultView'
 import { LocationCard } from '../LocationCard/LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView/HotSpotResultView'
 import BackgroundInformationView from '../BackgroundInformationView/BackgroundInformationView'
-import { useCountry } from '../../hooks/useCountry'
+import { useCountry } from '../../hooks/useGlobalContext'
 
 /** TODO: Remove Mock data generation for coastline change statistics */
 function generateRandomNumber(length: number, maxTo?: number): number {
