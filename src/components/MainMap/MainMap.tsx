@@ -4,11 +4,10 @@ import type { Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
 import { Checkbox, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
-import { Cross1Icon } from '@radix-ui/react-icons'
+import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import styles from './MainMap.module.scss'
-import BaseMapIcon from '../../assets/basemap.svg'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import {
@@ -79,39 +78,47 @@ const BaseMapPopup = ({
   onMangroveToggle,
 }: BaseMapPopupProps) => (
   <div className={styles.baseMapPopup}>
-    <div className={styles.mapTypeTitle}>Basemaps</div>
-    <div className={styles.mapTypeContainer}>
-      {BASE_MAPS.map((bm) => (
-        <button
-          key={bm.key}
-          aria-label={`Select ${bm.label} basemap`}
-          className={baseMap === bm.key ? styles.selected : ''}
-          onClick={() => onBaseMapSelection(bm.key)}
-        >
-          <img src={bm.thumbnail} alt={bm.label} />
-          <div>{bm.label}</div>
-        </button>
-      ))}
+    <div className={styles.popupSection}>
+      <div className={styles.mapTypeTitle}>Basemaps</div>
+      <div className={styles.mapTypeContainer}>
+        {BASE_MAPS.map((bm) => (
+          <button
+            key={bm.key}
+            aria-label={`Select ${bm.label} basemap`}
+            className={clsx(styles.baseMapButton, {
+              [styles.selected]: baseMap === bm.key,
+            })}
+            onClick={() => onBaseMapSelection(bm.key)}
+          >
+            <img src={bm.thumbnail} alt={bm.label} />
+            <div>{bm.label}</div>
+          </button>
+        ))}
+      </div>
     </div>
-    <div className={styles.mapTypeTitle}>Map Layers</div>
-    <Flex gap='2' align='center'>
-      <Checkbox
-        size='2'
-        variant='surface'
-        checked={isBuildingsLayerVisible}
-        onCheckedChange={onBuildingToggle}
-      />
-      <Text size='2'>Buildings</Text>
-    </Flex>
-    <Flex gap='2' align='center'>
-      <Checkbox
-        size='2'
-        variant='surface'
-        checked={isMangrovesLayerVisible}
-        onCheckedChange={onMangroveToggle}
-      />
-      <Text size='2'>Mangroves</Text>
-    </Flex>
+    <div className={styles.popupSection}>
+      <div className={styles.mapTypeTitle}>Map Layers</div>
+      <Flex gap='2' align='center'>
+        <Checkbox
+          size='2'
+          variant='surface'
+          className={styles.checkboxButton}
+          checked={isBuildingsLayerVisible}
+          onCheckedChange={onBuildingToggle}
+        />
+        <Text size='2'>Buildings</Text>
+      </Flex>
+      <Flex gap='2' align='center'>
+        <Checkbox
+          size='2'
+          variant='classic'
+          className={styles.checkboxButton}
+          checked={isMangrovesLayerVisible}
+          onCheckedChange={onMangroveToggle}
+        />
+        <Text size='2'>Mangroves</Text>
+      </Flex>
+    </div>
   </div>
 )
 
@@ -484,7 +491,7 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
 
         <Tooltip content='Change basemap or add layers' side='left'>
           <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
-            <img src={BaseMapIcon} alt='Change basemap or add layers' />
+            <LayersIcon />
           </IconButton>
         </Tooltip>
 
