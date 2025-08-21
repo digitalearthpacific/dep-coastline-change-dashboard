@@ -130,7 +130,7 @@
 
     @include mobile-only {
       right: 0;
-      bottom: -215px;
+      bottom: -223px;
     }
 
     .baseMapButton {
@@ -145,6 +145,7 @@
       padding: 0;
       font-family: var(--font-family-primary);
       box-shadow: none;
+      color: var(--gray-12, #202020);
 
       img {
         width: var(--space-8, 48px);
