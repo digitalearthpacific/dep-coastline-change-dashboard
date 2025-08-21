@@ -12,7 +12,6 @@ import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import {
   MAP_CONFIG,
-  FLY_TO_PRESETS,
   BASE_MAPS,
   LAYER_IDS,
   SOURCE_IDS,
@@ -125,7 +124,7 @@ const BaseMapPopup = ({
 export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
-  const { selectedCountry } = useCountry()
+  const { selectedCountryFeature } = useCountry()
   const { startDate, endDate } = useChart()
 
   const [shouldAnimate, setShouldAnimate] = useState(false)
@@ -166,21 +165,19 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
     [startDate, endDate],
   )
 
-  const createFlyToOptions = useCallback(
-    (preset: keyof typeof FLY_TO_PRESETS) => {
-      const defaultFlyToZoom = isMobileWidth
-        ? MAP_CONFIG.FLY_TO_ZOOM.MOBILE
-        : MAP_CONFIG.FLY_TO_ZOOM.DESKTOP
+  const createBBoxOptions = useCallback(() => {
+    if (!selectedCountryFeature?.bbox) return null
 
-      return {
-        center: selectedCountry?.coordinates as [number, number],
-        zoom: defaultFlyToZoom,
-        duration: MAP_CONFIG.FLY_TO_DURATION,
-        ...FLY_TO_PRESETS[preset],
-      }
-    },
-    [selectedCountry, isMobileWidth],
-  )
+    const selectedBbox = selectedCountryFeature.bbox as [number, number, number, number]
+
+    return {
+      bounds: [
+        [selectedBbox[0], selectedBbox[1]],
+        [selectedBbox[2], selectedBbox[3]],
+      ] as [[number, number], [number, number]],
+      duration: MAP_CONFIG.FLY_TO_DURATION,
+    }
+  }, [selectedCountryFeature])
 
   const addBuildingsLayer = useCallback(
     (map: MapLibreMap) => {
@@ -394,29 +391,39 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
   }, [])
 
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !selectedCountry || shouldAnimate) return
+    if (!isMapLoaded || !mapRef.current || !selectedCountryFeature || shouldAnimate) return
 
     const mapContainer = mapRef.current.getContainer().parentElement
     if (mapContainer) {
       mapContainer.style.transition = 'none'
       mapRef.current.resize()
       mapContainer.style.transition = ''
-      mapRef.current.flyTo(createFlyToOptions('firstSelection'))
+      const bboxOptions = createBBoxOptions()
+      if (bboxOptions) {
+        mapRef.current.fitBounds(bboxOptions.bounds, {
+          duration: bboxOptions.duration,
+        })
+      }
       setShouldAnimate(true)
     }
-  }, [isMapLoaded, selectedCountry, shouldAnimate, createFlyToOptions])
+  }, [isMapLoaded, selectedCountryFeature, shouldAnimate, createBBoxOptions])
 
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !shouldAnimate || !selectedCountry) return
+    if (!isMapLoaded || !mapRef.current || !shouldAnimate || !selectedCountryFeature) return
 
-    mapRef.current.flyTo(createFlyToOptions('subsequentSelection'))
-  }, [selectedCountry, shouldAnimate, createFlyToOptions, isMapLoaded])
+    const bboxOptions = createBBoxOptions()
+    if (bboxOptions) {
+      mapRef.current.fitBounds(bboxOptions.bounds, {
+        duration: bboxOptions.duration,
+      })
+    }
+  }, [selectedCountryFeature, shouldAnimate, createBBoxOptions, isMapLoaded])
 
   useEffect(() => {
-    if (!selectedCountry) {
+    if (!selectedCountryFeature) {
       setShouldAnimate(false)
     }
-  }, [selectedCountry])
+  }, [selectedCountryFeature])
 
   useEffect(() => {
     const map = mapRef.current?.getMap()
@@ -442,8 +449,8 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
   return (
     <div
       className={clsx(styles.mapContainer, {
-        [styles.withResultPanel]: selectedCountry && !isMobileWidth && !isFullscreen,
-        [styles.fullWidth]: !selectedCountry || isMobileWidth || isFullscreen,
+        [styles.withResultPanel]: selectedCountryFeature && !isMobileWidth && !isFullscreen,
+        [styles.fullWidth]: !selectedCountryFeature || isMobileWidth || isFullscreen,
       })}
     >
       <Map

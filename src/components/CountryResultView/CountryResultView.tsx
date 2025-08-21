@@ -1,6 +1,5 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
-import type { MockCoastLineChangeData } from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard/HotSpotsCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
@@ -10,13 +9,11 @@ import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
 
 type CountryResultViewProps = {
-  countryData: MockCoastLineChangeData | null
   goToHotSpotView: () => void
   goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
-  countryData,
   goToHotSpotView,
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
@@ -33,13 +30,13 @@ export const CountryResultView = ({
         </TextButton>
       </Flex>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard shorelineChange={countryData?.shorelineChange} />
-        <HotSpotsCard hotSpots={countryData?.hotSpots} />
+        <ShorelineChangeCard />
+        <HotSpotsCard />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard population={countryData?.population} />
-        <BuildingCard buildings={countryData?.buildings} />
-        <MangrovesCard mangroves={countryData?.mangroves} />
+        <PopulationCard />
+        <BuildingCard />
+        <MangrovesCard />
       </Grid>
       <ChartCard />
     </>

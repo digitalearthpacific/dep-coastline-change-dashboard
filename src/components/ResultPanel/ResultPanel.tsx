@@ -22,24 +22,6 @@ function generateRandomNumber(length: number, maxTo?: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
-function getMockCountryData(): MockCoastLineChangeData {
-  return {
-    shorelineChange: {
-      retreat: generateRandomNumber(2, 100),
-      growth: generateRandomNumber(2, 100),
-      stable: generateRandomNumber(2, 100),
-    },
-    hotSpots: {
-      highChange: generateRandomNumber(3, 1000),
-      moderateChange: generateRandomNumber(3, 1000),
-      lowChange: generateRandomNumber(3, 1000),
-    },
-    population: generateRandomNumber(7, 10000000),
-    buildings: generateRandomNumber(5, 100000),
-    mangroves: generateRandomNumber(5, 100000),
-  }
-}
-
 function getMockHotSpotData(): MockCoastLineChangeData {
   return {
     shorelineChange: {
@@ -57,25 +39,21 @@ function getMockHotSpotData(): MockCoastLineChangeData {
 
 export const ResultPanel = () => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountry } = useCountry()
-  const [countryData, setCountryData] = useState<MockCoastLineChangeData>({})
+  const { selectedCountryFeature } = useCountry()
   const [hotSpotData, setHotSpotData] = useState<MockCoastLineChangeData>({})
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hot spot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
   useEffect(() => {
-    if (selectedCountry) {
-      const mockData = selectedCountry.name === 'Error Country' ? null : getMockCountryData()
-      setCountryData(mockData ?? {})
+    if (selectedCountryFeature) {
       setIsMobilePanelOpen(true)
     } else {
-      setCountryData({})
       setIsMobilePanelOpen(false)
     }
-  }, [selectedCountry])
+  }, [selectedCountryFeature])
 
-  if (!selectedCountry) return null
+  if (!selectedCountryFeature) return null
 
   const handleResultPanelViewChange = (view: 'country' | 'hot spot') => {
     setResultPanelView(view)
@@ -104,7 +82,6 @@ export const ResultPanel = () => {
       <LocationCard />
       {resultPanelView === 'country' ? (
         <CountryResultView
-          countryData={countryData}
           goToHotSpotView={goToHotSpotView}
           goToBackgroundInfoView={goToBackgroundInfoView}
         />
@@ -124,8 +101,7 @@ export const ResultPanel = () => {
     resultViewContent
   )
 
-  const content =
-    selectedCountry?.name === 'Error Country' ? <ErrorCard /> : backgroundInfoOrResultView
+  const content = selectedCountryFeature?.properties ? backgroundInfoOrResultView : <ErrorCard />
 
   if (isMobileWidth) {
     return <MobileResultBottomPanel open={isMobilePanelOpen}>{content}</MobileResultBottomPanel>

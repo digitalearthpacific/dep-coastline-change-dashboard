@@ -15,10 +15,11 @@ import LineChartIcon from '../../assets/line-chart.svg'
 import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
 import { useChart, useCountry } from '../../hooks/useGlobalContext'
+import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
 
 export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountry } = useCountry()
+  const { selectedCountryFeature } = useCountry()
   const { startDate, endDate, selectedChartType, onDateChange, onChartTypeChange } = useChart()
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)
@@ -29,6 +30,10 @@ export const ChartCard = () => {
     enterFullscreen,
     exitFullscreen,
   } = useFullscreen<HTMLDivElement>()
+
+  const countryName = selectedCountryFeature
+    ? getNameByCountryCode(selectedCountryFeature)
+    : 'Missing Name'
 
   const startDateOptions = endDate
     ? RATES_OF_CHANGE_YEARS.filter((year) => year.value <= endDate)
@@ -86,7 +91,7 @@ export const ChartCard = () => {
           format: 'png',
           width: 1200,
           height: 800,
-          filename: `SP-${capitalize(selectedChartType)}-${selectedCountry?.name}-${startDate}-${endDate}`,
+          filename: `SP-${capitalize(selectedChartType)}-${countryName}-${startDate}-${endDate}`,
         })
       } else {
         console.error('Chart reference not found')
@@ -95,7 +100,7 @@ export const ChartCard = () => {
       console.error('Error downloading chart:', error)
       alert('Error downloading chart. Please try again.')
     }
-  }, [plotRef, selectedChartType, selectedCountry, startDate, endDate])
+  }, [plotRef, selectedChartType, countryName, startDate, endDate])
 
   return (
     <Card>
