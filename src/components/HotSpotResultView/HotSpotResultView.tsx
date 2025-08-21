@@ -69,12 +69,12 @@ export const HotSpotResultView = ({
         </Flex>
       </Flex>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard shorelineChange={hotSpotData?.shorelineChange} />
-        <PopulationCard population={hotSpotData?.population} />
+        <ShorelineChangeCard />
+        <PopulationCard />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <BuildingCard buildings={hotSpotData?.buildings} />
-        <MangrovesCard mangroves={hotSpotData?.mangroves} />
+        <BuildingCard />
+        <MangrovesCard />
       </Grid>
       <ChartCard />
     </>
