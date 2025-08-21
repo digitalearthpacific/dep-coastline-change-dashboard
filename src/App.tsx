@@ -1,14 +1,21 @@
-import { MapProvider } from 'react-map-gl/maplibre'
 import { Routes, Route } from 'react-router-dom'
-import { Dashboard } from './components'
+import { MapProvider } from 'react-map-gl/maplibre'
+import { CountryProvider } from './contexts/CountryContext'
+import { Dashboard } from './components/Dashboard'
+import { PACIFIC_COUNTRIES } from './library/constants' // Your countries data
+import { ChartProvider } from './contexts/ChartContext'
 
-const App = () => {
+export const App = () => {
   return (
-    <MapProvider>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-      </Routes>
-    </MapProvider>
+    <CountryProvider countries={[...PACIFIC_COUNTRIES]}>
+      <ChartProvider>
+        <MapProvider>
+          <Routes>
+            <Route path='/' element={<Dashboard />} />
+          </Routes>
+        </MapProvider>
+      </ChartProvider>
+    </CountryProvider>
   )
 }
 

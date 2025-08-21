@@ -1,12 +1,6 @@
-import { useEffect, useState } from 'react'
-import useResponsive from '../../library/hooks/useResponsive'
+import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
-import type {
-  ChartType,
-  DateType,
-  MockCoastLineChangeData,
-  PacificCountry,
-} from '../../library/types'
+import type { MockCoastLineChangeData } from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard/HotSpotsCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
@@ -14,49 +8,19 @@ import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
 import { ChartCard } from '../ChartCard/ChartCard'
 import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
-import { NONE_VALUE } from '../../library/constants'
 
 type CountryResultViewProps = {
-  selectedCountry: PacificCountry | null
   countryData: MockCoastLineChangeData | null
   goToHotSpotView: () => void
   goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
-  selectedCountry,
   countryData,
   goToHotSpotView,
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const [startDate, setStartDate] = useState<string | null>(null)
-  const [endDate, setEndDate] = useState<string | null>(null)
-  const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
-
-  useEffect(() => {
-    setStartDate(null)
-    setEndDate(null)
-    setSelectedChartType('line')
-  }, [selectedCountry])
-
-  const handleDateChange = (dateType: DateType, value: string) => {
-    if (value === NONE_VALUE) {
-      setStartDate(null)
-      setEndDate(null)
-      return
-    }
-
-    if (dateType === 'start') {
-      setStartDate(value)
-    } else {
-      setEndDate(value)
-    }
-  }
-
-  const handleChartTypeChange = (type: ChartType) => {
-    setSelectedChartType(type)
-  }
 
   return (
     <>
@@ -77,14 +41,7 @@ export const CountryResultView = ({
         <BuildingCard buildings={countryData?.buildings} />
         <MangrovesCard mangroves={countryData?.mangroves} />
       </Grid>
-      <ChartCard
-        startDate={startDate}
-        endDate={endDate}
-        onDateChange={handleDateChange}
-        selectedCountry={selectedCountry}
-        selectedChartType={selectedChartType}
-        onChartTypeChange={handleChartTypeChange}
-      />
+      <ChartCard />
     </>
   )
 }

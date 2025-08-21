@@ -4,34 +4,22 @@ import Plotly from 'plotly.js-basic-dist'
 import type { PlotData, PlotlyHTMLElement } from 'plotly.js'
 import { Card, Flex, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
-import useResponsive from '../../library/hooks/useResponsive'
-import { useFullscreen } from '../../library/hooks/useFullscreen'
+import useResponsive from '../../hooks/useResponsive'
+import { useFullscreen } from '../../hooks/useFullscreen'
 import styles from './ChartCard.module.scss'
 import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 import { capitalize } from '../../library/utils/capitalize'
-import type { ChartType, DateType, PacificCountry } from '../../library/types'
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
 import LineChartIcon from '../../assets/line-chart.svg'
 import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
+import { useChart, useCountry } from '../../hooks/useGlobalContext'
 
-export const ChartCard = ({
-  startDate,
-  endDate,
-  onDateChange,
-  selectedCountry,
-  selectedChartType,
-  onChartTypeChange,
-}: {
-  startDate: string | null
-  endDate: string | null
-  onDateChange: (dateType: DateType, value: string) => void
-  selectedCountry: PacificCountry | null
-  selectedChartType: ChartType
-  onChartTypeChange: (type: ChartType) => void
-}) => {
+export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()
+  const { selectedCountry } = useCountry()
+  const { startDate, endDate, selectedChartType, onDateChange, onChartTypeChange } = useChart()
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)
   const plotRef = useRef<PlotlyHTMLElement | null>(null)
@@ -68,29 +56,26 @@ export const ChartCard = ({
         ]
       : []
 
-  // Resize plot when container size changes
+  // Resize plot when chart container size changes
   useEffect(() => {
-    if (!chartContainerRef.current) return
+    const chartContainerCurrent = chartContainerRef.current
+    if (!chartContainerCurrent) return
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          // Container has dimensions, resize the plot
-          if (plotRef.current) {
-            setTimeout(() => {
-              Plotly.Plots.resize(plotRef.current!)
-            }, 100)
-          }
+        const { width, height } = entry.contentRect
+        if (width > 0 && height > 0 && plotRef.current) {
+          Plotly.Plots.resize(plotRef.current)
         }
       }
     })
 
-    resizeObserver.observe(chartContainerRef.current)
+    resizeObserver.observe(chartContainerCurrent)
 
     return () => {
       resizeObserver.disconnect()
     }
-  }, [])
+  }, [chartContainerRef])
 
   const handleDownload = useCallback(async () => {
     try {
@@ -134,7 +119,7 @@ export const ChartCard = ({
             <Flex gap='3'>
               <Select.Root
                 value={startDate || ''}
-                onValueChange={(value) => onDateChange('start', value)}
+                onValueChange={(value) => onDateChange && onDateChange('start', value)}
               >
                 <Select.Trigger placeholder='Start Date' style={{ width: '110px' }} />
                 <Select.Content
@@ -160,7 +145,7 @@ export const ChartCard = ({
               </Select.Root>
               <Select.Root
                 value={endDate || ''}
-                onValueChange={(value) => onDateChange('end', value)}
+                onValueChange={(value) => onDateChange && onDateChange('end', value)}
               >
                 <Select.Trigger placeholder='End Date' style={{ width: '110px' }} />
                 <Select.Content
