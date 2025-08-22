@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import InfoCircledIcon from '../../assets/info-circled.svg'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const ShorelineChangeCard = () => {
   const { selectedCountryFeature } = useCountry()
@@ -14,7 +14,12 @@ export const ShorelineChangeCard = () => {
             <Text as='div' size='4' weight='bold'>
               Shoreline Change
             </Text>
-            <img src={InfoCircledIcon} alt='Information Icon About Shoreline Change' />
+            <CustomPopover
+              ariaLabel='Information about shoreline change'
+              content={
+                'The percent of shorelines within each country showing retreat, growth, or stability between the years 1999-2023. For some countries fewer years of data were available. Only statistically significant trends are displayed for retreat and growth, so values do not sum to 100%. Values less than +/- 2km/year were considered stable.'
+              }
+            />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             The average annual rate of shoreline change

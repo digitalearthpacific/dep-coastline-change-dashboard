@@ -12,13 +12,13 @@ import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
 import { capitalize } from '../../library/utils/capitalize'
 import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 
-import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
 import LineChartIcon from '../../assets/line-chart.svg'
 import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
 
 import styles from './ChartCard.module.scss'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()
@@ -77,7 +77,7 @@ export const ChartCard = () => {
           color: '#0097d2',
           size: selectedChartType === 'line' ? 8 : undefined,
         },
-      },
+      } as PlotData,
     ]
   }, [startDate, endDate, medianDistances, selectedChartType])
 
@@ -123,7 +123,12 @@ export const ChartCard = () => {
           <Text as='div' size='4' weight='bold'>
             Shoreline Position
           </Text>
-          <img src={InfoCircledIcon} alt='Information Icon About Rates of Change' />
+          <CustomPopover
+            ariaLabel='Information about shoreline position'
+            content={
+              'Shoreline positions were calculated along transects over all years of available data (maximally 1999-2023). Transects were evenly spaced at 30-meter intervals. Values shown represent the median among all transects within the country.'
+            }
+          />
         </Flex>
 
         <Flex

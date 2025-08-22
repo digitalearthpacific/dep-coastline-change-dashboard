@@ -1,8 +1,6 @@
 import { Badge, Card, Flex, Text } from '@radix-ui/themes'
-import * as Popover from '@radix-ui/react-popover'
-import { InfoCircledIcon } from '@radix-ui/react-icons'
-import styles from './HotSpotsCard.module.scss'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const HotSpotsCard = () => {
   const { selectedCountryFeature } = useCountry()
@@ -16,26 +14,12 @@ export const HotSpotsCard = () => {
             <Text as='div' size='4' weight='bold'>
               Hot Spots
             </Text>
-            <Popover.Root>
-              <Popover.Trigger asChild>
-                <InfoCircledIcon
-                  className={styles.iconStyle}
-                  aria-label='More information about coastal change hot spots'
-                />
-              </Popover.Trigger>
-              <Popover.Portal>
-                <Popover.Content
-                  side='left'
-                  align='center'
-                  sideOffset={4}
-                  className={styles.popoverContent}
-                >
-                  Shows coastal change hot spots at 1, 5, and 15 km scales for visualizing local to
-                  regional patterns.
-                  <Popover.Arrow className={styles.popoverArrow} />
-                </Popover.Content>
-              </Popover.Portal>
-            </Popover.Root>
+            <CustomPopover
+              ariaLabel='Information about coastal change hot spots'
+              content={
+                'The length of the total shoreline within the country experiencing either retreat or growth at various rates.'
+              }
+            />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             Identifies coastal regions experiencing high levels of change

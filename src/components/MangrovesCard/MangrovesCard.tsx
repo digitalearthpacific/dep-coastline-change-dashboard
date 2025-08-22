@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import InfoCircledIcon from '../../assets/info-circled.svg'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const MangrovesCard = () => {
   const { selectedCountryFeature } = useCountry()
@@ -14,7 +14,12 @@ export const MangrovesCard = () => {
             <Text as='div' size='4' weight='bold'>
               Mangroves
             </Text>
-            <img src={InfoCircledIcon} alt='Information Icon About Mangroves' />
+            <CustomPopover
+              ariaLabel='Information about mangroves'
+              content={
+                'Mangrove areas were defined by the Global Mangrove Watch dataset v3.0 for the year 2020. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
+              }
+            />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             Estimated square area of mangroves in hot spot coastal areas

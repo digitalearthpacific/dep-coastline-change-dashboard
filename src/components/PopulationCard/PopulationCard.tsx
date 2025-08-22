@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import InfoCircledIcon from '../../assets/info-circled.svg'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const PopulationCard = () => {
   const { selectedCountryFeature } = useCountry()
@@ -14,7 +14,12 @@ export const PopulationCard = () => {
             <Text as='div' size='4' weight='bold'>
               Population
             </Text>
-            <img src={InfoCircledIcon} alt='Information Icon About Population' />
+            <CustomPopover
+              ariaLabel='Information about population'
+              content={
+                'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country.'
+              }
+            />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             Estimated population in hot spot coastal areas

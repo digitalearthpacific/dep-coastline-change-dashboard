@@ -1,6 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import InfoCircledIcon from '../../assets/info-circled.svg'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover/CustomPopover'
 
 export const BuildingCard = () => {
   const { selectedCountryFeature } = useCountry()
@@ -15,7 +15,12 @@ export const BuildingCard = () => {
             <Text as='div' size='4' weight='bold'>
               Buildings
             </Text>
-            <img src={InfoCircledIcon} alt='Information Icon About Buildings' />
+            <CustomPopover
+              ariaLabel='Information about buildings'
+              content={
+                'Buildings data were extracted from OpenStreetMap in August, 2025 and represent all building types.'
+              }
+            />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             Estimated number of buildings in hot spot coastal areas
