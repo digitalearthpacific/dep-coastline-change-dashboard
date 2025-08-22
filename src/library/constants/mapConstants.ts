@@ -9,11 +9,17 @@ const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
 // Map view state configuration
 export const MAP_CONFIG = {
+  MAP_STYLE: { width: '100%', height: '100%' },
   INITIAL_VIEW_STATE: {
     longitude: 160,
     latitude: -10,
     zoom: 4,
   } as MapViewState,
+
+  NAVIGATION_CONTROL_STYLE: {
+    marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
+    marginRight: 'var(--navigation-control-margin-right, 24px)',
+  },
 
   FLY_TO_ZOOM: {
     DESKTOP: 8,
@@ -91,6 +97,14 @@ export const MAP_LAYERS = {
     MANGROVES: 'mangroves',
     COASTLINES: 'coastlines',
     HOTSPOTS: 'contiguous_hotspots',
+  },
+
+  TILE_URLS: {
+    BUILDINGS: 'https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf',
+    MANGROVES:
+      'https://ows.prod.digitalearthpacific.io/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=mangroves&STYLES=style_mangroves&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}',
+    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+    HOTSPOTS: 'https://tileserver.prod.digitalearthpacific.io/data/hotspots.json',
   },
 } as const
 
@@ -213,6 +227,7 @@ export const MAP_EXPRESSION_CONFIGS = {
 
 export const LAYER_IDS = MAP_LAYERS.IDS
 export const SOURCE_IDS = MAP_LAYERS.SOURCES
+export const TILE_URLS = MAP_LAYERS.TILE_URLS
 export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
 export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
 export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION

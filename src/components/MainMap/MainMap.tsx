@@ -1,10 +1,11 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
 import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
-import type { MapRef } from 'react-map-gl/maplibre'
+import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
-import { Checkbox, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { IconButton, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
+import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import styles from './MainMap.module.scss'
@@ -20,32 +21,21 @@ import {
   SHORELINE_COLOR_EXPRESSION,
   HOTSPOT_COLOR_EXPRESSION,
   HOTSPOT_OPACITY_EXPRESSION,
+  TILE_URLS,
 } from '../../library/constants'
 import type { MainMapProps, MapStyleType } from '../../library/types'
-import useResponsive from '../../hooks/useResponsive'
-import clsx from 'clsx'
-import { useChart, useCountry } from '../../hooks/useGlobalContext'
-import type { MapMouseEvent } from 'react-map-gl/mapbox'
 import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
-
-// Constants
-const MAP_STYLE = {
-  width: '100%',
-  height: '100%',
-}
-
-const NAVIGATION_CONTROL_STYLE = {
-  marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
-  marginRight: 'var(--navigation-control-margin-right, 24px)',
-}
+import useResponsive from '../../hooks/useResponsive'
+import { useChart, useCountry } from '../../hooks/useGlobalContext'
+import { BaseMapPopup } from '../BaseMapPopup/BaseMapPopup'
 
 // Helper functions
 const getBaseMapStyle = (baseMap: MapStyleType): string => {
   const map = BASE_MAPS.find((bm) => bm.key === baseMap)
-  return map ? map.styleUrl : BASE_MAPS[0].styleUrl
+  return map?.styleUrl ?? BASE_MAPS[0].styleUrl
 }
 
-// Components
+// Sub-components
 const MapLegend = () => (
   <div className={styles.mapLegend}>
     <div className={styles.legendTitle}>Hot Spots</div>
@@ -63,68 +53,7 @@ const MapLegend = () => (
   </div>
 )
 
-interface BaseMapPopupProps {
-  baseMap: MapStyleType
-  isBuildingsLayerVisible: boolean
-  isMangrovesLayerVisible: boolean
-  onBaseMapSelection: (mapKey: MapStyleType) => void
-  onBuildingToggle: () => void
-  onMangroveToggle: () => void
-}
-
-const BaseMapPopup = ({
-  baseMap,
-  isBuildingsLayerVisible,
-  isMangrovesLayerVisible,
-  onBaseMapSelection,
-  onBuildingToggle,
-  onMangroveToggle,
-}: BaseMapPopupProps) => (
-  <div className={styles.baseMapPopup}>
-    <div className={styles.popupSection}>
-      <div className={styles.mapTypeTitle}>Basemaps</div>
-      <div className={styles.mapTypeContainer}>
-        {BASE_MAPS.map((bm) => (
-          <button
-            key={bm.key}
-            aria-label={`Select ${bm.label} basemap`}
-            className={clsx(styles.baseMapButton, {
-              [styles.selected]: baseMap === bm.key,
-            })}
-            onClick={() => onBaseMapSelection(bm.key)}
-          >
-            <img src={bm.thumbnail} alt={bm.label} />
-            <div>{bm.label}</div>
-          </button>
-        ))}
-      </div>
-    </div>
-    <div className={styles.popupSection}>
-      <div className={styles.mapTypeTitle}>Map Layers</div>
-      <Flex gap='2' align='center'>
-        <Checkbox
-          size='2'
-          variant='surface'
-          className={styles.checkboxButton}
-          checked={isBuildingsLayerVisible}
-          onCheckedChange={onBuildingToggle}
-        />
-        <Text size='2'>Buildings</Text>
-      </Flex>
-      <Flex gap='2' align='center'>
-        <Checkbox
-          size='2'
-          variant='classic'
-          className={styles.checkboxButton}
-          checked={isMangrovesLayerVisible}
-          onCheckedChange={onMangroveToggle}
-        />
-        <Text size='2'>Mangroves</Text>
-      </Flex>
-    </div>
-  </div>
-)
-
+// Main Component
 export const MainMap = ({
   isFullscreen,
   onFullscreenToggle,
@@ -137,6 +66,7 @@ export const MainMap = ({
   const { selectedCountryFeature } = useCountry()
   const { startDate, endDate } = useChart()
 
+  // State
   const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('default')
@@ -144,10 +74,12 @@ export const MainMap = ({
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
 
+  // Computed values
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
 
+  // Date filter creation
   const createDateFilter = useCallback(
     (certaintyCriteria?: FilterSpecification): FilterSpecification => {
       const filters: FilterSpecification[] = []
@@ -176,26 +108,27 @@ export const MainMap = ({
     [startDate, endDate],
   )
 
+  // Bbox options for country fitting
   const createBBoxOptions = useCallback(() => {
     if (!selectedCountryFeature?.bbox) return null
 
-    const selectedBbox = selectedCountryFeature.bbox as [number, number, number, number]
-
+    const [minX, minY, maxX, maxY] = selectedCountryFeature.bbox as [number, number, number, number]
     return {
       bounds: [
-        [selectedBbox[0], selectedBbox[1]],
-        [selectedBbox[2], selectedBbox[3]],
+        [minX, minY],
+        [maxX, maxY],
       ] as [[number, number], [number, number]],
       duration: MAP_CONFIG.FLY_TO_DURATION,
     }
   }, [selectedCountryFeature])
 
+  // Layer management functions
   const addBuildingsLayer = useCallback(
     (map: MapLibreMap) => {
       if (!map.getSource(SOURCE_IDS.BUILDINGS)) {
         map.addSource(SOURCE_IDS.BUILDINGS, {
           type: 'vector',
-          tiles: ['https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf'],
+          tiles: [TILE_URLS.BUILDINGS],
         })
       }
 
@@ -207,9 +140,7 @@ export const MainMap = ({
           maxzoom: 13,
           source: SOURCE_IDS.BUILDINGS,
           'source-layer': 'buildings',
-          layout: {
-            visibility: isBuildingsLayerVisible ? 'visible' : 'none',
-          },
+          layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
           paint: {
             'fill-color': '#eb8730',
             'fill-outline-color': '#4e4e4e',
@@ -226,20 +157,7 @@ export const MainMap = ({
       if (!map.getSource(SOURCE_IDS.MANGROVES)) {
         map.addSource(SOURCE_IDS.MANGROVES, {
           type: 'raster',
-          tiles: [
-            'https://ows.prod.digitalearthpacific.io/wms?' +
-              'SERVICE=WMS' +
-              '&VERSION=1.3.0' +
-              '&REQUEST=GetMap' +
-              '&LAYERS=mangroves' +
-              '&STYLES=style_mangroves' +
-              '&FORMAT=image/png' +
-              '&TRANSPARENT=true' +
-              '&CRS=EPSG:3857' +
-              '&WIDTH=512' +
-              '&HEIGHT=512' +
-              '&BBOX={bbox-epsg-3857}',
-          ],
+          tiles: [TILE_URLS.MANGROVES],
           tileSize: 512,
         })
       }
@@ -249,12 +167,8 @@ export const MainMap = ({
           id: LAYER_IDS.MANGROVES,
           type: 'raster',
           source: SOURCE_IDS.MANGROVES,
-          layout: {
-            visibility: isMangrovesLayerVisible ? 'visible' : 'none',
-          },
-          paint: {
-            'raster-opacity': 0.6,
-          },
+          layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
+          paint: { 'raster-opacity': 0.6 },
         })
       }
     },
@@ -263,56 +177,50 @@ export const MainMap = ({
 
   const addShorelineChangeLayer = useCallback(
     (map: MapLibreMap) => {
-      const uncertaintyFilter = createDateFilter(SHORELINE_FILTERS.UNCERTAIN)
-      const certaintyFilter = createDateFilter(SHORELINE_FILTERS.CERTAIN)
-
       if (!map.getSource(SOURCE_IDS.COASTLINES)) {
         map.addSource(SOURCE_IDS.COASTLINES, {
           type: 'vector',
-          url: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+          url: TILE_URLS.COASTLINES,
         })
       }
 
-      if (!map.getLayer(LAYER_IDS.SHORELINE_UNCERTAIN)) {
-        map.addLayer({
+      const layerConfigs = [
+        {
           id: LAYER_IDS.SHORELINE_UNCERTAIN,
-          type: 'line',
-          minzoom: 13,
-          maxzoom: 22,
-          source: SOURCE_IDS.COASTLINES,
-          'source-layer': 'shorelines_annual',
-          filter: uncertaintyFilter,
-          layout: {
-            visibility: isShorelineLayerVisible ? 'visible' : 'none',
-          },
+          filter: createDateFilter(SHORELINE_FILTERS.UNCERTAIN),
           paint: {
             'line-color': SHORELINE_COLOR_EXPRESSION,
             'line-width': 2,
             'line-opacity': 0.8,
             'line-dasharray': [4, 4],
           },
-        })
-      }
-
-      if (!map.getLayer(LAYER_IDS.SHORELINE_CERTAIN)) {
-        map.addLayer({
+        },
+        {
           id: LAYER_IDS.SHORELINE_CERTAIN,
-          type: 'line',
-          minzoom: 13,
-          maxzoom: 22,
-          source: SOURCE_IDS.COASTLINES,
-          'source-layer': 'shorelines_annual',
-          filter: certaintyFilter,
-          layout: {
-            visibility: isShorelineLayerVisible ? 'visible' : 'none',
-          },
+          filter: createDateFilter(SHORELINE_FILTERS.CERTAIN),
           paint: {
             'line-color': SHORELINE_COLOR_EXPRESSION,
             'line-width': 2.5,
             'line-opacity': 1,
           },
-        })
-      }
+        },
+      ]
+
+      layerConfigs.forEach(({ id, filter, paint }) => {
+        if (!map.getLayer(id)) {
+          map.addLayer({
+            id,
+            type: 'line',
+            minzoom: 13,
+            maxzoom: 22,
+            source: SOURCE_IDS.COASTLINES,
+            'source-layer': 'shorelines_annual',
+            filter,
+            layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
+            paint,
+          })
+        }
+      })
 
       if (!map.getLayer(LAYER_IDS.SHORELINE_LABELS)) {
         map.addLayer({
@@ -344,23 +252,20 @@ export const MainMap = ({
       if (!map.getSource(SOURCE_IDS.HOTSPOTS)) {
         map.addSource(SOURCE_IDS.HOTSPOTS, {
           type: 'vector',
-          tiles: [
-            'https://tileserver.prod.digitalearthpacific.io/data/dashboard-hotspot-stats/{z}/{x}/{y}.pbf',
-          ],
+          tiles: [TILE_URLS.HOTSPOTS],
           minzoom: 0,
           maxzoom: 13,
         })
       }
 
+      // Add hotspot fill layer
       if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
         map.addLayer({
           id: LAYER_IDS.HOTSPOT_FILL,
           type: 'fill',
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
-          layout: {
-            visibility: isHotspotLayerVisible ? 'visible' : 'none',
-          },
+          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
           paint: {
             'fill-color': HOTSPOT_COLOR_EXPRESSION,
             'fill-opacity': HOTSPOT_OPACITY_EXPRESSION,
@@ -368,24 +273,18 @@ export const MainMap = ({
         })
       }
 
+      // Add hotspot outline layer
       if (!map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
         map.addLayer({
           id: LAYER_IDS.HOTSPOT_OUTLINE,
           type: 'line',
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
-          layout: {
-            visibility: isHotspotLayerVisible ? 'visible' : 'none',
-          },
+          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
           paint: {
             'line-color': HOTSPOT_COLOR_EXPRESSION,
             'line-opacity': HOTSPOT_OPACITY_EXPRESSION,
-            'line-width': [
-              'case',
-              ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
-              5, // Thicker when selected
-              0.5, // Normal width
-            ],
+            'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 5, 0.5],
           },
         })
       }
@@ -393,52 +292,48 @@ export const MainMap = ({
     [selectedHotspotData, isHotspotLayerVisible],
   )
 
+  // Event handlers
   const handleMapLoad = useCallback(() => {
-    const removeNativeTooltips = () => {
+    // Remove native tooltips
+    requestAnimationFrame(() => {
       const controls = mapRef.current
         ?.getContainer()
         .querySelectorAll('.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out')
-
       controls?.forEach((control) => control.removeAttribute('title'))
-    }
-
-    requestAnimationFrame(removeNativeTooltips)
+    })
 
     const map = mapRef.current?.getMap()
     if (!map) return
 
+    // Add all layers
     addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
     addContiguousHotspot(map)
 
-    // Add click handler for hotspot layers
+    // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
-      if (e.features && e.features.length > 0) {
+      if (e.features?.[0]) {
         const featureProperties = e.features[0].properties as ContiguousHotspotProperties
         handleHotspotDataChange(featureProperties)
       }
     }
 
-    // Clear selection when clicking elsewhere on the map (NOT on hotspot features)
     const handleMapClick = (e: MapMouseEvent) => {
-      // Query the map at the click point to check if we clicked on hotspot layers
       const hotspotFeatures = map.queryRenderedFeatures(e.point, {
         layers: [LAYER_IDS.HOTSPOT_FILL, LAYER_IDS.HOTSPOT_OUTLINE],
       })
 
-      // Only clear selection if we didn't click on any hotspot features
-      if (!hotspotFeatures || hotspotFeatures.length === 0) {
+      if (!hotspotFeatures?.length) {
         handleHotspotDataChange(null)
       }
     }
 
-    // Add click listeners for both hotspot layers
+    // Add event listeners
     map.on('click', LAYER_IDS.HOTSPOT_FILL, handleHotspotClick)
     map.on('click', LAYER_IDS.HOTSPOT_OUTLINE, handleHotspotClick)
     map.on('click', handleMapClick)
 
-    // Change cursor on hover
     map.on('mouseenter', LAYER_IDS.HOTSPOT_FILL, () => {
       map.getCanvas().style.cursor = 'pointer'
     })
@@ -473,65 +368,61 @@ export const MainMap = ({
     [addBuildingsLayer, addMangrovesLayer, addShorelineChangeLayer, addContiguousHotspot],
   )
 
-  const toggleLayerVisibility = useCallback(
-    (layerId: string, currentVisibility: boolean, setVisibility: (visible: boolean) => void) => {
-      const map = mapRef.current?.getMap()
-      if (!map) return
-
-      const newVisibility = !currentVisibility
-      setVisibility(newVisibility)
+  const toggleLayerVisibility = useCallback((layerId: string, newVisibility: boolean) => {
+    const map = mapRef.current?.getMap()
+    if (map) {
       map.setLayoutProperty(layerId, 'visibility', newVisibility ? 'visible' : 'none')
-    },
-    [],
-  )
+    }
+  }, [])
 
   const handleBuildingToggle = useCallback(() => {
-    toggleLayerVisibility(LAYER_IDS.BUILDINGS, isBuildingsLayerVisible, setIsBuildingsLayerVisible)
-  }, [toggleLayerVisibility, isBuildingsLayerVisible])
+    const newVisibility = !isBuildingsLayerVisible
+    setIsBuildingsLayerVisible(newVisibility)
+    toggleLayerVisibility(LAYER_IDS.BUILDINGS, newVisibility)
+  }, [isBuildingsLayerVisible, toggleLayerVisibility])
 
   const handleMangroveToggle = useCallback(() => {
-    toggleLayerVisibility(LAYER_IDS.MANGROVES, isMangrovesLayerVisible, setIsMangrovesLayerVisible)
-  }, [toggleLayerVisibility, isMangrovesLayerVisible])
+    const newVisibility = !isMangrovesLayerVisible
+    setIsMangrovesLayerVisible(newVisibility)
+    toggleLayerVisibility(LAYER_IDS.MANGROVES, newVisibility)
+  }, [isMangrovesLayerVisible, toggleLayerVisibility])
 
   const handleBaseMapPopupToggle = useCallback(() => {
     setIsBaseMapPopupOpen((prev) => !prev)
   }, [])
 
+  // Effects
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !selectedCountryFeature || shouldAnimate) return
+    if (!isMapLoaded || !selectedCountryFeature || shouldAnimate) return
 
-    const mapContainer = mapRef.current.getContainer().parentElement
+    const mapContainer = mapRef.current?.getContainer().parentElement
     if (mapContainer) {
       mapContainer.style.transition = 'none'
-      mapRef.current.resize()
+      mapRef.current?.resize()
       mapContainer.style.transition = ''
+
       const bboxOptions = createBBoxOptions()
       if (bboxOptions) {
-        mapRef.current.fitBounds(bboxOptions.bounds, {
-          duration: bboxOptions.duration,
-        })
+        mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
       }
       setShouldAnimate(true)
     }
   }, [isMapLoaded, selectedCountryFeature, shouldAnimate, createBBoxOptions])
 
   useEffect(() => {
-    if (!isMapLoaded || !mapRef.current || !shouldAnimate || !selectedCountryFeature) return
+    if (!isMapLoaded || !shouldAnimate || !selectedCountryFeature) return
 
     const bboxOptions = createBBoxOptions()
     if (bboxOptions) {
-      mapRef.current.fitBounds(bboxOptions.bounds, {
-        duration: bboxOptions.duration,
-      })
+      mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
     }
   }, [selectedCountryFeature, shouldAnimate, createBBoxOptions, isMapLoaded])
 
   useEffect(() => {
-    if (!selectedCountryFeature) {
-      setShouldAnimate(false)
-    }
+    if (!selectedCountryFeature) setShouldAnimate(false)
   }, [selectedCountryFeature])
 
+  // Update shoreline layers
   useEffect(() => {
     const map = mapRef.current?.getMap()
     if (!map) return
@@ -545,7 +436,6 @@ export const MainMap = ({
     layerConfigs.forEach(({ id, filter }) => {
       if (map.getLayer(id)) {
         map.setLayoutProperty(id, 'visibility', isShorelineLayerVisible ? 'visible' : 'none')
-
         if (isShorelineLayerVisible) {
           map.setFilter(id, createDateFilter(filter))
         }
@@ -553,70 +443,58 @@ export const MainMap = ({
     })
   }, [createDateFilter, isShorelineLayerVisible])
 
+  // Update hotspot selection
   useEffect(() => {
     const map = mapRef.current?.getMap()
     if (!map || !isMapLoaded) return
 
     const selectedUid = selectedHotspotData?.uid || ''
-
-    // Outline layer update
     if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-      // Only line-width changes when selected
       map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-width', [
         'case',
         ['==', ['get', 'uid'], selectedUid],
-        5, // Thicker when selected
-        0.5, // Normal width
+        5,
+        0.5,
       ])
     }
   }, [isMapLoaded, selectedHotspotData])
 
+  // Update hotspot layer visibility
   useEffect(() => {
     const map = mapRef.current?.getMap()
     if (!map) return
-
-    if (map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
-      map.setLayoutProperty(
-        LAYER_IDS.HOTSPOT_FILL,
-        'visibility',
-        isHotspotLayerVisible ? 'visible' : 'none',
-      )
-    }
-
-    if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-      map.setLayoutProperty(
-        LAYER_IDS.HOTSPOT_OUTLINE,
-        'visibility',
-        isHotspotLayerVisible ? 'visible' : 'none',
-      )
-    }
+    ;[LAYER_IDS.HOTSPOT_FILL, LAYER_IDS.HOTSPOT_OUTLINE].forEach((layerId) => {
+      if (map.getLayer(layerId)) {
+        map.setLayoutProperty(layerId, 'visibility', isHotspotLayerVisible ? 'visible' : 'none')
+      }
+    })
   }, [isHotspotLayerVisible])
 
+  // Container classes
+  const containerClasses = clsx(styles.mapContainer, {
+    [styles.withResultPanel]:
+      (selectedCountryFeature || selectedHotspotData) && !isMobileWidth && !isFullscreen,
+    [styles.fullWidth]:
+      (!selectedCountryFeature && !selectedHotspotData) || isMobileWidth || isFullscreen,
+  })
+
   return (
-    <div
-      className={clsx(styles.mapContainer, {
-        [styles.withResultPanel]:
-          (selectedCountryFeature && !isMobileWidth && !isFullscreen) ||
-          (selectedHotspotData && !isMobileWidth && !isFullscreen),
-        [styles.fullWidth]:
-          (!selectedCountryFeature && !selectedHotspotData) || isMobileWidth || isFullscreen,
-      })}
-    >
+    <div className={containerClasses}>
       <Map
         id='main-map'
         ref={mapRef}
-        style={MAP_STYLE}
+        style={MAP_CONFIG.MAP_STYLE}
         initialViewState={MAP_CONFIG.INITIAL_VIEW_STATE}
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
       >
-        <AttributionControl position='bottom-left' compact={true} />
+        <AttributionControl position='bottom-left' compact />
         <NavigationControl
           key={navigationControlKey}
           position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
-          style={NAVIGATION_CONTROL_STYLE}
+          style={MAP_CONFIG.NAVIGATION_CONTROL_STYLE}
         />
       </Map>
 
