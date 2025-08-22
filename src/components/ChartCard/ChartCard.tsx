@@ -4,23 +4,27 @@ import Plotly from 'plotly.js-basic-dist'
 import type { PlotData, PlotlyHTMLElement } from 'plotly.js'
 import { Card, Flex, IconButton, Select, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
+
 import useResponsive from '../../hooks/useResponsive'
 import { useFullscreen } from '../../hooks/useFullscreen'
-import styles from './ChartCard.module.scss'
-import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
+import { useChart, useCountry } from '../../hooks/useGlobalContext'
+import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
 import { capitalize } from '../../library/utils/capitalize'
+import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
+
 import InfoCircledIcon from '../../assets/info-circled.svg'
 import BarChartIcon from '../../assets/bar-chart.svg'
 import LineChartIcon from '../../assets/line-chart.svg'
 import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
-import { useChart, useCountry } from '../../hooks/useGlobalContext'
-import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
+
+import styles from './ChartCard.module.scss'
 
 export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature } = useCountry()
   const { startDate, endDate, selectedChartType, onDateChange, onChartTypeChange } = useChart()
+
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)
   const plotRef = useRef<PlotlyHTMLElement | null>(null)
@@ -31,10 +35,12 @@ export const ChartCard = () => {
     exitFullscreen,
   } = useFullscreen<HTMLDivElement>()
 
+  const medianDistances = selectedCountryFeature?.properties?.median_distances
   const countryName = selectedCountryFeature
     ? getNameByCountryCode(selectedCountryFeature)
     : 'Missing Name'
 
+  // Filter date options based on selected dates
   const startDateOptions = endDate
     ? RATES_OF_CHANGE_YEARS.filter((year) => year.value <= endDate)
     : RATES_OF_CHANGE_YEARS
@@ -42,65 +48,73 @@ export const ChartCard = () => {
     ? RATES_OF_CHANGE_YEARS.filter((year) => year.value >= startDate)
     : RATES_OF_CHANGE_YEARS
 
-  // Mock data for the chart with proper typing
-  const chartData: PlotData[] =
-    startDate && endDate
-      ? [
-          {
-            x: [1999, 2000, 2005, 2010, 2015, 2020, 2023],
-            y: [-22, 24, 13, 30, 3, -18, 11],
-            type: selectedChartType === 'line' ? 'scatter' : 'bar',
-            mode: selectedChartType === 'line' ? 'lines+markers' : undefined,
-            name: 'Coastline Change (m)',
-            line: selectedChartType === 'line' ? { color: '#0097d2', width: 3 } : undefined,
-            marker: {
-              color: '#0097d2',
-              size: selectedChartType === 'line' ? 8 : undefined,
-            },
-          } as PlotData,
-        ]
-      : []
+  const getChartData = useCallback((): PlotData[] => {
+    if (!startDate || !endDate || !medianDistances) return []
 
-  // Resize plot when chart container size changes
-  useEffect(() => {
-    const chartContainerCurrent = chartContainerRef.current
-    if (!chartContainerCurrent) return
+    const startYear = parseInt(startDate)
+    const endYear = parseInt(endDate)
 
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect
-        if (width > 0 && height > 0 && plotRef.current) {
-          Plotly.Plots.resize(plotRef.current)
-        }
-      }
-    })
+    // Convert and filter median distances data
+    const dataPoints = Object.entries(medianDistances)
+      .map(([year, value]) => ({ year: parseInt(year), value: value as number }))
+      .filter(
+        ({ year, value }) => year >= startYear && year <= endYear && typeof value === 'number',
+      )
+      .sort((a, b) => a.year - b.year)
 
-    resizeObserver.observe(chartContainerCurrent)
+    const years = dataPoints.map((d) => d.year)
+    const values = dataPoints.map((d) => d.value)
 
-    return () => {
-      resizeObserver.disconnect()
-    }
-  }, [chartContainerRef])
+    return [
+      {
+        x: years,
+        y: values,
+        type: selectedChartType === 'line' ? 'scatter' : 'bar',
+        mode: selectedChartType === 'line' ? 'lines+markers' : undefined,
+        name: 'Coastline Change (m)',
+        line: selectedChartType === 'line' ? { color: '#0097d2', width: 3 } : undefined,
+        marker: {
+          color: '#0097d2',
+          size: selectedChartType === 'line' ? 8 : undefined,
+        },
+      },
+    ]
+  }, [startDate, endDate, medianDistances, selectedChartType])
 
   const handleDownload = useCallback(async () => {
-    try {
-      if (plotRef.current) {
-        await new Promise((resolve) => setTimeout(resolve, 100))
+    if (!plotRef.current) {
+      console.error('Chart reference not found')
+      return
+    }
 
-        await Plotly.downloadImage(plotRef.current as PlotlyHTMLElement, {
-          format: 'png',
-          width: 1200,
-          height: 800,
-          filename: `SP-${capitalize(selectedChartType)}-${countryName}-${startDate}-${endDate}`,
-        })
-      } else {
-        console.error('Chart reference not found')
-      }
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 100))
+      await Plotly.downloadImage(plotRef.current, {
+        format: 'png',
+        width: 1200,
+        height: 800,
+        filename: `SP-${capitalize(selectedChartType)}-${countryName}-${startDate}-${endDate}`,
+      })
     } catch (error) {
       console.error('Error downloading chart:', error)
       alert('Error downloading chart. Please try again.')
     }
-  }, [plotRef, selectedChartType, countryName, startDate, endDate])
+  }, [selectedChartType, countryName, startDate, endDate])
+
+  // Handle chart resize
+  useEffect(() => {
+    const chartContainer = chartContainerRef.current
+    if (!chartContainer) return
+
+    const resizeObserver = new ResizeObserver(() => {
+      if (plotRef.current) {
+        Plotly.Plots.resize(plotRef.current)
+      }
+    })
+
+    resizeObserver.observe(chartContainer)
+    return () => resizeObserver.disconnect()
+  }, [chartContainerRef])
 
   return (
     <Card>
@@ -111,6 +125,7 @@ export const ChartCard = () => {
           </Text>
           <img src={InfoCircledIcon} alt='Information Icon About Rates of Change' />
         </Flex>
+
         <Flex
           gap='2'
           direction={{ initial: 'column-reverse', sm: 'row' }}
@@ -119,23 +134,18 @@ export const ChartCard = () => {
         >
           <Flex direction='column' gap='1'>
             <Text as='div' size='1'>
-              Select date range to view on map
+              Select date range to view shorelines on map
             </Text>
             <Flex gap='3'>
               <Select.Root
                 value={startDate || ''}
-                onValueChange={(value) => onDateChange && onDateChange('start', value)}
+                onValueChange={(value) => onDateChange('start', value)}
               >
                 <Select.Trigger placeholder='Start Date' style={{ width: '110px' }} />
                 <Select.Content
                   position='popper'
                   ref={startDateSelectRef}
-                  style={{
-                    maxHeight: '170px',
-                    overflowY: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    overscrollBehaviorY: 'contain',
-                  }}
+                  style={{ maxHeight: '170px', overflowY: 'auto' }}
                 >
                   <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
                     None
@@ -148,20 +158,16 @@ export const ChartCard = () => {
                   ))}
                 </Select.Content>
               </Select.Root>
+
               <Select.Root
                 value={endDate || ''}
-                onValueChange={(value) => onDateChange && onDateChange('end', value)}
+                onValueChange={(value) => onDateChange('end', value)}
               >
                 <Select.Trigger placeholder='End Date' style={{ width: '110px' }} />
                 <Select.Content
                   position='popper'
                   ref={endDateSelectRef}
-                  style={{
-                    maxHeight: '170px',
-                    overflowY: 'auto',
-                    WebkitOverflowScrolling: 'touch',
-                    overscrollBehaviorY: 'contain',
-                  }}
+                  style={{ maxHeight: '170px', overflowY: 'auto' }}
                 >
                   <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
                     None
@@ -176,6 +182,7 @@ export const ChartCard = () => {
               </Select.Root>
             </Flex>
           </Flex>
+
           <Flex
             gap='2'
             justify={{ initial: 'between', sm: 'start' }}
@@ -221,6 +228,7 @@ export const ChartCard = () => {
             </Flex>
           </Flex>
         </Flex>
+
         <div
           ref={chartContainerRef}
           style={{
@@ -239,15 +247,12 @@ export const ChartCard = () => {
           }}
         >
           <Plot
-            data={chartData}
+            data={getChartData()}
             layout={{
               height: 280,
               autosize: true,
               dragmode: false,
-              xaxis: {
-                title: { text: 'Year' },
-                gridcolor: '#f0f0f0',
-              },
+              xaxis: { title: { text: 'Year' }, gridcolor: '#f0f0f0' },
               yaxis: {
                 title: { text: 'Distance (kilometers)' },
                 gridcolor: '#f0f0f0',
@@ -255,26 +260,11 @@ export const ChartCard = () => {
                 zerolinecolor: '#888888',
                 zerolinewidth: 1,
               },
-              font: {
-                family: 'var(--font-family-primary)',
-                size: 12,
-              },
-              margin: {
-                l: 50,
-                r: 10,
-                t: 10,
-                b: undefined,
-              },
+              font: { family: 'var(--font-family-primary)', size: 12 },
+              margin: { l: 50, r: 10, t: 10, b: undefined },
             }}
-            style={{
-              width: '100%',
-              height: '100%',
-            }}
-            config={{
-              displayModeBar: false,
-              responsive: true,
-              staticPlot: false,
-            }}
+            style={{ width: '100%', height: '100%' }}
+            config={{ displayModeBar: false, responsive: true, staticPlot: false }}
             useResizeHandler
             onInitialized={(_, graphDiv) => {
               plotRef.current = graphDiv as PlotlyHTMLElement
