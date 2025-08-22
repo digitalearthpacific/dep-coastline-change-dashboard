@@ -12,10 +12,10 @@ export const HotSpotsCard = () => {
         <Flex direction='column' align='stretch' style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
             <Text as='div' size='4' weight='bold'>
-              Hot Spots
+              Hotspots
             </Text>
             <CustomPopover
-              ariaLabel='Information about coastal change hot spots'
+              ariaLabel='Information about coastal change hotspots'
               content={
                 'The length of the total shoreline within the country experiencing either retreat or growth at various rates.'
               }

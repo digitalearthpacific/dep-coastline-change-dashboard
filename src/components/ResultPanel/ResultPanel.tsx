@@ -20,7 +20,7 @@ export const ResultPanel = ({
 }) => {
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature } = useCountry()
-  const [resultPanelView, setResultPanelView] = useState<'country' | 'hot spot'>('country')
+  const [resultPanelView, setResultPanelView] = useState<'country' | 'hotspot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
@@ -34,18 +34,18 @@ export const ResultPanel = ({
     if (selectedCountryFeature && !selectedHotspotData) {
       setResultPanelView('country')
     } else {
-      setResultPanelView('hot spot')
+      setResultPanelView('hotspot')
     }
   }, [selectedCountryFeature, selectedHotspotData])
 
   if (!selectedCountryFeature && !selectedHotspotData) return null
 
-  const handleResultPanelViewChange = (view: 'country' | 'hot spot') => {
+  const handleResultPanelViewChange = (view: 'country' | 'hotspot') => {
     setResultPanelView(view)
   }
 
-  const goToHotSpotView = () => {
-    handleResultPanelViewChange('hot spot')
+  const goToHotspotView = () => {
+    handleResultPanelViewChange('hotspot')
   }
 
   const goToCountryView = () => {
@@ -68,14 +68,14 @@ export const ResultPanel = ({
           <LocationCard />
           <CountryResultView
             selectedHotspotData={selectedHotspotData}
-            goToHotSpotView={goToHotSpotView}
+            goToHotspotView={goToHotspotView}
             goToBackgroundInfoView={goToBackgroundInfoView}
           />
         </>
       )
     }
 
-    if (resultPanelView === 'hot spot') {
+    if (resultPanelView === 'hotspot') {
       return (
         <>
           <LocationCard />

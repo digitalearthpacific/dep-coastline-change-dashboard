@@ -18,7 +18,7 @@ export const BuildingsCard = ({ numberOfBuildings }: { numberOfBuildings: number
             />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
-            Estimated number of buildings in hot spot coastal areas
+            Estimated number of buildings in hotspot coastal areas
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>

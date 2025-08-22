@@ -18,7 +18,7 @@ export const RateOfChangeCard = ({ rateOfChange }: { rateOfChange: number | stri
             />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
-            Estimated rate of change in hot spot coastal areas
+            Estimated rate of change in hotspot coastal areas
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>

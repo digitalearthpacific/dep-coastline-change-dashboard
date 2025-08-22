@@ -38,7 +38,7 @@ const getBaseMapStyle = (baseMap: MapStyleType): string => {
 // Sub-components
 const MapLegend = () => (
   <div className={styles.mapLegend}>
-    <div className={styles.legendTitle}>Hot Spots</div>
+    <div className={styles.legendTitle}>Hotspots</div>
     <div className={styles.legendSubtitle}>Levels of change</div>
     <div className={styles.legendItems}>
       {LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (

@@ -12,13 +12,13 @@ import { useCountry } from '../../hooks/useGlobalContext'
 
 type CountryResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
-  goToHotSpotView: () => void
+  goToHotspotView: () => void
   goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
   selectedHotspotData,
-  goToHotSpotView,
+  goToHotspotView,
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
@@ -35,8 +35,8 @@ export const CountryResultView = ({
           VIEW BACKGROUND INFORMATION
         </TextButton>
         {selectedHotspotData && (
-          <TextButton ariaLabel='View Hot Spot Information' onClick={goToHotSpotView}>
-            HOT SPOT VIEW
+          <TextButton ariaLabel='View Hotspot Information' onClick={goToHotspotView}>
+            HOTSPOT VIEW
           </TextButton>
         )}
       </Flex>

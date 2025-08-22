@@ -18,7 +18,7 @@ export const MangrovesCard = ({ mangroveArea }: { mangroveArea: number | string 
             />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
-            Estimated square area of mangroves in hot spot coastal areas
+            Estimated square area of mangroves in hotspot coastal areas
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
