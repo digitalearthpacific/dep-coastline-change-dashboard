@@ -72,9 +72,17 @@ export const ChartCard = () => {
         type: selectedChartType === 'line' ? 'scatter' : 'bar',
         mode: selectedChartType === 'line' ? 'lines+markers' : undefined,
         name: 'Coastline Change (m)',
-        line: selectedChartType === 'line' ? { color: '#0097d2', width: 3 } : undefined,
+        line:
+          selectedChartType === 'line'
+            ? {
+                color: 'rgba(0, 122, 179, 1)',
+                width: 3,
+                shape: 'spline',
+                smoothing: 1.3,
+              }
+            : undefined,
         marker: {
-          color: '#0097d2',
+          color: 'rgba(0, 122, 179, 1)',
           size: selectedChartType === 'line' ? 8 : undefined,
         },
       } as PlotData,
