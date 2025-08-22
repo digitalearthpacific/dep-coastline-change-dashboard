@@ -1,3 +1,5 @@
+import { Callout } from '@radix-ui/themes'
+import { InfoCircledIcon } from '@radix-ui/react-icons'
 import { useEffect, useState } from 'react'
 
 import { MainMap } from '../MainMap'
@@ -5,6 +7,7 @@ import { ResultPanel } from '../ResultPanel'
 import { SearchBar } from '../SearchBar'
 import styles from './Dashboard.module.scss'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { useSessionStorage } from '../../hooks/useSessionStorage'
 import type {
   ContiguousHotspotProperties,
   CountryGeoJSONFeature,
@@ -42,6 +45,7 @@ export const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [selectedHotspotData, setSelectedHotspotData] =
     useState<ContiguousHotspotProperties | null>(null)
+  const [showAlert, setShowAlert] = useSessionStorage('dashboardAlert', true)
 
   useEffect(() => {
     const loadCountryData = async () => {
@@ -53,6 +57,16 @@ export const Dashboard = () => {
 
     loadCountryData()
   }, [setCountryApiData])
+
+  useEffect(() => {
+    if (showAlert) {
+      const timer = setTimeout(() => {
+        setShowAlert(false)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [showAlert, setShowAlert])
 
   const handleFullscreenToggle = () => {
     setIsFullscreen((prev) => !prev)
@@ -69,6 +83,14 @@ export const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       {!isFullscreen && <SearchBar isLoading={isLoading} />}
+      {!isFullscreen && showAlert && (
+        <Callout.Root className={styles.alertBanner}>
+          <Callout.Icon>
+            <InfoCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>Zoom in to see hotspots, shorelines, and map layers</Callout.Text>
+        </Callout.Root>
+      )}
       <MainMap
         isFullscreen={isFullscreen}
         onFullscreenToggle={handleFullscreenToggle}
