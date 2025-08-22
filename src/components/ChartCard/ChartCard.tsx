@@ -259,7 +259,7 @@ export const ChartCard = () => {
               dragmode: false,
               xaxis: { title: { text: 'Year' }, gridcolor: '#f0f0f0' },
               yaxis: {
-                title: { text: 'Distance (kilometers)' },
+                title: { text: 'Distance (meters)' },
                 gridcolor: '#f0f0f0',
                 zeroline: true,
                 zerolinecolor: '#888888',

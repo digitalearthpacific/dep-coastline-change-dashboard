@@ -33,3 +33,11 @@ export interface CountryGeoJSONFeature {
     coordinates: null | [number, number]
   }
 }
+
+export interface ContiguousHotspotProperties {
+  uid: string
+  total_population: number
+  building_counts: number
+  mangrove_area_ha: number
+  rate_time: number
+}

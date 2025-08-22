@@ -5,7 +5,10 @@ import { ResultPanel } from '../ResultPanel'
 import { SearchBar } from '../SearchBar'
 import styles from './Dashboard.module.scss'
 import { useCountry } from '../../hooks/useGlobalContext'
-import type { CountryGeoJSONFeature } from '../../library/types/countryGeoJsonTypes'
+import type {
+  ContiguousHotspotProperties,
+  CountryGeoJSONFeature,
+} from '../../library/types/countryGeoJsonTypes'
 
 const COUNTRY_DATA_URL =
   'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-1/country_summaries.geojson'
@@ -34,9 +37,11 @@ const fetchCountryData = async (): Promise<CountryGeoJSONFeature[]> => {
 }
 
 export const Dashboard = () => {
+  const { setCountryApiData } = useCountry()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const { setCountryApiData } = useCountry()
+  const [selectedHotspotData, setSelectedHotspotData] =
+    useState<ContiguousHotspotProperties | null>(null)
 
   useEffect(() => {
     const loadCountryData = async () => {
@@ -57,6 +62,10 @@ export const Dashboard = () => {
     setIsFullscreen(false)
   }
 
+  const handleHotspotDataChange = (hotspotData: ContiguousHotspotProperties | null) => {
+    setSelectedHotspotData(hotspotData)
+  }
+
   return (
     <div className={styles.dashboardContainer}>
       {!isFullscreen && <SearchBar isLoading={isLoading} />}
@@ -64,8 +73,15 @@ export const Dashboard = () => {
         isFullscreen={isFullscreen}
         onFullscreenToggle={handleFullscreenToggle}
         onFullscreenExit={handleFullscreenExit}
+        selectedHotspotData={selectedHotspotData}
+        handleHotspotDataChange={handleHotspotDataChange}
       />
-      {!isFullscreen && <ResultPanel />}
+      {!isFullscreen && (
+        <ResultPanel
+          selectedHotspotData={selectedHotspotData}
+          handleHotspotDataChange={handleHotspotDataChange}
+        />
+      )}
     </div>
   )
 }

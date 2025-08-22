@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
-import type { Map as MapLibreMap } from 'maplibre-gl'
+import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
 import { Checkbox, Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
@@ -18,11 +18,15 @@ import {
   SHORELINE_FILTERS,
   LEGEND_ITEMS,
   SHORELINE_COLOR_EXPRESSION,
+  HOTSPOT_COLOR_EXPRESSION,
+  HOTSPOT_OPACITY_EXPRESSION,
 } from '../../library/constants'
 import type { MainMapProps, MapStyleType } from '../../library/types'
 import useResponsive from '../../hooks/useResponsive'
 import clsx from 'clsx'
 import { useChart, useCountry } from '../../hooks/useGlobalContext'
+import type { MapMouseEvent } from 'react-map-gl/mapbox'
+import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
 
 // Constants
 const MAP_STYLE = {
@@ -121,7 +125,13 @@ const BaseMapPopup = ({
   </div>
 )
 
-export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: MainMapProps) => {
+export const MainMap = ({
+  isFullscreen,
+  onFullscreenToggle,
+  onFullscreenExit,
+  selectedHotspotData,
+  handleHotspotDataChange,
+}: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature } = useCountry()
@@ -136,6 +146,7 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
 
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
+  const isHotspotLayerVisible = Boolean(selectedCountryFeature)
 
   const createDateFilter = useCallback(
     (certaintyCriteria?: FilterSpecification): FilterSpecification => {
@@ -328,6 +339,60 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
     [createDateFilter, isShorelineLayerVisible],
   )
 
+  const addContiguousHotspot = useCallback(
+    (map: MapLibreMap) => {
+      if (!map.getSource(SOURCE_IDS.HOTSPOTS)) {
+        map.addSource(SOURCE_IDS.HOTSPOTS, {
+          type: 'vector',
+          tiles: [
+            'https://tileserver.prod.digitalearthpacific.io/data/dashboard-hotspot-stats/{z}/{x}/{y}.pbf',
+          ],
+          minzoom: 0,
+          maxzoom: 13,
+        })
+      }
+
+      if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
+        map.addLayer({
+          id: LAYER_IDS.HOTSPOT_FILL,
+          type: 'fill',
+          source: SOURCE_IDS.HOTSPOTS,
+          'source-layer': 'contiguous_hotspots',
+          layout: {
+            visibility: isHotspotLayerVisible ? 'visible' : 'none',
+          },
+          paint: {
+            'fill-color': HOTSPOT_COLOR_EXPRESSION,
+            'fill-opacity': HOTSPOT_OPACITY_EXPRESSION,
+          },
+        })
+      }
+
+      if (!map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
+        map.addLayer({
+          id: LAYER_IDS.HOTSPOT_OUTLINE,
+          type: 'line',
+          source: SOURCE_IDS.HOTSPOTS,
+          'source-layer': 'contiguous_hotspots',
+          layout: {
+            visibility: isHotspotLayerVisible ? 'visible' : 'none',
+          },
+          paint: {
+            'line-color': HOTSPOT_COLOR_EXPRESSION,
+            'line-opacity': HOTSPOT_OPACITY_EXPRESSION,
+            'line-width': [
+              'case',
+              ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
+              5, // Thicker when selected
+              0.5, // Normal width
+            ],
+          },
+        })
+      }
+    },
+    [selectedHotspotData, isHotspotLayerVisible],
+  )
+
   const handleMapLoad = useCallback(() => {
     const removeNativeTooltips = () => {
       const controls = mapRef.current
@@ -345,9 +410,50 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
     addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
+    addContiguousHotspot(map)
+
+    // Add click handler for hotspot layers
+    const handleHotspotClick = (e: MapLayerMouseEvent) => {
+      if (e.features && e.features.length > 0) {
+        const featureProperties = e.features[0].properties as ContiguousHotspotProperties
+        handleHotspotDataChange(featureProperties)
+      }
+    }
+
+    // Clear selection when clicking elsewhere on the map (NOT on hotspot features)
+    const handleMapClick = (e: MapMouseEvent) => {
+      // Query the map at the click point to check if we clicked on hotspot layers
+      const hotspotFeatures = map.queryRenderedFeatures(e.point, {
+        layers: [LAYER_IDS.HOTSPOT_FILL, LAYER_IDS.HOTSPOT_OUTLINE],
+      })
+
+      // Only clear selection if we didn't click on any hotspot features
+      if (!hotspotFeatures || hotspotFeatures.length === 0) {
+        handleHotspotDataChange(null)
+      }
+    }
+
+    // Add click listeners for both hotspot layers
+    map.on('click', LAYER_IDS.HOTSPOT_FILL, handleHotspotClick)
+    map.on('click', LAYER_IDS.HOTSPOT_OUTLINE, handleHotspotClick)
+    map.on('click', handleMapClick)
+
+    // Change cursor on hover
+    map.on('mouseenter', LAYER_IDS.HOTSPOT_FILL, () => {
+      map.getCanvas().style.cursor = 'pointer'
+    })
+    map.on('mouseleave', LAYER_IDS.HOTSPOT_FILL, () => {
+      map.getCanvas().style.cursor = ''
+    })
 
     setIsMapLoaded(true)
-  }, [addShorelineChangeLayer, addBuildingsLayer, addMangrovesLayer])
+  }, [
+    addShorelineChangeLayer,
+    addBuildingsLayer,
+    addMangrovesLayer,
+    addContiguousHotspot,
+    handleHotspotDataChange,
+  ])
 
   const handleBaseMapSelection = useCallback(
     (mapKey: MapStyleType) => {
@@ -360,10 +466,11 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
           addBuildingsLayer(map)
           addMangrovesLayer(map)
           addShorelineChangeLayer(map)
+          addContiguousHotspot(map)
         })
       }
     },
-    [addBuildingsLayer, addMangrovesLayer, addShorelineChangeLayer],
+    [addBuildingsLayer, addMangrovesLayer, addShorelineChangeLayer, addContiguousHotspot],
   )
 
   const toggleLayerVisibility = useCallback(
@@ -444,13 +551,55 @@ export const MainMap = ({ isFullscreen, onFullscreenToggle, onFullscreenExit }: 
         }
       }
     })
-  }, [startDate, endDate, createDateFilter, isShorelineLayerVisible])
+  }, [createDateFilter, isShorelineLayerVisible])
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap()
+    if (!map || !isMapLoaded) return
+
+    const selectedUid = selectedHotspotData?.uid || ''
+
+    // Outline layer update
+    if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
+      // Only line-width changes when selected
+      map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-width', [
+        'case',
+        ['==', ['get', 'uid'], selectedUid],
+        5, // Thicker when selected
+        0.5, // Normal width
+      ])
+    }
+  }, [isMapLoaded, selectedHotspotData])
+
+  useEffect(() => {
+    const map = mapRef.current?.getMap()
+    if (!map) return
+
+    if (map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
+      map.setLayoutProperty(
+        LAYER_IDS.HOTSPOT_FILL,
+        'visibility',
+        isHotspotLayerVisible ? 'visible' : 'none',
+      )
+    }
+
+    if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
+      map.setLayoutProperty(
+        LAYER_IDS.HOTSPOT_OUTLINE,
+        'visibility',
+        isHotspotLayerVisible ? 'visible' : 'none',
+      )
+    }
+  }, [isHotspotLayerVisible])
 
   return (
     <div
       className={clsx(styles.mapContainer, {
-        [styles.withResultPanel]: selectedCountryFeature && !isMobileWidth && !isFullscreen,
-        [styles.fullWidth]: !selectedCountryFeature || isMobileWidth || isFullscreen,
+        [styles.withResultPanel]:
+          (selectedCountryFeature && !isMobileWidth && !isFullscreen) ||
+          (selectedHotspotData && !isMobileWidth && !isFullscreen),
+        [styles.fullWidth]:
+          (!selectedCountryFeature && !selectedHotspotData) || isMobileWidth || isFullscreen,
       })}
     >
       <Map

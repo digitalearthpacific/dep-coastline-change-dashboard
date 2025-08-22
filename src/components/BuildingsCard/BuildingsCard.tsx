@@ -1,12 +1,7 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import { useCountry } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover/CustomPopover'
 
-export const BuildingCard = () => {
-  const { selectedCountryFeature } = useCountry()
-  const numberOfBuildings =
-    selectedCountryFeature?.properties?.number_of_buildings_in_hotspots ?? '-'
-
+export const BuildingsCard = ({ numberOfBuildings }: { numberOfBuildings: number | string }) => {
   return (
     <Card>
       <Flex direction='column' gap='5'>

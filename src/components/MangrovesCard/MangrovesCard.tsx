@@ -1,11 +1,7 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import { useCountry } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover/CustomPopover'
 
-export const MangrovesCard = () => {
-  const { selectedCountryFeature } = useCountry()
-  const mangroveAreaHa = selectedCountryFeature?.properties?.mangrove_area_ha_in_hotspots ?? '-'
-
+export const MangrovesCard = ({ mangroveArea }: { mangroveArea: number | string }) => {
   return (
     <Card>
       <Flex direction='column' gap='5'>
@@ -26,7 +22,7 @@ export const MangrovesCard = () => {
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {mangroveAreaHa.toLocaleString()} ha
+          {mangroveArea.toLocaleString()} ha
         </Text>
       </Flex>
     </Card>
