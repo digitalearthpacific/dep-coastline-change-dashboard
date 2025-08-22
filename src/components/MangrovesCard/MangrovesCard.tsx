@@ -21,7 +21,7 @@ export const MangrovesCard = () => {
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {mangroveAreaHa.toLocaleString()} m&sup2;
+          {mangroveAreaHa.toLocaleString()} ha
         </Text>
       </Flex>
     </Card>
