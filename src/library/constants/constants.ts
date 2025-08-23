@@ -33,6 +33,8 @@ export const RATES_OF_CHANGE_YEARS: RatesOfChangeYear[] = [
 
 export const NONE_VALUE = 'none'
 
+export const SEARCHBAR_INITIAL_VALUE = 'Select location for coastline data'
+
 export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'ASM', name: 'American Samoa' },
   { id: 'COK', name: 'Cook Islands' },

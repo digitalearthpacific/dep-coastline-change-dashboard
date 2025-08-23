@@ -42,17 +42,14 @@ const fetchCountryData = async (): Promise<CountryGeoJSONFeature[]> => {
 export const Dashboard = () => {
   const { setCountryApiData } = useCountry()
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
   const [selectedHotspotData, setSelectedHotspotData] =
     useState<ContiguousHotspotProperties | null>(null)
   const [showAlert, setShowAlert] = useSessionStorage('dashboardAlert', true)
 
   useEffect(() => {
     const loadCountryData = async () => {
-      setIsLoading(true)
       const features = await fetchCountryData()
       setCountryApiData(features)
-      setIsLoading(false)
     }
 
     loadCountryData()
@@ -82,7 +79,7 @@ export const Dashboard = () => {
 
   return (
     <div className={styles.dashboardContainer}>
-      {!isFullscreen && <SearchBar isLoading={isLoading} />}
+      {!isFullscreen && <SearchBar />}
       {!isFullscreen && showAlert && (
         <Callout.Root className={styles.alertBanner}>
           <Callout.Icon>

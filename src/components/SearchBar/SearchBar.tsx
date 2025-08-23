@@ -1,17 +1,37 @@
-import { Button, DropdownMenu, Spinner } from '@radix-ui/themes'
+import { Button, DropdownMenu } from '@radix-ui/themes'
+import { useState, useEffect } from 'react'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
-import { NONE_VALUE } from '../../library/constants'
+import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useChart, useCountry } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
+import type { CountryGeoJSONFeature } from '../../library/types/countryGeoJsonTypes'
 
-export const SearchBar = ({ isLoading }: { isLoading: boolean }) => {
+export const SearchBar = () => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useCountry()
   const { resetChartDefaultSettings } = useChart()
+  const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
+
+  // Sync local dropdown value with global selected country
+  useEffect(() => {
+    if (selectedCountryFeature) {
+      setDropdownValue(getNameByCountryCode(selectedCountryFeature))
+    } else {
+      setDropdownValue(SEARCHBAR_INITIAL_VALUE)
+    }
+  }, [selectedCountryFeature])
 
   const handleSelectNone = () => {
+    setDropdownValue(SEARCHBAR_INITIAL_VALUE)
     updateCountrySelectAndSearchParam(null)
     resetChartDefaultSettings()
+  }
+
+  const handleSelectCountry = (country: CountryGeoJSONFeature) => {
+    const countryName = getNameByCountryCode(country)
+
+    setDropdownValue(countryName)
+    updateCountrySelectAndSearchParam(country)
   }
 
   return (
@@ -19,42 +39,24 @@ export const SearchBar = ({ isLoading }: { isLoading: boolean }) => {
       <img src={DEPLogo} alt='Digital Earth Pacific' className={styles.logo} />
       <DropdownMenu.Root>
         <DropdownMenu.Trigger>
-          <Button className={styles.dropdownButton} disabled={isLoading}>
-            {isLoading ? (
-              <>
-                <Spinner size='1' />
-                Loading locations...
-              </>
-            ) : selectedCountryFeature ? (
-              getNameByCountryCode(selectedCountryFeature)
-            ) : (
-              'Select location for coastline data'
-            )}
+          <Button className={styles.dropdownButton}>
+            {dropdownValue}
             <DropdownMenu.TriggerIcon />
           </Button>
         </DropdownMenu.Trigger>
         <DropdownMenu.Content className={styles.dropdownContent}>
-          {isLoading ? (
-            <DropdownMenu.Item disabled>
-              <Spinner size='1' />
-              Loading locations...
+          <DropdownMenu.Item key={NONE_VALUE} onSelect={handleSelectNone}>
+            None
+          </DropdownMenu.Item>
+          <DropdownMenu.Separator />
+          {countryApiData.map((country) => (
+            <DropdownMenu.Item
+              key={country.properties.id}
+              onSelect={() => handleSelectCountry(country)}
+            >
+              {getNameByCountryCode(country)}
             </DropdownMenu.Item>
-          ) : (
-            <>
-              <DropdownMenu.Item key={NONE_VALUE} onSelect={handleSelectNone}>
-                None
-              </DropdownMenu.Item>
-              <DropdownMenu.Separator />
-              {countryApiData.map((country) => (
-                <DropdownMenu.Item
-                  key={country.properties.id}
-                  onSelect={() => updateCountrySelectAndSearchParam(country)}
-                >
-                  {getNameByCountryCode(country)}
-                </DropdownMenu.Item>
-              ))}
-            </>
-          )}
+          ))}
         </DropdownMenu.Content>
       </DropdownMenu.Root>
     </div>
