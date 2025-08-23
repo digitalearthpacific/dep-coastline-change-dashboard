@@ -9,11 +9,17 @@ const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
 // Map view state configuration
 export const MAP_CONFIG = {
+  MAP_STYLE: { width: '100%', height: '100%' },
   INITIAL_VIEW_STATE: {
     longitude: 160,
     latitude: -10,
     zoom: 4,
   } as MapViewState,
+
+  NAVIGATION_CONTROL_STYLE: {
+    marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
+    marginRight: 'var(--navigation-control-margin-right, 24px)',
+  },
 
   FLY_TO_ZOOM: {
     DESKTOP: 8,
@@ -82,29 +88,41 @@ export const MAP_LAYERS = {
     SHORELINE_UNCERTAIN: 'Annual shorelines (uncertain)',
     SHORELINE_CERTAIN: 'Annual shorelines',
     SHORELINE_LABELS: 'Annual shorelines labels',
+    HOTSPOT_FILL: 'hotspot-fill',
+    HOTSPOT_OUTLINE: 'hotspot-outline',
   },
 
   SOURCES: {
     BUILDINGS: 'buildings',
     MANGROVES: 'mangroves',
     COASTLINES: 'coastlines',
+    HOTSPOTS: 'contiguous_hotspots',
+  },
+
+  TILE_URLS: {
+    BUILDINGS: 'https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf',
+    MANGROVES:
+      'https://ows.prod.digitalearthpacific.io/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=mangroves&STYLES=style_mangroves&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}',
+    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+    HOTSPOTS:
+      'https://tileserver.prod.digitalearthpacific.io/data/dashboard-hotspot-stats/{z}/{x}/{y}.pbf',
   },
 } as const
 
 export const LEGEND_ITEMS = [
   { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
-  { key: 'moderate', label: '3-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
-  { key: 'low', label: '2-3 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
+  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
 ]
 
 // Shoreline layer configuration
-export const SHORELINE_CONFIG = {
-  FILTERS: {
+export const MAP_EXPRESSION_CONFIGS = {
+  SHORELINE_FILTERS: {
     CERTAIN: ['==', ['get', 'certainty'], 'good'] as FilterSpecification,
     UNCERTAIN: ['!=', ['get', 'certainty'], 'good'] as FilterSpecification,
   },
 
-  COLOR_EXPRESSION: [
+  SHORELINE_COLOR_EXPRESSION: [
     'interpolate',
     ['linear'],
     ['get', 'year'],
@@ -121,9 +139,97 @@ export const SHORELINE_CONFIG = {
     2023,
     '#fcffa4',
   ] as ExpressionSpecification,
+
+  HOTSPOT_COLOR_EXPRESSION: [
+    'case',
+    // High > 5
+    [
+      '>',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      5,
+    ],
+    'rgba(210, 0, 5, 0.44)',
+
+    // Moderate 3–5
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      3,
+    ],
+    'rgba(255, 179, 0, 0.76)',
+
+    // Low 2–2.99
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      2,
+    ],
+    'rgba(0, 146, 75, 0.64)',
+
+    // fallback → transparent
+    'rgba(0,0,0,0)',
+  ] as ExpressionSpecification,
+
+  HOTSPOT_OPACITY_EXPRESSION: [
+    'case',
+    // If none of the thresholds matched, opacity = 0
+    [
+      'any',
+      [
+        '>',
+        [
+          'case',
+          ['<', ['get', 'sig_time'], 0.01],
+          ['abs', ['get', 'rate_time']],
+          ['get', 'rate_time'],
+        ],
+        5,
+      ],
+      [
+        '>=',
+        [
+          'case',
+          ['<', ['get', 'sig_time'], 0.01],
+          ['abs', ['get', 'rate_time']],
+          ['get', 'rate_time'],
+        ],
+        3,
+      ],
+      [
+        '>=',
+        [
+          'case',
+          ['<', ['get', 'sig_time'], 0.01],
+          ['abs', ['get', 'rate_time']],
+          ['get', 'rate_time'],
+        ],
+        2,
+      ],
+    ],
+    0.7, // show normally if matched
+    0, // hide otherwise
+  ] as ExpressionSpecification,
 } as const
 
 export const LAYER_IDS = MAP_LAYERS.IDS
 export const SOURCE_IDS = MAP_LAYERS.SOURCES
-export const SHORELINE_FILTERS = SHORELINE_CONFIG.FILTERS
-export const SHORELINE_COLOR_EXPRESSION = SHORELINE_CONFIG.COLOR_EXPRESSION
+export const TILE_URLS = MAP_LAYERS.TILE_URLS
+export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
+export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
+export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
+export const HOTSPOT_OPACITY_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_OPACITY_EXPRESSION
