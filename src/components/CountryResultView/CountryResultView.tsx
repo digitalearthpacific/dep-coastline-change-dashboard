@@ -1,26 +1,32 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
-import type { MockCoastLineChangeData } from '../../library/types'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard/HotSpotsCard'
 import { PopulationCard } from '../PopulationCard/PopulationCard'
+import { BuildingsCard } from '../BuildingsCard/BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
 import { ChartCard } from '../ChartCard/ChartCard'
-import { BuildingCard } from '../BuildingCard/BuildingCard'
 import TextButton from '../TextButton/TextButton'
+import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import { useCountry } from '../../hooks/useGlobalContext'
 
 type CountryResultViewProps = {
-  countryData: MockCoastLineChangeData | null
-  goToHotSpotView: () => void
+  selectedHotspotData: ContiguousHotspotProperties | null
+  goToHotspotView: () => void
   goToBackgroundInfoView: () => void
 }
 
 export const CountryResultView = ({
-  countryData,
-  goToHotSpotView,
+  selectedHotspotData,
+  goToHotspotView,
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
+  const { selectedCountryFeature } = useCountry()
+  const totalPopulation = selectedCountryFeature?.properties?.population_in_hotspots ?? '-'
+  const numberOfBuildings =
+    selectedCountryFeature?.properties?.number_of_buildings_in_hotspots ?? '-'
+  const mangroveArea = selectedCountryFeature?.properties?.mangrove_area_ha_in_hotspots ?? '-'
 
   return (
     <>
@@ -28,18 +34,20 @@ export const CountryResultView = ({
         <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
           VIEW BACKGROUND INFORMATION
         </TextButton>
-        <TextButton ariaLabel='View Hot Spot Information' onClick={goToHotSpotView}>
-          HOT SPOT VIEW
-        </TextButton>
+        {selectedHotspotData && (
+          <TextButton ariaLabel='View Hotspot Information' onClick={goToHotspotView}>
+            HOTSPOT VIEW
+          </TextButton>
+        )}
       </Flex>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard shorelineChange={countryData?.shorelineChange} />
-        <HotSpotsCard hotSpots={countryData?.hotSpots} />
+        <ShorelineChangeCard />
+        <HotSpotsCard />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard population={countryData?.population} />
-        <BuildingCard buildings={countryData?.buildings} />
-        <MangrovesCard mangroves={countryData?.mangroves} />
+        <PopulationCard totalPopulation={totalPopulation} />
+        <BuildingsCard numberOfBuildings={numberOfBuildings} />
+        <MangrovesCard mangroveArea={mangroveArea} />
       </Grid>
       <ChartCard />
     </>

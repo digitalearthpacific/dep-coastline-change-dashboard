@@ -1,10 +1,13 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
 import { useCountry } from '../../hooks/useGlobalContext'
+import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
 
 export const LocationCard = () => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountry } = useCountry()
+  const { selectedCountryFeature } = useCountry()
+
+  const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 
   return (
     <Card>
@@ -16,12 +19,12 @@ export const LocationCard = () => {
                 Coastline Change:
               </Text>
               <Text as='div' size='6' weight='bold'>
-                {selectedCountry?.name}
+                {countryName}
               </Text>
             </Flex>
           ) : (
             <Text as='div' size='7' weight='bold'>
-              Coastline Change: {selectedCountry?.name}
+              Coastline Change: {countryName}
             </Text>
           )}
         </Flex>
