@@ -31,7 +31,7 @@ const ShorelineChangeSection = () => (
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Sources
+        Data Source
       </Text>
       <Link
         href='https://www.sciencedirect.com/science/article/pii/S0034425721004545'
@@ -132,7 +132,7 @@ const BuildingsSection = () => (
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Sources
+        Data Source
       </Text>
       <Link href='https://www.openstreetmap.org/' target='_blank' rel='noopener noreferrer'>
         https://www.openstreetmap.org/
@@ -152,7 +152,7 @@ const MangrovesSection = () => (
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Sources
+        Data Source
       </Text>
       <Link href='https://zenodo.org/records/6894273' target='_blank' rel='noopener noreferrer'>
         https://zenodo.org/records/6894273

@@ -53,7 +53,7 @@ export const HotSpotsCard = () => {
               size='1'
               style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}
             >
-              Moderate Change (3-5m)
+              Moderate Change (3.0-5m)
             </Badge>
           </Flex>
           <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
@@ -67,7 +67,7 @@ export const HotSpotsCard = () => {
                 color: 'var(--success-a11)',
               }}
             >
-              Low Change (2-3m)
+              Low Change (2.0-2.99m)
             </Badge>
           </Flex>
         </Flex>

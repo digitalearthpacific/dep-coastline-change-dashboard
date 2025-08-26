@@ -85,9 +85,9 @@ export const MAP_LAYERS = {
   IDS: {
     BUILDINGS: 'Buildings',
     MANGROVES: 'Mangroves',
-    SHORELINE_UNCERTAIN: 'Annual shorelines (uncertain)',
-    SHORELINE_CERTAIN: 'Annual shorelines',
-    SHORELINE_LABELS: 'Annual shorelines labels',
+    SHORELINE_UNCERTAIN: 'shoreline-uncertain',
+    SHORELINE_CERTAIN: 'shoreline-certain',
+    SHORELINE_LABELS: 'shoreline-labels',
     HOTSPOT_FILL: 'hotspot-fill',
     HOTSPOT_OUTLINE: 'hotspot-outline',
   },
@@ -185,45 +185,86 @@ export const MAP_EXPRESSION_CONFIGS = {
     'rgba(0,0,0,0)',
   ] as ExpressionSpecification,
 
-  HOTSPOT_OPACITY_EXPRESSION: [
+  // Selected hotspot colors (darker versions for outline when selected)
+  HOTSPOT_SELECTED_COLOR_EXPRESSION: [
     'case',
-    // If none of the thresholds matched, opacity = 0
+    // High > 5
     [
-      'any',
+      '>',
       [
-        '>',
-        [
-          'case',
-          ['<', ['get', 'sig_time'], 0.01],
-          ['abs', ['get', 'rate_time']],
-          ['get', 'rate_time'],
-        ],
-        5,
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
       ],
-      [
-        '>=',
-        [
-          'case',
-          ['<', ['get', 'sig_time'], 0.01],
-          ['abs', ['get', 'rate_time']],
-          ['get', 'rate_time'],
-        ],
-        3,
-      ],
-      [
-        '>=',
-        [
-          'case',
-          ['<', ['get', 'sig_time'], 0.01],
-          ['abs', ['get', 'rate_time']],
-          ['get', 'rate_time'],
-        ],
-        2,
-      ],
+      5,
     ],
-    0.7, // show normally if matched
-    0, // hide otherwise
+    'rgba(85, 0, 13, 0.91)', // High selected - Dark red
+
+    // Moderate 3–5
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      3,
+    ],
+    'rgba(52, 21, 0, 0.87)', // Moderate selected - Dark orange
+
+    // Low 2–2.99
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      2,
+    ],
+    'rgba(0, 38, 22, 0.9)', // Low selected - Dark green
+
+    // fallback → transparent
+    'rgba(0,0,0,0)',
   ] as ExpressionSpecification,
+
+  // Add hotspot visibility filter
+  HOTSPOT_VISIBILITY_FILTER: [
+    'any',
+    [
+      '>',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      5,
+    ],
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      3,
+    ],
+    [
+      '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      2,
+    ],
+  ] as FilterSpecification,
 } as const
 
 export const LAYER_IDS = MAP_LAYERS.IDS
@@ -232,4 +273,6 @@ export const TILE_URLS = MAP_LAYERS.TILE_URLS
 export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
 export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
 export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
-export const HOTSPOT_OPACITY_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_OPACITY_EXPRESSION
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION
+export const HOTSPOT_VISIBILITY_FILTER = MAP_EXPRESSION_CONFIGS.HOTSPOT_VISIBILITY_FILTER

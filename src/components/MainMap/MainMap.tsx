@@ -20,8 +20,9 @@ import {
   LEGEND_ITEMS,
   SHORELINE_COLOR_EXPRESSION,
   HOTSPOT_COLOR_EXPRESSION,
-  HOTSPOT_OPACITY_EXPRESSION,
+  HOTSPOT_VISIBILITY_FILTER,
   TILE_URLS,
+  HOTSPOT_SELECTED_COLOR_EXPRESSION,
 } from '../../library/constants'
 import type { MainMapProps, MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
@@ -266,9 +267,9 @@ export const MainMap = ({
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
           layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+          filter: HOTSPOT_VISIBILITY_FILTER,
           paint: {
             'fill-color': HOTSPOT_COLOR_EXPRESSION,
-            'fill-opacity': HOTSPOT_OPACITY_EXPRESSION,
           },
         })
       }
@@ -281,9 +282,14 @@ export const MainMap = ({
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
           layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+          filter: HOTSPOT_VISIBILITY_FILTER,
           paint: {
-            'line-color': HOTSPOT_COLOR_EXPRESSION,
-            'line-opacity': HOTSPOT_OPACITY_EXPRESSION,
+            'line-color': [
+              'case',
+              ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
+              HOTSPOT_SELECTED_COLOR_EXPRESSION,
+              HOTSPOT_COLOR_EXPRESSION,
+            ],
             'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 5, 0.5],
           },
         })
@@ -455,6 +461,14 @@ export const MainMap = ({
         ['==', ['get', 'uid'], selectedUid],
         5,
         0.5,
+      ])
+      map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-color', [
+        'case',
+        ['==', ['get', 'uid'], selectedUid],
+        // When selected, use the darker colors
+        HOTSPOT_SELECTED_COLOR_EXPRESSION,
+        // When not selected, use regular colors
+        HOTSPOT_COLOR_EXPRESSION,
       ])
     }
   }, [isMapLoaded, selectedHotspotData])
