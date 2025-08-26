@@ -77,8 +77,6 @@ export const ChartCard = () => {
             ? {
                 color: 'rgba(0, 122, 179, 1)',
                 width: 3,
-                shape: 'spline',
-                smoothing: 1.3,
               }
             : undefined,
         marker: {

@@ -22,7 +22,7 @@ export const PopulationCard = ({ totalPopulation }: { totalPopulation: number | 
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {totalPopulation.toLocaleString()}
+          {Math.round(Number(totalPopulation)).toLocaleString()}
         </Text>
       </Flex>
     </Card>

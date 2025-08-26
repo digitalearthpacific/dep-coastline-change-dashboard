@@ -137,10 +137,9 @@ export const MainMap = ({
         map.addLayer({
           id: LAYER_IDS.BUILDINGS,
           type: 'fill',
-          minzoom: 0,
-          maxzoom: 13,
           source: SOURCE_IDS.BUILDINGS,
           'source-layer': 'buildings',
+          minzoom: 6,
           layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
           paint: {
             'fill-color': '#eb8730',
@@ -168,6 +167,7 @@ export const MainMap = ({
           id: LAYER_IDS.MANGROVES,
           type: 'raster',
           source: SOURCE_IDS.MANGROVES,
+          minzoom: 6,
           layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
           paint: { 'raster-opacity': 0.6 },
         })
@@ -212,10 +212,10 @@ export const MainMap = ({
           map.addLayer({
             id,
             type: 'line',
-            minzoom: 13,
-            maxzoom: 22,
             source: SOURCE_IDS.COASTLINES,
             'source-layer': 'shorelines_annual',
+            minzoom: 13,
+            maxzoom: 22,
             filter,
             layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
             paint,
@@ -226,11 +226,11 @@ export const MainMap = ({
       if (!map.getLayer(LAYER_IDS.SHORELINE_LABELS)) {
         map.addLayer({
           id: LAYER_IDS.SHORELINE_LABELS,
-          minzoom: 13,
-          maxzoom: 22,
           type: 'symbol',
           source: SOURCE_IDS.COASTLINES,
           'source-layer': 'shorelines_annual',
+          minzoom: 13,
+          maxzoom: 22,
           layout: {
             'text-field': '{year}',
             'symbol-placement': 'line',
@@ -254,8 +254,6 @@ export const MainMap = ({
         map.addSource(SOURCE_IDS.HOTSPOTS, {
           type: 'vector',
           tiles: [TILE_URLS.HOTSPOTS],
-          minzoom: 0,
-          maxzoom: 13,
         })
       }
 
@@ -266,6 +264,7 @@ export const MainMap = ({
           type: 'fill',
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
+          minzoom: 6,
           layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
           filter: HOTSPOT_VISIBILITY_FILTER,
           paint: {
@@ -281,6 +280,7 @@ export const MainMap = ({
           type: 'line',
           source: SOURCE_IDS.HOTSPOTS,
           'source-layer': 'contiguous_hotspots',
+          minzoom: 6,
           layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
           filter: HOTSPOT_VISIBILITY_FILTER,
           paint: {
