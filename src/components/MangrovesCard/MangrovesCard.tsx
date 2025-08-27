@@ -22,7 +22,7 @@ export const MangrovesCard = ({ mangroveArea }: { mangroveArea: number | string 
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {mangroveArea.toLocaleString()} ha
+          {Math.round(Number(mangroveArea)).toLocaleString()} ha
         </Text>
       </Flex>
     </Card>

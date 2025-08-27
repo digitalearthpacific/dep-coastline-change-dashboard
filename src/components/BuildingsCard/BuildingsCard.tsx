@@ -22,7 +22,7 @@ export const BuildingsCard = ({ numberOfBuildings }: { numberOfBuildings: number
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {numberOfBuildings.toLocaleString()}
+          {Math.round(Number(numberOfBuildings)).toLocaleString()}
         </Text>
       </Flex>
     </Card>
