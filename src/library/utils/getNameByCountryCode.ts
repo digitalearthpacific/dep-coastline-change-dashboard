@@ -1,5 +1,5 @@
 import { PACIFIC_COUNTRIES_NAMES } from '../constants'
-import type { CountryGeoJSONFeature } from '../types/countryGeoJsonTypes'
+import type { CountryGeoJSONFeature } from '../types'
 
 export function getNameByCountryCode(country: CountryGeoJSONFeature): string | '' {
   if (!country) return ''

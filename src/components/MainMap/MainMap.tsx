@@ -23,7 +23,7 @@ import {
   HOTSPOT_SELECTED_COLOR_EXPRESSION,
 } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties } from '../../library/types'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { getUniqueHotspotFeatures } from '../../library/utils/getUniqueHotspotFeatures'

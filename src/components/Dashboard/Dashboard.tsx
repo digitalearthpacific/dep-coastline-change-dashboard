@@ -8,7 +8,7 @@ import { SearchBar } from '../SearchBar'
 import styles from './Dashboard.module.scss'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { useSessionStorage } from '../../hooks/useSessionStorage'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties } from '../../library/types'
 import { fetchCountryData } from '../../library/utils/fetchCountryData'
 
 export const Dashboard = () => {

@@ -6,10 +6,7 @@ import { ChartCard } from '../ChartCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { RateOfChangeCard } from '../RateOfChangeCard'
 import { TextButton } from '../TextButton'
-import type {
-  ContiguousHotspotProperties,
-  CountryGeoJSONFeature,
-} from '../../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null

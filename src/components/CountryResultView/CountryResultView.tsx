@@ -7,7 +7,7 @@ import { BuildingsCard } from '../BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { ChartCard } from '../ChartCard'
 import { TextButton } from '../TextButton'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties } from '../../library/types'
 import { useMapData } from '../../hooks/useGlobalContext'
 
 type CountryResultViewProps = {

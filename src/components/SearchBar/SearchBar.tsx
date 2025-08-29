@@ -5,7 +5,7 @@ import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
-import type { CountryGeoJSONFeature } from '../../library/types/countryGeoJsonTypes'
+import type { CountryGeoJSONFeature } from '../../library/types'
 
 export const SearchBar = () => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()

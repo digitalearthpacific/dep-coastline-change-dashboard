@@ -1,4 +1,4 @@
-import type { ContiguousHotspotProperties } from '../types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties } from '../types'
 
 export function getUniqueHotspotFeatures(
   features: ContiguousHotspotProperties[],

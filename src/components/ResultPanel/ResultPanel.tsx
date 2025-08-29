@@ -9,7 +9,7 @@ import { LocationCard } from '../LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView'
 import { BackgroundInformationView } from '../BackgroundInformationView'
 import { useMapData } from '../../hooks/useGlobalContext'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties } from '../../library/types'
 
 export const ResultPanel = ({
   selectedHotspotData,

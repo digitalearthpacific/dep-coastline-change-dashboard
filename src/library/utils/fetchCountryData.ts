@@ -1,5 +1,5 @@
 import { COUNTRY_DATA_URL } from '../constants'
-import type { CountryGeoJSONFeature } from '../types/countryGeoJsonTypes'
+import type { CountryGeoJSONFeature } from '../types'
 
 function sanitizeGeoJSONResponse(responseText: string): string {
   return responseText.replace(/:\s*NaN/g, ': null')

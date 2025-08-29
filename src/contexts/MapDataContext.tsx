@@ -2,10 +2,7 @@ import React, { createContext, useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { normalize } from '../library/utils/normalize'
 import { PACIFIC_COUNTRIES_NAMES } from '../library/constants'
-import type {
-  ContiguousHotspotProperties,
-  CountryGeoJSONFeature,
-} from '../library/types/countryGeoJsonTypes'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../library/types'
 import { getNameByCountryCode } from '../library/utils/getNameByCountryCode'
 
 interface MapDataContextType {
