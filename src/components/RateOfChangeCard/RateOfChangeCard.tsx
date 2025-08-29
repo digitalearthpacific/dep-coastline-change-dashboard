@@ -22,7 +22,7 @@ export const RateOfChangeCard = ({ rateOfChange }: { rateOfChange: number | stri
           </Text>
         </Flex>
         <Text as='div' size='8' weight='bold'>
-          {Math.abs(Number(rateOfChange)).toLocaleString()} m/year
+          {rateOfChange.toLocaleString()} m/year
         </Text>
       </Flex>
     </Card>

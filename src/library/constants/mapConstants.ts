@@ -113,6 +113,7 @@ export const LEGEND_ITEMS = [
   { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
   { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
   { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'stable', label: '<2 m', text: 'Stable', extraStyleClass: 'stableChange' },
 ]
 
 // Shoreline layer configuration
@@ -181,8 +182,8 @@ export const MAP_EXPRESSION_CONFIGS = {
     ],
     'rgba(0, 146, 75, 0.64)',
 
-    // fallback → transparent
-    'rgba(0,0,0,0)',
+    // fallback → grey
+    'rgba(141, 141, 141, 1)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors (darker versions for outline when selected)
@@ -227,8 +228,8 @@ export const MAP_EXPRESSION_CONFIGS = {
     ],
     'rgba(0, 38, 22, 0.9)', // Low selected - Dark green
 
-    // fallback → transparent
-    'rgba(0,0,0,0)',
+    // fallback → grey
+    '#000000',
   ] as ExpressionSpecification,
 
   // Add hotspot visibility filter
@@ -256,6 +257,16 @@ export const MAP_EXPRESSION_CONFIGS = {
     ],
     [
       '>=',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], 0.01],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      2,
+    ],
+    [
+      '<',
       [
         'case',
         ['<', ['get', 'sig_time'], 0.01],

@@ -1,11 +1,11 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
 
 export const LocationCard = () => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountryFeature } = useCountry()
+  const { selectedCountryFeature } = useMapData()
 
   const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 

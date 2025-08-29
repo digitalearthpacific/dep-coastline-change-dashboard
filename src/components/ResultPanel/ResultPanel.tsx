@@ -8,7 +8,7 @@ import { CountryResultView } from '../CountryResultView/CountryResultView'
 import { LocationCard } from '../LocationCard/LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView/HotSpotResultView'
 import BackgroundInformationView from '../BackgroundInformationView/BackgroundInformationView'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { useMapData } from '../../hooks/useGlobalContext'
 import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
 
 export const ResultPanel = ({
@@ -19,7 +19,7 @@ export const ResultPanel = ({
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }) => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountryFeature } = useCountry()
+  const { selectedCountryFeature } = useMapData()
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hotspot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)

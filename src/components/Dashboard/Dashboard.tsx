@@ -6,7 +6,7 @@ import { MainMap } from '../MainMap'
 import { ResultPanel } from '../ResultPanel'
 import { SearchBar } from '../SearchBar'
 import styles from './Dashboard.module.scss'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { useMapData } from '../../hooks/useGlobalContext'
 import { useSessionStorage } from '../../hooks/useSessionStorage'
 import type {
   ContiguousHotspotProperties,
@@ -40,7 +40,7 @@ const fetchCountryData = async (): Promise<CountryGeoJSONFeature[]> => {
 }
 
 export const Dashboard = () => {
-  const { setCountryApiData } = useCountry()
+  const { setCountryApiData } = useMapData()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedHotspotData, setSelectedHotspotData] =
     useState<ContiguousHotspotProperties | null>(null)

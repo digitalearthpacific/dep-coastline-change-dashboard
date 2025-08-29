@@ -1,9 +1,12 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { Card, Checkbox, Flex, Text } from '@radix-ui/themes'
+import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover/CustomPopover'
 
+import styles from './ShoreLineChangeCard.module.scss'
+
 export const ShorelineChangeCard = () => {
-  const { selectedCountryFeature } = useCountry()
+  const { selectedCountryFeature } = useMapData()
+  const { hotspotCheckbox, onCheckboxStateChange } = useMapVisualization()
   const shorelineChangeDirection = selectedCountryFeature?.properties?.shoreline_change_direction
 
   return (
@@ -28,8 +31,16 @@ export const ShorelineChangeCard = () => {
         <Flex direction='column'>
           <Flex
             align='center'
+            gap='2'
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
+            <Checkbox
+              size='2'
+              variant='surface'
+              className={styles.checkboxButton}
+              checked={hotspotCheckbox.shorelineRetreat}
+              onCheckedChange={() => onCheckboxStateChange('shorelineRetreat')}
+            />
             <Text size='4' weight='bold' style={{ width: '80px' }}>
               {shorelineChangeDirection?.percent_retreat ?? '-'}%
             </Text>
@@ -39,8 +50,16 @@ export const ShorelineChangeCard = () => {
           </Flex>
           <Flex
             align='center'
+            gap='2'
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
+            <Checkbox
+              size='2'
+              variant='surface'
+              className={styles.checkboxButton}
+              checked={hotspotCheckbox.shorelineGrowth}
+              onCheckedChange={() => onCheckboxStateChange('shorelineGrowth')}
+            />
             <Text size='4' weight='bold' style={{ width: '80px' }}>
               {shorelineChangeDirection?.percent_growth ?? '-'}%
             </Text>
@@ -48,7 +67,14 @@ export const ShorelineChangeCard = () => {
               Growth
             </Text>
           </Flex>
-          <Flex align='center' style={{ paddingTop: 'var(--space-1)' }}>
+          <Flex align='center' gap='2' style={{ paddingTop: 'var(--space-1)' }}>
+            <Checkbox
+              size='2'
+              variant='surface'
+              className={styles.checkboxButton}
+              checked={hotspotCheckbox.shorelineStable}
+              onCheckedChange={() => onCheckboxStateChange('shorelineStable')}
+            />
             <Text size='4' weight='bold' style={{ width: '80px' }}>
               {shorelineChangeDirection?.percent_stable ?? '-'}%
             </Text>
