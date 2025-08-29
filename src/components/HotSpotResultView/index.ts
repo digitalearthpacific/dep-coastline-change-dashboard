@@ -1,0 +1,1 @@
+export { HotSpotResultView } from './HotSpotResultView'

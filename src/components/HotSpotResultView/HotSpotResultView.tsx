@@ -1,15 +1,15 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Badge, Flex, Grid } from '@radix-ui/themes'
-import { PopulationCard } from '../PopulationCard/PopulationCard'
-import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
-import { ChartCard } from '../ChartCard/ChartCard'
-import { BuildingsCard } from '../BuildingsCard/BuildingsCard'
-import TextButton from '../TextButton/TextButton'
+import { PopulationCard } from '../PopulationCard'
+import { MangrovesCard } from '../MangrovesCard'
+import { ChartCard } from '../ChartCard'
+import { BuildingsCard } from '../BuildingsCard'
+import { RateOfChangeCard } from '../RateOfChangeCard'
+import { TextButton } from '../TextButton'
 import type {
   ContiguousHotspotProperties,
   CountryGeoJSONFeature,
 } from '../../library/types/countryGeoJsonTypes'
-import { RateOfChangeCard } from '../RateOfChangeCard/RateOfChangeCard'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null

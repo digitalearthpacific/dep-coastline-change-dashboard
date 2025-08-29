@@ -18,7 +18,7 @@ import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
 
 import styles from './ChartCard.module.scss'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { CustomPopover } from '../CustomPopover'
 
 export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()

@@ -31,5 +31,3 @@ export const TextButton = ({
     {children}
   </Button>
 )
-
-export default TextButton

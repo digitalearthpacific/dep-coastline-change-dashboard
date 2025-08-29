@@ -1,6 +1,6 @@
 import { Badge, Card, Checkbox, Flex, Text } from '@radix-ui/themes'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { CustomPopover } from '../CustomPopover'
 
 import styles from './HotSpotsCard.module.scss'
 

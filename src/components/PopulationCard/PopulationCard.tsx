@@ -1,5 +1,5 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { CustomPopover } from '../CustomPopover'
 
 export const PopulationCard = ({ totalPopulation }: { totalPopulation: number | string }) => {
   return (

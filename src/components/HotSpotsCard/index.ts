@@ -1,0 +1,1 @@
+export { HotSpotsCard } from './HotSpotsCard'

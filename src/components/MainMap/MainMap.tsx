@@ -26,9 +26,9 @@ import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
-import { BaseMapPopup } from '../BaseMapPopup/BaseMapPopup'
 import { getUniqueHotspotFeatures } from '../../library/utils/getUniqueHotspotFeatures'
 import { getBaseMapStyle } from '../../library/utils/getBaseMapStyle'
+import { BaseMapPopup } from '../BaseMapPopup'
 
 type MainMapProps = {
   isFullscreen: boolean
