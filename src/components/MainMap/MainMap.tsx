@@ -13,7 +13,6 @@ import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import {
   MAP_CONFIG,
-  BASE_MAPS,
   LAYER_IDS,
   SOURCE_IDS,
   SHORELINE_FILTERS,
@@ -23,38 +22,22 @@ import {
   TILE_URLS,
   HOTSPOT_SELECTED_COLOR_EXPRESSION,
 } from '../../library/constants'
-import type { MainMapProps, MapStyleType } from '../../library/types'
+import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { BaseMapPopup } from '../BaseMapPopup/BaseMapPopup'
+import { getUniqueHotspotFeatures } from '../../library/utils/getUniqueHotspotFeatures'
+import { getBaseMapStyle } from '../../library/utils/getBaseMapStyle'
 
-// Helper functions
-const getBaseMapStyle = (baseMap: MapStyleType): string => {
-  const map = BASE_MAPS.find((bm) => bm.key === baseMap)
-  return map?.styleUrl ?? BASE_MAPS[0].styleUrl
+type MainMapProps = {
+  isFullscreen: boolean
+  onFullscreenToggle: () => void
+  onFullscreenExit: () => void
+  selectedHotspotData: ContiguousHotspotProperties | null
+  handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }
 
-function getUniqueHotspotFeatures(
-  features: ContiguousHotspotProperties[],
-): ContiguousHotspotProperties[] {
-  const uniqueIds = new Set<string | number>()
-  const uniqueFeatures: ContiguousHotspotProperties[] = []
-
-  for (const feature of features) {
-    const id = feature['uid']
-
-    // Only process features with valid, non-null IDs
-    if (id != null && !uniqueIds.has(id)) {
-      uniqueIds.add(id)
-      uniqueFeatures.push(feature)
-    }
-  }
-
-  return uniqueFeatures
-}
-
-// Sub-components
 const MapLegend = () => (
   <div className={styles.mapLegend}>
     <div className={styles.legendTitle}>Hotspots</div>
@@ -72,7 +55,6 @@ const MapLegend = () => (
   </div>
 )
 
-// Main Component
 export const MainMap = ({
   isFullscreen,
   onFullscreenToggle,
@@ -106,7 +88,7 @@ export const MainMap = ({
     hotspotsLow,
   } = hotspotCheckbox
 
-  // Date filter creation
+  // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
     (certaintyCriteria?: FilterSpecification): FilterSpecification => {
       const filters: FilterSpecification[] = []
@@ -135,12 +117,10 @@ export const MainMap = ({
     [startDate, endDate],
   )
 
-  // Add this helper function
+  // Build dynamic filters for hotspots based on hotspot and shoreline change checkboxes
   const createHotspotFilterExpression = useCallback((): FilterSpecification => {
-    // Build dynamic filter filters based on checkbox states
     const filters: FilterSpecification[] = []
 
-    // High change areas (rate > 5)
     if (hotspotsHigh) {
       filters.push([
         '>',
@@ -154,7 +134,6 @@ export const MainMap = ({
       ])
     }
 
-    // Moderate-high change areas (rate >= 3)
     if (hotspotsModerate) {
       filters.push([
         'all',
@@ -181,7 +160,6 @@ export const MainMap = ({
       ])
     }
 
-    // Moderate change areas (rate >= 2)
     if (hotspotsLow) {
       filters.push([
         'all',
@@ -216,16 +194,12 @@ export const MainMap = ({
       filters.push(['all', ['<', ['get', 'sig_time'], 0.01], ['>', ['get', 'rate_time'], 2]])
     }
 
-    // Stable/low change areas (rate < 2) - controlled by shorelineStable
     if (shorelineStable) {
       filters.push(['<=', ['abs', ['get', 'rate_time']], 2])
     }
 
     const baseFilter = ['any', ...filters] as FilterSpecification
 
-    console.log('baseFilter ', baseFilter)
-
-    // If no country is selected, return the base filter
     if (!selectedCountryFeature?.properties?.id) {
       return baseFilter
     }
@@ -393,7 +367,6 @@ export const MainMap = ({
         })
       }
 
-      // Add hotspot fill layer
       if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
         map.addLayer({
           id: LAYER_IDS.HOTSPOT_FILL,
@@ -408,7 +381,6 @@ export const MainMap = ({
         })
       }
 
-      // Add hotspot outline layer
       if (!map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
         map.addLayer({
           id: LAYER_IDS.HOTSPOT_OUTLINE,
@@ -471,7 +443,6 @@ export const MainMap = ({
       }
     }
 
-    // Add event listeners
     map.on('click', LAYER_IDS.HOTSPOT_FILL, handleHotspotClick)
     map.on('click', LAYER_IDS.HOTSPOT_OUTLINE, handleHotspotClick)
     map.on('click', handleMapClick)
@@ -559,28 +530,24 @@ export const MainMap = ({
 
     const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
 
-    // Retreat condition (significant negative change)
     if (shorelineRetreat) {
       filterConditions.push(
         (feature: ContiguousHotspotProperties) => feature.sig_time < 0.01 && feature.rate_time < -2,
       )
     }
 
-    // Growth condition (significant positive change)
     if (shorelineGrowth) {
       filterConditions.push(
         (feature: ContiguousHotspotProperties) => feature.sig_time < 0.01 && feature.rate_time > 2,
       )
     }
 
-    // Stable shoreline condition
     if (shorelineStable) {
       filterConditions.push(
         (feature: ContiguousHotspotProperties) => Math.abs(feature.rate_time) < 2,
       )
     }
 
-    // High change areas (rate > 5)
     if (hotspotsHigh) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =
@@ -589,7 +556,6 @@ export const MainMap = ({
       })
     }
 
-    // Moderate change areas (rate >= 3 and <= 5)
     if (hotspotsModerate) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =
@@ -598,7 +564,6 @@ export const MainMap = ({
       })
     }
 
-    // Low change areas (rate >= 2 and < 3)
     if (hotspotsLow) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =

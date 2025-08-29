@@ -4,11 +4,16 @@ import clsx from 'clsx'
 import styles from './MobileResultBottomPanel.module.scss'
 
 import type { PanInfo } from 'framer-motion'
-import type { BottomPanelProps } from '../../library/types'
 
 const COLLAPSED_HEIGHT_PERCENT = 0.15
 const MINI_COLLAPSED_HEIGHT_PERCENT = 0.05
 const EXPANDED_HEIGHT = 0.85
+
+type BottomPanelProps = {
+  open: boolean
+  onClose?: () => void
+  children?: React.ReactNode
+}
 
 export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) => {
   const y = useMotionValue(window.innerHeight)

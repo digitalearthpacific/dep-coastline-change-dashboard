@@ -7,7 +7,6 @@ import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 
 const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
 
-// Map view state configuration
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
   INITIAL_VIEW_STATE: {
@@ -29,14 +28,12 @@ export const MAP_CONFIG = {
   FLY_TO_DURATION: 2000,
 } as const
 
-// Easing functions for different animation types
 export const EASING_FUNCTIONS = {
   smoothstep: (t: number) => t * t * (3 - 2 * t),
   easeInOutCubic: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
   easeInOutQuad: (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
 } as const
 
-// FlyTo configuration presets
 export const FLY_TO_PRESETS = {
   firstSelection: {
     essential: true,
@@ -81,6 +78,13 @@ export const BASE_MAPS = [
   },
 ] as const
 
+export const LEGEND_ITEMS = [
+  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
+  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
+  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'stable', label: '<2 m', text: 'Stable', extraStyleClass: 'stableChange' },
+]
+
 export const MAP_LAYERS = {
   IDS: {
     BUILDINGS: 'Buildings',
@@ -109,14 +113,6 @@ export const MAP_LAYERS = {
   },
 } as const
 
-export const LEGEND_ITEMS = [
-  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
-  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
-  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
-  { key: 'stable', label: '<2 m', text: 'Stable', extraStyleClass: 'stableChange' },
-]
-
-// Shoreline layer configuration
 export const MAP_EXPRESSION_CONFIGS = {
   SHORELINE_FILTERS: {
     CERTAIN: ['==', ['get', 'certainty'], 'good'] as FilterSpecification,
