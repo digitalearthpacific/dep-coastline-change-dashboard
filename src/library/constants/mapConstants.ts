@@ -150,7 +150,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       5,
     ],
-    'rgba(210, 0, 5, 0.44)',
+    'rgba(210, 0, 5, 0.7)', // High - Red with consistent opacity
 
     // Moderate 3–5
     [
@@ -163,7 +163,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       3,
     ],
-    'rgba(255, 179, 0, 0.76)',
+    'rgba(255, 179, 0, 0.7)', // Moderate - Orange with consistent opacity
 
     // Low 2–2.99
     [
@@ -176,10 +176,10 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       2,
     ],
-    'rgba(0, 146, 75, 0.64)',
+    'rgba(0, 146, 75, 0.7)', // Low - Green with consistent opacity
 
     // fallback → grey
-    'rgba(141, 141, 141, 1)',
+    'rgba(141, 141, 141, 0.7)', // Grey with consistent opacity
   ] as ExpressionSpecification,
 
   // Selected hotspot colors (darker versions for outline when selected)
@@ -196,7 +196,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       5,
     ],
-    'rgba(85, 0, 13, 0.91)', // High selected - Dark red
+    'rgba(85, 0, 13, 0.9)', // High selected - Dark red
 
     // Moderate 3–5
     [
@@ -209,7 +209,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       3,
     ],
-    'rgba(52, 21, 0, 0.87)', // Moderate selected - Dark orange
+    'rgba(52, 21, 0, 0.9)', // Moderate selected - Dark orange
 
     // Low 2–2.99
     [

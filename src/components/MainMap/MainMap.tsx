@@ -395,7 +395,7 @@ export const MainMap = ({
               HOTSPOT_SELECTED_COLOR_EXPRESSION,
               HOTSPOT_COLOR_EXPRESSION,
             ],
-            'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 5, 0.5],
+            'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 2, 0.5],
           },
         })
       }
@@ -644,7 +644,7 @@ export const MainMap = ({
       map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-width', [
         'case',
         ['==', ['get', 'uid'], selectedUid],
-        5,
+        2,
         0.5,
       ])
       map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-color', [
