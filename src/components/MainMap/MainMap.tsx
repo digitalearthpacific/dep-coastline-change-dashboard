@@ -26,8 +26,7 @@ import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
-import { getUniqueHotspotFeatures } from '../../library/utils/getUniqueHotspotFeatures'
-import { getBaseMapStyle } from '../../library/utils/getBaseMapStyle'
+import { getUniqueHotspotFeatures, getBaseMapStyle } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 
 type MainMapProps = {

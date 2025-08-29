@@ -9,7 +9,7 @@ import styles from './Dashboard.module.scss'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { useSessionStorage } from '../../hooks/useSessionStorage'
 import type { ContiguousHotspotProperties } from '../../library/types'
-import { fetchCountryData } from '../../library/utils/fetchCountryData'
+import { fetchCountryData } from '../../library/utils'
 
 export const Dashboard = () => {
   const { setCountryApiData } = useMapData()
