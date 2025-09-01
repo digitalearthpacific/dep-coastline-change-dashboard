@@ -21,6 +21,11 @@ import {
   HOTSPOT_COLOR_EXPRESSION,
   TILE_URLS,
   HOTSPOT_SELECTED_COLOR_EXPRESSION,
+  SIGNIFICANCE_THRESHOLD,
+  HIGH_CHANGE_THRESHOLD,
+  MODERATE_CHANGE_THRESHOLD,
+  LOW_CHANGE_THRESHOLD,
+  NEGATIVE_LOW_CHANGE_THRESHOLD,
 } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
@@ -125,11 +130,11 @@ export const MainMap = ({
         '>',
         [
           'case',
-          ['<', ['get', 'sig_time'], 0.01],
+          ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
           ['abs', ['get', 'rate_time']],
           ['get', 'rate_time'],
         ],
-        5,
+        HIGH_CHANGE_THRESHOLD,
       ])
     }
 
@@ -140,21 +145,21 @@ export const MainMap = ({
           '>=',
           [
             'case',
-            ['<', ['get', 'sig_time'], 0.01],
+            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
             ['abs', ['get', 'rate_time']],
             ['get', 'rate_time'],
           ],
-          3,
+          MODERATE_CHANGE_THRESHOLD,
         ],
         [
           '<=',
           [
             'case',
-            ['<', ['get', 'sig_time'], 0.01],
+            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
             ['abs', ['get', 'rate_time']],
             ['get', 'rate_time'],
           ],
-          5,
+          HIGH_CHANGE_THRESHOLD,
         ],
       ])
     }
@@ -166,35 +171,43 @@ export const MainMap = ({
           '>=',
           [
             'case',
-            ['<', ['get', 'sig_time'], 0.01],
+            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
             ['abs', ['get', 'rate_time']],
             ['get', 'rate_time'],
           ],
-          2,
+          LOW_CHANGE_THRESHOLD,
         ],
         [
           '<',
           [
             'case',
-            ['<', ['get', 'sig_time'], 0.01],
+            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
             ['abs', ['get', 'rate_time']],
             ['get', 'rate_time'],
           ],
-          3,
+          MODERATE_CHANGE_THRESHOLD,
         ],
       ])
     }
 
     if (shorelineRetreat) {
-      filters.push(['all', ['<', ['get', 'sig_time'], 0.01], ['<', ['get', 'rate_time'], -2]])
+      filters.push([
+        'all',
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
+        ['<', ['get', 'rate_time'], NEGATIVE_LOW_CHANGE_THRESHOLD],
+      ])
     }
 
     if (shorelineGrowth) {
-      filters.push(['all', ['<', ['get', 'sig_time'], 0.01], ['>', ['get', 'rate_time'], 2]])
+      filters.push([
+        'all',
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
+        ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
+      ])
     }
 
     if (shorelineStable) {
-      filters.push(['<=', ['abs', ['get', 'rate_time']], 2])
+      filters.push(['<=', ['abs', ['get', 'rate_time']], LOW_CHANGE_THRESHOLD])
     }
 
     const baseFilter = ['any', ...filters] as FilterSpecification
@@ -531,43 +544,57 @@ export const MainMap = ({
 
     if (shorelineRetreat) {
       filterConditions.push(
-        (feature: ContiguousHotspotProperties) => feature.sig_time < 0.01 && feature.rate_time < -2,
+        (feature: ContiguousHotspotProperties) =>
+          feature.sig_time < SIGNIFICANCE_THRESHOLD &&
+          feature.rate_time < NEGATIVE_LOW_CHANGE_THRESHOLD,
       )
     }
 
     if (shorelineGrowth) {
       filterConditions.push(
-        (feature: ContiguousHotspotProperties) => feature.sig_time < 0.01 && feature.rate_time > 2,
+        (feature: ContiguousHotspotProperties) =>
+          feature.sig_time < SIGNIFICANCE_THRESHOLD && feature.rate_time > LOW_CHANGE_THRESHOLD,
       )
     }
 
     if (shorelineStable) {
       filterConditions.push(
-        (feature: ContiguousHotspotProperties) => Math.abs(feature.rate_time) < 2,
+        (feature: ContiguousHotspotProperties) =>
+          Math.abs(feature.rate_time) < LOW_CHANGE_THRESHOLD,
       )
     }
 
     if (hotspotsHigh) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =
-          feature.sig_time < 0.01 ? Math.abs(feature.rate_time) : feature.rate_time
-        return rateTimeChange > 5
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+        return rateTimeChange > HIGH_CHANGE_THRESHOLD
       })
     }
 
     if (hotspotsModerate) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =
-          feature.sig_time < 0.01 ? Math.abs(feature.rate_time) : feature.rate_time
-        return rateTimeChange >= 3 && rateTimeChange <= 5
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+
+        return (
+          rateTimeChange >= MODERATE_CHANGE_THRESHOLD && rateTimeChange <= HIGH_CHANGE_THRESHOLD
+        )
       })
     }
 
     if (hotspotsLow) {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         const rateTimeChange =
-          feature.sig_time < 0.01 ? Math.abs(feature.rate_time) : feature.rate_time
-        return rateTimeChange >= 2 && rateTimeChange < 3
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+
+        return rateTimeChange >= LOW_CHANGE_THRESHOLD && rateTimeChange < MODERATE_CHANGE_THRESHOLD
       })
     }
 

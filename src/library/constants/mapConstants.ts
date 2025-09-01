@@ -6,6 +6,11 @@ import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 
 const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
+export const SIGNIFICANCE_THRESHOLD = 0.01
+export const HIGH_CHANGE_THRESHOLD = 5
+export const MODERATE_CHANGE_THRESHOLD = 3
+export const LOW_CHANGE_THRESHOLD = 2
+export const NEGATIVE_LOW_CHANGE_THRESHOLD = -2
 
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
@@ -144,11 +149,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
     'rgba(210, 0, 5, 0.7)', // High - Red with consistent opacity
 
@@ -157,11 +162,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
     'rgba(255, 179, 0, 0.7)', // Moderate - Orange with consistent opacity
 
@@ -170,11 +175,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
     'rgba(0, 146, 75, 0.7)', // Low - Green with consistent opacity
 
@@ -190,11 +195,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
     'rgba(85, 0, 13, 0.9)', // High selected - Dark red
 
@@ -203,11 +208,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
     'rgba(52, 21, 0, 0.9)', // Moderate selected - Dark orange
 
@@ -216,11 +221,11 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
     'rgba(0, 38, 22, 0.9)', // Low selected - Dark green
 
@@ -235,41 +240,41 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
     [
       '<',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
   ] as FilterSpecification,
 } as const
