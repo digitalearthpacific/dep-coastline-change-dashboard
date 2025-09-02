@@ -1,28 +1,32 @@
 import React, { createContext, useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { normalize } from '../library/utils/normalize'
 import { PACIFIC_COUNTRIES_NAMES } from '../library/constants'
-import type { CountryGeoJSONFeature } from '../library/types/countryGeoJsonTypes'
-import { getNameByCountryCode } from '../library/utils/getNameByCountryCode'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../library/types'
+import { normalize, getNameByCountryCode } from '../library/utils'
 
-interface CountryContextType {
+interface MapDataContextType {
   countryApiData: CountryGeoJSONFeature[] | []
   setCountryApiData: React.Dispatch<React.SetStateAction<CountryGeoJSONFeature[]>>
   selectedCountryFeature: CountryGeoJSONFeature | null
   updateCountrySelectAndSearchParam: (country: CountryGeoJSONFeature | null) => void
+  contiguousHotspotFeatures: ContiguousHotspotProperties[] | []
+  setContiguousHotspotFeatures: React.Dispatch<React.SetStateAction<ContiguousHotspotProperties[]>>
 }
 
-export const CountryContext = createContext<CountryContextType | undefined>(undefined)
+export const MapDataContext = createContext<MapDataContextType | undefined>(undefined)
 
-interface CountryProviderProps {
+interface MapDataProviderProps {
   children: React.ReactNode
 }
 
-export const CountryProvider = ({ children }: CountryProviderProps) => {
+export const MapDataProvider = ({ children }: MapDataProviderProps) => {
   const [searchParams, setSearchParams] = useSearchParams()
   const [countryApiData, setCountryApiData] = useState<CountryGeoJSONFeature[]>([])
   const [selectedCountryFeature, setSelectedCountryFeature] =
     useState<CountryGeoJSONFeature | null>(null)
+  const [contiguousHotspotFeatures, setContiguousHotspotFeatures] = useState<
+    ContiguousHotspotProperties[]
+  >([])
 
   useEffect(() => {
     const countryParam = searchParams.get('country')
@@ -58,15 +62,17 @@ export const CountryProvider = ({ children }: CountryProviderProps) => {
   }
 
   return (
-    <CountryContext.Provider
+    <MapDataContext.Provider
       value={{
         setCountryApiData,
         countryApiData,
         selectedCountryFeature,
         updateCountrySelectAndSearchParam,
+        contiguousHotspotFeatures,
+        setContiguousHotspotFeatures,
       }}
     >
       {children}
-    </CountryContext.Provider>
+    </MapDataContext.Provider>
   )
 }

@@ -1,0 +1,1 @@
+export { BackgroundInformationView } from './BackgroundInformationView'

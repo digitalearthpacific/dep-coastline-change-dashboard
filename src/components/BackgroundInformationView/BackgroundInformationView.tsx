@@ -179,7 +179,11 @@ const RateOfChangeSection = () => (
   </Flex>
 )
 
-const BackgroundInformationView = ({ goBackToResultView }: { goBackToResultView: () => void }) => {
+export const BackgroundInformationView = ({
+  goBackToResultView,
+}: {
+  goBackToResultView: () => void
+}) => {
   const { isMobileWidth } = useResponsive()
   return (
     <Flex direction='column' gap='4' align='start'>
@@ -201,5 +205,3 @@ const BackgroundInformationView = ({ goBackToResultView }: { goBackToResultView:
     </Flex>
   )
 }
-
-export default BackgroundInformationView

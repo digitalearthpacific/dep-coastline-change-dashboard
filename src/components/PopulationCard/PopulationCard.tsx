@@ -1,28 +1,36 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { CustomPopover } from '../CustomPopover'
 
-export const PopulationCard = ({ totalPopulation }: { totalPopulation: number | string }) => {
+type PopulationCardProps = {
+  totalPopulation: number | null
+}
+
+const POPULATION_INFO =
+  'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country.'
+
+const formatPopulation = (population: number | null): string => {
+  if (population === null) return '—'
+  return Math.round(Number(population)).toLocaleString()
+}
+
+export const PopulationCard = ({ totalPopulation }: PopulationCardProps) => {
   return (
     <Card>
       <Flex direction='column' gap='5'>
-        <Flex direction='column' align='stretch' style={{ height: '80px' }}>
+        <header style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
             <Text as='div' size='4' weight='bold'>
               Population
             </Text>
-            <CustomPopover
-              ariaLabel='Information about population'
-              content={
-                'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country.'
-              }
-            />
+            <CustomPopover ariaLabel='Information about population' content={POPULATION_INFO} />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
             Estimated population in hotspot coastal areas
           </Text>
-        </Flex>
+        </header>
+
         <Text as='div' size='8' weight='bold'>
-          {Math.round(Number(totalPopulation)).toLocaleString()}
+          {formatPopulation(totalPopulation)}
         </Text>
       </Flex>
     </Card>

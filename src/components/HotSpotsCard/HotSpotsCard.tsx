@@ -1,9 +1,12 @@
-import { Badge, Card, Flex, Text } from '@radix-ui/themes'
-import { useCountry } from '../../hooks/useGlobalContext'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { Badge, Card, Checkbox, Flex, Text } from '@radix-ui/themes'
+import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
+import { CustomPopover } from '../CustomPopover'
+
+import styles from './HotSpotsCard.module.scss'
 
 export const HotSpotsCard = () => {
-  const { selectedCountryFeature } = useCountry()
+  const { selectedCountryFeature } = useMapData()
+  const { hotspotCheckbox, onCheckboxStateChange } = useMapVisualization()
   const shorelineChangeMagnitude = selectedCountryFeature?.properties?.shoreline_change_magnitude
 
   return (
@@ -31,9 +34,18 @@ export const HotSpotsCard = () => {
             align='center'
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
-            <Text size='4' weight='bold'>
-              {shorelineChangeMagnitude?.high_change_km.toLocaleString() ?? '-'} km
-            </Text>
+            <Flex align='center' gap='2'>
+              <Checkbox
+                size='2'
+                variant='surface'
+                className={styles.checkboxButton}
+                checked={hotspotCheckbox.hotspotsHigh}
+                onCheckedChange={() => onCheckboxStateChange('hotspotsHigh')}
+              />
+              <Text size='4' weight='bold'>
+                {shorelineChangeMagnitude?.high_change_km.toLocaleString() ?? '-'} km
+              </Text>
+            </Flex>
             <Badge
               size='1'
               style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}
@@ -46,9 +58,18 @@ export const HotSpotsCard = () => {
             align='center'
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
-            <Text size='4' weight='bold'>
-              {shorelineChangeMagnitude?.medium_change_km.toLocaleString() ?? '-'} km
-            </Text>
+            <Flex align='center' gap='2'>
+              <Checkbox
+                size='2'
+                variant='surface'
+                className={styles.checkboxButton}
+                checked={hotspotCheckbox.hotspotsModerate}
+                onCheckedChange={() => onCheckboxStateChange('hotspotsModerate')}
+              />
+              <Text size='4' weight='bold'>
+                {shorelineChangeMagnitude?.medium_change_km.toLocaleString() ?? '-'} km
+              </Text>
+            </Flex>
             <Badge
               size='1'
               style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}
@@ -57,9 +78,18 @@ export const HotSpotsCard = () => {
             </Badge>
           </Flex>
           <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
-            <Text size='4' weight='bold'>
-              {shorelineChangeMagnitude?.low_change_km.toLocaleString() ?? '-'} km
-            </Text>
+            <Flex align='center' gap='2'>
+              <Checkbox
+                size='2'
+                variant='surface'
+                className={styles.checkboxButton}
+                checked={hotspotCheckbox.hotspotsLow}
+                onCheckedChange={() => onCheckboxStateChange('hotspotsLow')}
+              />
+              <Text size='4' weight='bold'>
+                {shorelineChangeMagnitude?.low_change_km.toLocaleString() ?? '-'} km
+              </Text>
+            </Flex>
             <Badge
               size='1'
               style={{

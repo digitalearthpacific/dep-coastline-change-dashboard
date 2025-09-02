@@ -1,14 +1,14 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid } from '@radix-ui/themes'
-import { ShorelineChangeCard } from '../ShoreLineChangeCard/ShoreLineChangeCard'
-import { HotSpotsCard } from '../HotSpotsCard/HotSpotsCard'
-import { PopulationCard } from '../PopulationCard/PopulationCard'
-import { BuildingsCard } from '../BuildingsCard/BuildingsCard'
-import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
-import { ChartCard } from '../ChartCard/ChartCard'
-import TextButton from '../TextButton/TextButton'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { ShorelineChangeCard } from '../ShoreLineChangeCard'
+import { HotSpotsCard } from '../HotSpotsCard'
+import { PopulationCard } from '../PopulationCard'
+import { BuildingsCard } from '../BuildingsCard'
+import { MangrovesCard } from '../MangrovesCard'
+import { ChartCard } from '../ChartCard'
+import { TextButton } from '../TextButton'
+import type { ContiguousHotspotProperties } from '../../library/types'
+import { useMapData } from '../../hooks/useGlobalContext'
 
 type CountryResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
@@ -22,11 +22,20 @@ export const CountryResultView = ({
   goToBackgroundInfoView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountryFeature } = useCountry()
-  const totalPopulation = selectedCountryFeature?.properties?.population_in_hotspots ?? '-'
-  const numberOfBuildings =
-    selectedCountryFeature?.properties?.number_of_buildings_in_hotspots ?? '-'
-  const mangroveArea = selectedCountryFeature?.properties?.mangrove_area_ha_in_hotspots ?? '-'
+  const { contiguousHotspotFeatures } = useMapData()
+
+  const totalPopulationFromHotspot = contiguousHotspotFeatures.reduce(
+    (acc, feature) => acc + (feature.total_population ?? 0),
+    0,
+  )
+  const numberOfBuildingsFromHotspot = contiguousHotspotFeatures.reduce(
+    (acc, feature) => acc + (feature.building_counts ?? 0),
+    0,
+  )
+  const mangroveAreaFromHotspot = contiguousHotspotFeatures.reduce(
+    (acc, feature) => acc + (feature.mangrove_area_ha ?? 0),
+    0,
+  )
 
   return (
     <>
@@ -45,9 +54,9 @@ export const CountryResultView = ({
         <HotSpotsCard />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
-        <PopulationCard totalPopulation={totalPopulation} />
-        <BuildingsCard numberOfBuildings={numberOfBuildings} />
-        <MangrovesCard mangroveArea={mangroveArea} />
+        <PopulationCard totalPopulation={totalPopulationFromHotspot} />
+        <BuildingsCard numberOfBuildings={numberOfBuildingsFromHotspot} />
+        <MangrovesCard mangroveArea={mangroveAreaFromHotspot} />
       </Grid>
       <ChartCard />
     </>

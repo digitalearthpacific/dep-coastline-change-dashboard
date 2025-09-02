@@ -6,41 +6,13 @@ import { MainMap } from '../MainMap'
 import { ResultPanel } from '../ResultPanel'
 import { SearchBar } from '../SearchBar'
 import styles from './Dashboard.module.scss'
-import { useCountry } from '../../hooks/useGlobalContext'
+import { useMapData } from '../../hooks/useGlobalContext'
 import { useSessionStorage } from '../../hooks/useSessionStorage'
-import type {
-  ContiguousHotspotProperties,
-  CountryGeoJSONFeature,
-} from '../../library/types/countryGeoJsonTypes'
-
-const COUNTRY_DATA_URL =
-  'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-1/country_summaries.geojson'
-
-const sanitizeGeoJSONResponse = (responseText: string): string => {
-  return responseText.replace(/:\s*NaN/g, ': null')
-}
-
-const fetchCountryData = async (): Promise<CountryGeoJSONFeature[]> => {
-  try {
-    const response = await fetch(COUNTRY_DATA_URL)
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch country data: ${response.status} ${response.statusText}`)
-    }
-
-    const responseText = await response.text()
-    const sanitizedText = sanitizeGeoJSONResponse(responseText)
-    const data = JSON.parse(sanitizedText)
-
-    return data?.features || []
-  } catch (error) {
-    console.error('Error fetching GeoJSON:', error)
-    return []
-  }
-}
+import type { ContiguousHotspotProperties } from '../../library/types'
+import { fetchCountryData } from '../../library/utils'
 
 export const Dashboard = () => {
-  const { setCountryApiData } = useCountry()
+  const { setCountryApiData } = useMapData()
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedHotspotData, setSelectedHotspotData] =
     useState<ContiguousHotspotProperties | null>(null)

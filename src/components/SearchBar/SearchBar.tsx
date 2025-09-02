@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
-import { useChart, useCountry } from '../../hooks/useGlobalContext'
-import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
-import type { CountryGeoJSONFeature } from '../../library/types/countryGeoJsonTypes'
+import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
+import { getNameByCountryCode } from '../../library/utils'
+import type { CountryGeoJSONFeature } from '../../library/types'
 
 export const SearchBar = () => {
-  const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useCountry()
-  const { resetChartDefaultSettings } = useChart()
+  const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
+  const { resetChartDefaultSettings } = useMapVisualization()
   const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
 
   // Sync local dropdown value with global selected country

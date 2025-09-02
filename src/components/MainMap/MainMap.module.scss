@@ -181,6 +181,10 @@
   &.lowChange {
     background-color: var(--success-a8, rgba(0, 146, 75, 0.64)); // Green color
   }
+
+  &.stableChange {
+    background-color: var(--gray-9, rgba(141, 141, 141, 1)); // Grey color
+  }
 }
 
 .legendText {

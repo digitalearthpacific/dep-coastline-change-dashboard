@@ -3,13 +3,13 @@ import { useState, useEffect } from 'react'
 import { MobileResultBottomPanel } from '../MobileResultBottomPanel'
 import useResponsive from '../../hooks/useResponsive'
 import styles from './ResultPanel.module.scss'
-import { ErrorCard } from '../ErrorCard/ErrorCard'
-import { CountryResultView } from '../CountryResultView/CountryResultView'
-import { LocationCard } from '../LocationCard/LocationCard'
-import { HotSpotResultView } from '../HotSpotResultView/HotSpotResultView'
-import BackgroundInformationView from '../BackgroundInformationView/BackgroundInformationView'
-import { useCountry } from '../../hooks/useGlobalContext'
-import type { ContiguousHotspotProperties } from '../../library/types/countryGeoJsonTypes'
+import { ErrorCard } from '../ErrorCard'
+import { CountryResultView } from '../CountryResultView'
+import { LocationCard } from '../LocationCard'
+import { HotSpotResultView } from '../HotSpotResultView'
+import { BackgroundInformationView } from '../BackgroundInformationView'
+import { useMapData } from '../../hooks/useGlobalContext'
+import type { ContiguousHotspotProperties } from '../../library/types'
 
 export const ResultPanel = ({
   selectedHotspotData,
@@ -19,7 +19,7 @@ export const ResultPanel = ({
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }) => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountryFeature } = useCountry()
+  const { selectedCountryFeature } = useMapData()
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hotspot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)

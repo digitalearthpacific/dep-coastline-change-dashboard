@@ -17,3 +17,12 @@ export type RatesOfChangeYear = {
 export type DateType = 'start' | 'end'
 
 export type ChartType = 'bar' | 'line'
+
+export type HotspotCheckboxState = {
+  shorelineRetreat: boolean
+  shorelineGrowth: boolean
+  shorelineStable: boolean
+  hotspotsHigh: boolean
+  hotspotsModerate: boolean
+  hotspotsLow: boolean
+}

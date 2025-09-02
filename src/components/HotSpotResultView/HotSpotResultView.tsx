@@ -1,15 +1,12 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Badge, Flex, Grid } from '@radix-ui/themes'
-import { PopulationCard } from '../PopulationCard/PopulationCard'
-import { MangrovesCard } from '../MangrovesCard/MangrovesCard'
-import { ChartCard } from '../ChartCard/ChartCard'
-import { BuildingsCard } from '../BuildingsCard/BuildingsCard'
-import TextButton from '../TextButton/TextButton'
-import type {
-  ContiguousHotspotProperties,
-  CountryGeoJSONFeature,
-} from '../../library/types/countryGeoJsonTypes'
-import { RateOfChangeCard } from '../RateOfChangeCard/RateOfChangeCard'
+import { PopulationCard } from '../PopulationCard'
+import { MangrovesCard } from '../MangrovesCard'
+import { ChartCard } from '../ChartCard'
+import { BuildingsCard } from '../BuildingsCard'
+import { RateOfChangeCard } from '../RateOfChangeCard'
+import { TextButton } from '../TextButton'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null
@@ -26,7 +23,7 @@ const HotSpotBadge = ({ hotspotIndicator }: { hotspotIndicator: number | undefin
   if (absoluteHotspotIndicator > 5) {
     return (
       <Badge size='3' style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}>
-        High Change (&gt;5m)
+        High Change (&gt;5 m)
       </Badge>
     )
   }
@@ -34,7 +31,7 @@ const HotSpotBadge = ({ hotspotIndicator }: { hotspotIndicator: number | undefin
   if (absoluteHotspotIndicator >= 2.99 && absoluteHotspotIndicator <= 5) {
     return (
       <Badge size='3' style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}>
-        Moderate Change (&gt;3m)
+        Moderate Change (3 - 5 m)
       </Badge>
     )
   }
@@ -42,12 +39,16 @@ const HotSpotBadge = ({ hotspotIndicator }: { hotspotIndicator: number | undefin
   if (absoluteHotspotIndicator >= 2) {
     return (
       <Badge size='3' style={{ backgroundColor: 'var(--success-a3)', color: 'var(--success-a11)' }}>
-        Low Change (&gt;1m)
+        Low Change (2 - 2.99 m)
       </Badge>
     )
   }
 
-  return null
+  return (
+    <Badge size='3' style={{ backgroundColor: 'var(--gray-a3)', color: 'var(--gray-a11)' }}>
+      Stable (&lt;2 m)
+    </Badge>
+  )
 }
 
 export const HotSpotResultView = ({
@@ -57,10 +58,10 @@ export const HotSpotResultView = ({
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const totalPopulation = selectedHotspotData?.total_population ?? '-'
-  const numberOfBuildings = selectedHotspotData?.building_counts ?? '-'
-  const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? '-'
-  const rateOfChange = selectedHotspotData?.rate_time ?? '-'
+  const totalPopulation = selectedHotspotData?.total_population ?? null
+  const numberOfBuildings = selectedHotspotData?.building_counts ?? null
+  const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
+  const rateOfChange = selectedHotspotData?.rate_time ?? null
   const hotspotIndicator = Number(rateOfChange)
 
   return (

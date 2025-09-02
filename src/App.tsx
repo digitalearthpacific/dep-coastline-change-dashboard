@@ -1,20 +1,20 @@
 import { Routes, Route } from 'react-router-dom'
 import { MapProvider } from 'react-map-gl/maplibre'
-import { CountryProvider } from './contexts/CountryContext'
+import { MapDataProvider } from './contexts/MapDataContext'
 import { Dashboard } from './components/Dashboard'
-import { ChartProvider } from './contexts/ChartContext'
+import { MapVisualizationProvider } from './contexts/MapVisualizationContext'
 
 export const App = () => {
   return (
-    <CountryProvider>
-      <ChartProvider>
+    <MapDataProvider>
+      <MapVisualizationProvider>
         <MapProvider>
           <Routes>
             <Route path='/' element={<Dashboard />} />
           </Routes>
         </MapProvider>
-      </ChartProvider>
-    </CountryProvider>
+      </MapVisualizationProvider>
+    </MapDataProvider>
   )
 }
 

@@ -1,0 +1,7 @@
+.checkboxButton {
+  --accent-indicator: var(--blue-9, #008ac5);
+  --accent-contrast: var(--white, #fff);
+  border-radius: var(--radius-1, 3px);
+
+  cursor: pointer !important;
+}

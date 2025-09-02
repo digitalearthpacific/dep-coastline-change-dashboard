@@ -7,9 +7,8 @@ import { Cross1Icon } from '@radix-ui/react-icons'
 
 import useResponsive from '../../hooks/useResponsive'
 import { useFullscreen } from '../../hooks/useFullscreen'
-import { useChart, useCountry } from '../../hooks/useGlobalContext'
-import { getNameByCountryCode } from '../../library/utils/getNameByCountryCode'
-import { capitalize } from '../../library/utils/capitalize'
+import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
+import { getNameByCountryCode, capitalize } from '../../library/utils'
 import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
 
 import BarChartIcon from '../../assets/bar-chart.svg'
@@ -18,12 +17,13 @@ import DownloadIcon from '../../assets/download.svg'
 import ChartFullscreenIcon from '../../assets/chart-full-screen.svg'
 
 import styles from './ChartCard.module.scss'
-import { CustomPopover } from '../CustomPopover/CustomPopover'
+import { CustomPopover } from '../CustomPopover'
 
 export const ChartCard = () => {
   const { isMobileWidth } = useResponsive()
-  const { selectedCountryFeature } = useCountry()
-  const { startDate, endDate, selectedChartType, onDateChange, onChartTypeChange } = useChart()
+  const { selectedCountryFeature } = useMapData()
+  const { startDate, endDate, selectedChartType, onDateChange, onChartTypeChange } =
+    useMapVisualization()
 
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)

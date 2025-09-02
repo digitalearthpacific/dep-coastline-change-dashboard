@@ -6,8 +6,12 @@ import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 
 const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
+export const SIGNIFICANCE_THRESHOLD = 0.01
+export const HIGH_CHANGE_THRESHOLD = 5
+export const MODERATE_CHANGE_THRESHOLD = 3
+export const LOW_CHANGE_THRESHOLD = 2
+export const NEGATIVE_LOW_CHANGE_THRESHOLD = -2
 
-// Map view state configuration
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
   INITIAL_VIEW_STATE: {
@@ -29,14 +33,12 @@ export const MAP_CONFIG = {
   FLY_TO_DURATION: 2000,
 } as const
 
-// Easing functions for different animation types
 export const EASING_FUNCTIONS = {
   smoothstep: (t: number) => t * t * (3 - 2 * t),
   easeInOutCubic: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
   easeInOutQuad: (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
 } as const
 
-// FlyTo configuration presets
 export const FLY_TO_PRESETS = {
   firstSelection: {
     essential: true,
@@ -81,6 +83,13 @@ export const BASE_MAPS = [
   },
 ] as const
 
+export const LEGEND_ITEMS = [
+  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
+  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
+  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'stable', label: '<2 m', text: 'Stable', extraStyleClass: 'stableChange' },
+]
+
 export const MAP_LAYERS = {
   IDS: {
     BUILDINGS: 'Buildings',
@@ -109,13 +118,6 @@ export const MAP_LAYERS = {
   },
 } as const
 
-export const LEGEND_ITEMS = [
-  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
-  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
-  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
-]
-
-// Shoreline layer configuration
 export const MAP_EXPRESSION_CONFIGS = {
   SHORELINE_FILTERS: {
     CERTAIN: ['==', ['get', 'certainty'], 'good'] as FilterSpecification,
@@ -147,42 +149,42 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
-    'rgba(210, 0, 5, 0.44)',
+    'rgba(210, 0, 5, 0.7)',
 
     // Moderate 3–5
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
-    'rgba(255, 179, 0, 0.76)',
+    'rgba(255, 179, 0, 0.7)',
 
     // Low 2–2.99
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
-    'rgba(0, 146, 75, 0.64)',
+    'rgba(0, 146, 75, 0.7)',
 
-    // fallback → transparent
-    'rgba(0,0,0,0)',
+    // fallback
+    'rgba(141, 141, 141, 0.7)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors (darker versions for outline when selected)
@@ -193,42 +195,42 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
-    'rgba(85, 0, 13, 0.91)', // High selected - Dark red
+    'rgba(85, 0, 13, 0.9)',
 
     // Moderate 3–5
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
-    'rgba(52, 21, 0, 0.87)', // Moderate selected - Dark orange
+    'rgba(52, 21, 0, 0.9)',
 
     // Low 2–2.99
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
     ],
-    'rgba(0, 38, 22, 0.9)', // Low selected - Dark green
+    'rgba(0, 38, 22, 0.9)',
 
-    // fallback → transparent
-    'rgba(0,0,0,0)',
+    // fallback
+    '#000000',
   ] as ExpressionSpecification,
 
   // Add hotspot visibility filter
@@ -238,31 +240,41 @@ export const MAP_EXPRESSION_CONFIGS = {
       '>',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      5,
+      HIGH_CHANGE_THRESHOLD,
     ],
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      3,
+      MODERATE_CHANGE_THRESHOLD,
     ],
     [
       '>=',
       [
         'case',
-        ['<', ['get', 'sig_time'], 0.01],
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
         ['abs', ['get', 'rate_time']],
         ['get', 'rate_time'],
       ],
-      2,
+      LOW_CHANGE_THRESHOLD,
+    ],
+    [
+      '<',
+      [
+        'case',
+        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
+        ['abs', ['get', 'rate_time']],
+        ['get', 'rate_time'],
+      ],
+      LOW_CHANGE_THRESHOLD,
     ],
   ] as FilterSpecification,
 } as const
