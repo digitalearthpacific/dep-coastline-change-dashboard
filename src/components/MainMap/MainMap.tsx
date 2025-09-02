@@ -516,7 +516,7 @@ export const MainMap = ({
     setIsBaseMapPopupOpen((prev) => !prev)
   }, [])
 
-  const handleMapOnIdleChange = () => {
+  const handleMapChange = () => {
     const map = mapRef.current?.getMap()
     if (!map) {
       return
@@ -720,7 +720,8 @@ export const MainMap = ({
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
-        onIdle={handleMapOnIdleChange}
+        onMoveEnd={handleMapChange}
+        onZoomEnd={handleMapChange}
       >
         <AttributionControl position='bottom-left' compact />
         <NavigationControl
