@@ -58,10 +58,10 @@ export const HotSpotResultView = ({
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
-  const totalPopulation = selectedHotspotData?.total_population ?? '-'
-  const numberOfBuildings = selectedHotspotData?.building_counts ?? '-'
-  const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? '-'
-  const rateOfChange = selectedHotspotData?.rate_time ?? '-'
+  const totalPopulation = selectedHotspotData?.total_population ?? null
+  const numberOfBuildings = selectedHotspotData?.building_counts ?? null
+  const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
+  const rateOfChange = selectedHotspotData?.rate_time ?? null
   const hotspotIndicator = Number(rateOfChange)
 
   return (

@@ -207,7 +207,7 @@ export const MainMap = ({
     }
 
     if (shorelineStable) {
-      filters.push(['<=', ['abs', ['get', 'rate_time']], LOW_CHANGE_THRESHOLD])
+      filters.push(['<', ['abs', ['get', 'rate_time']], LOW_CHANGE_THRESHOLD])
     }
 
     const baseFilter = ['any', ...filters] as FilterSpecification

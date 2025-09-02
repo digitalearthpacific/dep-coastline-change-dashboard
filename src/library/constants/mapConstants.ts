@@ -155,7 +155,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       HIGH_CHANGE_THRESHOLD,
     ],
-    'rgba(210, 0, 5, 0.7)', // High - Red with consistent opacity
+    'rgba(210, 0, 5, 0.7)',
 
     // Moderate 3–5
     [
@@ -168,7 +168,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       MODERATE_CHANGE_THRESHOLD,
     ],
-    'rgba(255, 179, 0, 0.7)', // Moderate - Orange with consistent opacity
+    'rgba(255, 179, 0, 0.7)',
 
     // Low 2–2.99
     [
@@ -181,10 +181,10 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       LOW_CHANGE_THRESHOLD,
     ],
-    'rgba(0, 146, 75, 0.7)', // Low - Green with consistent opacity
+    'rgba(0, 146, 75, 0.7)',
 
-    // fallback → grey
-    'rgba(141, 141, 141, 0.7)', // Grey with consistent opacity
+    // fallback
+    'rgba(141, 141, 141, 0.7)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors (darker versions for outline when selected)
@@ -201,7 +201,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       HIGH_CHANGE_THRESHOLD,
     ],
-    'rgba(85, 0, 13, 0.9)', // High selected - Dark red
+    'rgba(85, 0, 13, 0.9)',
 
     // Moderate 3–5
     [
@@ -214,7 +214,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       MODERATE_CHANGE_THRESHOLD,
     ],
-    'rgba(52, 21, 0, 0.9)', // Moderate selected - Dark orange
+    'rgba(52, 21, 0, 0.9)',
 
     // Low 2–2.99
     [
@@ -227,9 +227,9 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       LOW_CHANGE_THRESHOLD,
     ],
-    'rgba(0, 38, 22, 0.9)', // Low selected - Dark green
+    'rgba(0, 38, 22, 0.9)',
 
-    // fallback → grey
+    // fallback
     '#000000',
   ] as ExpressionSpecification,
 

@@ -5,7 +5,7 @@ import { MapVisualizationContext } from '../contexts/MapVisualizationContext'
 export const useMapData = () => {
   const context = useContext(MapDataContext)
   if (context === undefined) {
-    throw new Error('useMapData must be used within a CountryProvider')
+    throw new Error('useMapData must be used within a MapDataProvider')
   }
   return context
 }
