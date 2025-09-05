@@ -10,7 +10,6 @@ export const SIGNIFICANCE_THRESHOLD = 0.01
 export const HIGH_CHANGE_THRESHOLD = 5
 export const MODERATE_CHANGE_THRESHOLD = 3
 export const LOW_CHANGE_THRESHOLD = 2
-export const NEGATIVE_LOW_CHANGE_THRESHOLD = -2
 
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
@@ -58,16 +57,16 @@ export const FLY_TO_PRESETS = {
 
 export const BASE_MAPS = [
   {
-    key: 'default',
-    label: 'Default',
-    thumbnail: StreetMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_TILER_API_KEY}`,
-  },
-  {
     key: 'satellite',
     label: 'Satellite',
     thumbnail: SatelliteMapStyleThumbNail,
     styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
+  },
+  {
+    key: 'basic',
+    label: 'Basic',
+    thumbnail: StreetMapStyleThumbNail,
+    styleUrl: `https://api.maptiler.com/maps/streets/style.json?key=${MAP_TILER_API_KEY}`,
   },
   {
     key: 'light',
@@ -87,7 +86,6 @@ export const LEGEND_ITEMS = [
   { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
   { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
   { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
-  { key: 'stable', label: '<2 m', text: 'Stable', extraStyleClass: 'stableChange' },
 ]
 
 export const MAP_LAYERS = {
@@ -187,7 +185,7 @@ export const MAP_EXPRESSION_CONFIGS = {
     'rgba(141, 141, 141, 0.7)',
   ] as ExpressionSpecification,
 
-  // Selected hotspot colors (darker versions for outline when selected)
+  // Selected hotspot colors
   HOTSPOT_SELECTED_COLOR_EXPRESSION: [
     'case',
     // High > 5
@@ -232,6 +230,8 @@ export const MAP_EXPRESSION_CONFIGS = {
     // fallback
     '#000000',
   ] as ExpressionSpecification,
+
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE: '#FFFFFF',
 
   // Add hotspot visibility filter
   HOTSPOT_VISIBILITY_FILTER: [
@@ -287,4 +287,6 @@ export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR
 export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
 export const HOTSPOT_SELECTED_COLOR_EXPRESSION =
   MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE
 export const HOTSPOT_VISIBILITY_FILTER = MAP_EXPRESSION_CONFIGS.HOTSPOT_VISIBILITY_FILTER

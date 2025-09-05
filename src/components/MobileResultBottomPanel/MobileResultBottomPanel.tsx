@@ -181,7 +181,14 @@ export const MobileResultBottomPanel = ({ open, children }: BottomPanelProps) =>
       content.removeEventListener('touchend', handleTouchEnd)
       resizeObserver.disconnect()
     }
-  }, [children])
+  }, [
+    children,
+    y,
+    allowPanelDrag,
+    currentPanelState,
+    getExpandedPosition,
+    getMiniCollapsedPosition,
+  ])
 
   const animateToPosition = useCallback(
     (position: number) => {

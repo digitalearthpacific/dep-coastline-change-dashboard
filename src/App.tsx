@@ -1,8 +1,8 @@
 import { Routes, Route } from 'react-router-dom'
 import { MapProvider } from 'react-map-gl/maplibre'
-import { MapDataProvider } from './contexts/MapDataContext'
+import { MapDataProvider } from './contexts/MapDataProvider'
+import { MapVisualizationProvider } from './contexts/MapVisualizationProvider'
 import { Dashboard } from './components/Dashboard'
-import { MapVisualizationProvider } from './contexts/MapVisualizationContext'
 
 export const App = () => {
   return (

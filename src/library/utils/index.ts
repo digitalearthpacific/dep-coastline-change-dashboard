@@ -1,6 +1,7 @@
 export { capitalize } from './capitalize'
 export { fetchCountryData } from './fetchCountryData'
-export { getBaseMapStyle } from './getBaseMapStyle'
+export { getBaseMapStyle } from './mapUtils'
 export { getNameByCountryCode } from './getNameByCountryCode'
 export { getUniqueHotspotFeatures } from './getUniqueHotspotFeatures'
 export { normalize } from './normalize'
+export { getHotspotSelectedColorExpression } from './mapUtils'

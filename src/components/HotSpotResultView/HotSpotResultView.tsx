@@ -2,11 +2,11 @@ import useResponsive from '../../hooks/useResponsive'
 import { Badge, Flex, Grid } from '@radix-ui/themes'
 import { PopulationCard } from '../PopulationCard'
 import { MangrovesCard } from '../MangrovesCard'
-import { ChartCard } from '../ChartCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { RateOfChangeCard } from '../RateOfChangeCard'
 import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
+import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null
@@ -79,6 +79,7 @@ export const HotSpotResultView = ({
           </TextButton>
         </Flex>
       </Flex>
+      <DateRangeSelect />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <RateOfChangeCard rateOfChange={rateOfChange} />
         <PopulationCard totalPopulation={totalPopulation} />
@@ -87,7 +88,6 @@ export const HotSpotResultView = ({
         <BuildingsCard numberOfBuildings={numberOfBuildings} />
         <MangrovesCard mangroveArea={mangroveArea} />
       </Grid>
-      <ChartCard />
     </>
   )
 }
