@@ -10,4 +10,4 @@ export type MapViewState = {
   zoom: number
 }
 
-export type MapStyleType = 'default' | 'satellite' | 'light' | 'dark'
+export type MapStyleType = 'satellite' | 'basic' | 'light' | 'dark'
