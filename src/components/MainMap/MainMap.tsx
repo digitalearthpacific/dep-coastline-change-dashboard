@@ -692,9 +692,6 @@ export const MainMap = ({
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
-        onZoomEnd={() => {
-          console.log(mapRef.current?.getZoom())
-        }}
       >
         <AttributionControl position='bottom-left' compact />
         <NavigationControl

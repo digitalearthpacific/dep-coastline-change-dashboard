@@ -4,7 +4,7 @@ export const DEFAULT_MOBILE_WIDTH_THRESHOLD = 768
 export const NONE_VALUE = 'none'
 export const SEARCHBAR_INITIAL_VALUE = 'Select location for coastline data'
 export const COUNTRY_DATA_URL =
-  'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-1/country_summaries.geojson'
+  'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-3/country_summaries.geojson'
 
 export const RATES_OF_CHANGE_YEARS: RatesOfChangeYear[] = [
   { id: '2023', value: '2023' },
@@ -56,4 +56,5 @@ export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'TON', name: 'Tonga' },
   { id: 'TUV', name: 'Tuvalu' },
   { id: 'VUT', name: 'Vanuatu' },
+  { id: 'WLF', name: 'Wallis and Futuna' },
 ] as const

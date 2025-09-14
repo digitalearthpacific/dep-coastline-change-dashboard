@@ -3,11 +3,11 @@ export interface MedianDistances {
 }
 
 export interface ShorelineChangeDirection {
-  percent_growth: number
-  percent_growth_non_sig: number
-  percent_retreat: number
-  percent_retreat_non_sig: number
-  percent_stable: number
+  growth_km: number
+  growth_non_sig_km: number
+  retreat_km: number
+  retreat_non_sig_km: number
+  stable_km: number
 }
 
 export interface ShorelineChangeMagnitude {

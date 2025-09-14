@@ -31,8 +31,8 @@ export const ShorelineChangeCard = () => {
             gap='2'
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
-            <Text size='4' weight='bold' style={{ width: '100px' }}>
-              {shorelineChangeDirection?.percent_retreat ?? '-'} km
+            <Text size='4' weight='bold'>
+              {shorelineChangeDirection?.retreat_km ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Retreat
@@ -43,16 +43,16 @@ export const ShorelineChangeCard = () => {
             gap='2'
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
-            <Text size='4' weight='bold' style={{ width: '100px' }}>
-              {shorelineChangeDirection?.percent_growth ?? '-'} km
+            <Text size='4' weight='bold'>
+              {shorelineChangeDirection?.growth_km ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Growth
             </Text>
           </Flex>
           <Flex align='center' gap='2' style={{ paddingTop: 'var(--space-1)' }}>
-            <Text size='4' weight='bold' style={{ width: '100px' }}>
-              {shorelineChangeDirection?.percent_stable ?? '-'} km
+            <Text size='4' weight='bold'>
+              {shorelineChangeDirection?.stable_km ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Stable
