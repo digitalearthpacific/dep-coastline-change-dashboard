@@ -37,8 +37,8 @@ export const RATES_OF_CHANGE_YEARS: RatesOfChangeYear[] = [
 export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'ASM', name: 'American Samoa' },
   { id: 'COK', name: 'Cook Islands' },
-  { id: 'FSM', name: 'Federated States of Micronesia' },
   { id: 'FJI', name: 'Fiji' },
+  { id: 'FSM', name: 'Federated States of Micronesia' },
   { id: 'PYF', name: 'French Polynesia' },
   { id: 'GUM', name: 'Guam' },
   { id: 'KIR', name: 'Kiribati' },
@@ -50,10 +50,10 @@ export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'PLW', name: 'Palau' },
   { id: 'PNG', name: 'Papua New Guinea' },
   { id: 'PCN', name: 'Pitcairn' },
+  { id: 'WSM', name: 'Samoa' },
   { id: 'SLB', name: 'Solomon Islands' },
   { id: 'TKL', name: 'Tokelau' },
   { id: 'TON', name: 'Tonga' },
   { id: 'TUV', name: 'Tuvalu' },
   { id: 'VUT', name: 'Vanuatu' },
-  { id: 'WSM', name: 'Wallis and Futuna' },
 ] as const

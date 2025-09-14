@@ -310,7 +310,7 @@ export const MainMap = ({
           minzoom: 6,
           layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
           paint: {
-            'fill-color': '#eb8730',
+            'fill-color': '#FF751F',
             'fill-outline-color': '#4e4e4e',
             'fill-opacity': 0.8,
           },
@@ -692,6 +692,9 @@ export const MainMap = ({
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
+        onZoomEnd={() => {
+          console.log(mapRef.current?.getZoom())
+        }}
       >
         <AttributionControl position='bottom-left' compact />
         <NavigationControl

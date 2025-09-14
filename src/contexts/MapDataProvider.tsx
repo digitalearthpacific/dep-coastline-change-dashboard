@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../library/types'
-import { getNameByCountryCode, normalize } from '../library/utils'
-import { PACIFIC_COUNTRIES_NAMES } from '../library/constants'
+import { getNameByCountryCode, findCountryIdByName } from '../library/utils'
 import { MapDataContext } from './MapDataContext'
 
 interface MapDataProviderProps {
@@ -20,13 +19,6 @@ export const MapDataProvider = ({ children }: MapDataProviderProps) => {
 
   useEffect(() => {
     const countryParam = searchParams.get('country')
-
-    const findCountryIdByName = (query: string): string | null => {
-      const normQuery = normalize(query)
-      return (
-        PACIFIC_COUNTRIES_NAMES.find((country) => normalize(country.name) === normQuery)?.id || null
-      )
-    }
 
     if (countryParam) {
       const countryId = findCountryIdByName(countryParam)
