@@ -74,7 +74,6 @@ export const MainMap = ({
   const { startDate, endDate, hotspotCheckbox } = useMapVisualization()
 
   // State
-  const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
@@ -569,35 +568,28 @@ export const MainMap = ({
   }
 
   // Effects
+  // Update map size and fit to country bounds on load or when selected country changes
   useEffect(() => {
-    if (!isMapLoaded || !selectedCountryFeature || shouldAnimate) return
+    if (!isMapLoaded) return
 
     const mapContainer = mapRef.current?.getContainer().parentElement
     if (mapContainer) {
       mapContainer.style.transition = 'none'
       mapRef.current?.resize()
       mapContainer.style.transition = ''
-
-      const bboxOptions = createBBoxOptions()
-      if (bboxOptions) {
-        mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
-      }
-      setShouldAnimate(true)
     }
-  }, [isMapLoaded, selectedCountryFeature, shouldAnimate, createBBoxOptions])
-
-  useEffect(() => {
-    if (!isMapLoaded || !shouldAnimate || !selectedCountryFeature) return
 
     const bboxOptions = createBBoxOptions()
     if (bboxOptions) {
       mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
+    } else {
+      mapRef.current?.flyTo({
+        center: [MAP_CONFIG.INITIAL_VIEW_STATE.longitude, MAP_CONFIG.INITIAL_VIEW_STATE.latitude],
+        zoom: MAP_CONFIG.INITIAL_VIEW_STATE.zoom,
+        duration: MAP_CONFIG.FLY_TO_DURATION,
+      })
     }
-  }, [selectedCountryFeature, shouldAnimate, createBBoxOptions, isMapLoaded])
-
-  useEffect(() => {
-    if (!selectedCountryFeature) setShouldAnimate(false)
-  }, [selectedCountryFeature])
+  }, [isMapLoaded, createBBoxOptions])
 
   // Update the ref whenever baseMap changes (separate effect)
   useEffect(() => {
