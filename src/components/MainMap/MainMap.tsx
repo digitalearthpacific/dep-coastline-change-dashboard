@@ -69,6 +69,7 @@ export const MainMap = ({
   handleHotspotDataChange,
 }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
+  const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
   const { startDate, endDate, hotspotCheckbox } = useMapVisualization()
@@ -411,14 +412,10 @@ export const MainMap = ({
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
       if (e.features?.[0]) {
         const featureProperties = e.features[0].properties as ContiguousHotspotProperties
-        console.log('Clicked hotspot feature:', featureProperties)
-        console.log('Current selected hotspot:', selectedHotspotData)
 
-        // If the clicked hotspot is already selected, deselect it
-        if (selectedHotspotData?.uid === featureProperties.uid) {
+        if (selectedHotspotDataRef.current?.uid === featureProperties.uid) {
           handleHotspotDataChange(null)
         } else {
-          // Otherwise, select the new hotspot
           handleHotspotDataChange(featureProperties)
         }
       }
@@ -451,7 +448,6 @@ export const MainMap = ({
     addBuildingsLayer,
     addMangrovesLayer,
     addContiguousHotspot,
-    selectedHotspotData,
     handleHotspotDataChange,
   ])
 
@@ -591,10 +587,14 @@ export const MainMap = ({
     }
   }, [isMapLoaded, createBBoxOptions])
 
-  // Update the ref whenever baseMap changes (separate effect)
+  // Update the ref (separate effect)
   useEffect(() => {
     baseMapRef.current = baseMap
   }, [baseMap])
+
+  useEffect(() => {
+    selectedHotspotDataRef.current = selectedHotspotData
+  }, [selectedHotspotData])
 
   // Update shoreline layer visibility and filters
   useEffect(() => {
