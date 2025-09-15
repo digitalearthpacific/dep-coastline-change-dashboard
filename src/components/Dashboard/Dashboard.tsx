@@ -54,7 +54,7 @@ export const Dashboard = () => {
   return (
     <div className={styles.dashboardContainer}>
       {!isFullscreen && <SearchBar handleHotspotDataChange={handleHotspotDataChange} />}
-      {!isFullscreen && (
+      {!isFullscreen && showAlert && (
         <Callout.Root className={styles.alertBanner}>
           <Callout.Icon>
             <InfoCircledIcon />
