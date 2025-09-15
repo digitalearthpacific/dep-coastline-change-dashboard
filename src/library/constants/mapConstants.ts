@@ -153,7 +153,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       HIGH_CHANGE_THRESHOLD,
     ],
-    'rgba(210, 0, 5, 0.7)',
+    'rgba(209, 0, 5, 0.7)',
 
     // Moderate 3–5
     [
@@ -179,7 +179,7 @@ export const MAP_EXPRESSION_CONFIGS = {
       ],
       LOW_CHANGE_THRESHOLD,
     ],
-    'rgba(0, 146, 75, 0.7)',
+    'rgba(0, 134, 71, 0.7)',
 
     // fallback
     'rgba(141, 141, 141, 0.7)',

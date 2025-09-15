@@ -5,9 +5,13 @@ import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils'
-import type { CountryGeoJSONFeature } from '../../library/types'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
-export const SearchBar = () => {
+export const SearchBar = ({
+  handleHotspotDataChange,
+}: {
+  handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
+}) => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
   const { resetChartDefaultSettings } = useMapVisualization()
   const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
@@ -31,6 +35,7 @@ export const SearchBar = () => {
     const countryName = getNameByCountryCode(country)
 
     setDropdownValue(countryName)
+    handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(country)
   }
 

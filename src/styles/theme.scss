@@ -73,18 +73,19 @@
   --blue-indicator: #0097d2;
   --blue-track: #0097d2;
 
-  /* Alert Semantic Colors */
+  /* Alert Semantic Alpha Colors */
   --error-a3: rgba(243, 0, 13, 0.08);
+  --error-a8: rgba(210, 0, 5, 0.44);
+  --error-a10: rgba(209, 0, 5, 0.76);
   --error-a11: rgba(196, 0, 6, 0.83);
   --warning-a3: rgba(255, 222, 0, 0.24);
+  --warning-a9: rgba(255, 179, 0, 0.76);
+  --warning-a10: rgba(255, 179, 0, 0.91);
   --warning-a11: rgba(171, 100, 0, 1);
   --success-a3: rgba(0, 164, 51, 0.1);
-  --success-a11: rgba(0, 113, 63, 0.87);
-
-  /* Alert Semantic Alpha Colors */
-  --error-a8: rgba(210, 0, 5, 0.44);
-  --warning-a9: rgba(255, 179, 0, 0.76);
   --success-a8: rgba(0, 146, 75, 0.64);
+  --success-a10: rgba(0, 134, 71, 0.83);
+  --success-a11: rgba(0, 113, 63, 0.87);
 
   /* ===== SPACING ===== */
   --space-1: 4px;

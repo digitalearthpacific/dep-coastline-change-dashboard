@@ -32,7 +32,7 @@ export const ShorelineChangeCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
             <Text size='4' weight='bold'>
-              {shorelineChangeDirection?.retreat_km ?? '-'} km
+              {shorelineChangeDirection?.retreat_km.toLocaleString() ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Retreat
@@ -44,7 +44,7 @@ export const ShorelineChangeCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
             <Text size='4' weight='bold'>
-              {shorelineChangeDirection?.growth_km ?? '-'} km
+              {shorelineChangeDirection?.growth_km.toLocaleString() ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Growth
@@ -52,7 +52,7 @@ export const ShorelineChangeCard = () => {
           </Flex>
           <Flex align='center' gap='2' style={{ paddingTop: 'var(--space-1)' }}>
             <Text size='4' weight='bold'>
-              {shorelineChangeDirection?.stable_km ?? '-'} km
+              {shorelineChangeDirection?.stable_km.toLocaleString() ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Stable

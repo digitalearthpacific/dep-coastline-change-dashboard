@@ -199,84 +199,6 @@ export const MainMap = ({
     ] as FilterSpecification
   }, [selectedCountryFeature?.properties?.id, hotspotsLow, hotspotsModerate, hotspotsHigh])
 
-  const updateCountryDataByHotspotFeatures = useCallback(
-    (map: MapLibreMap) => {
-      if (!selectedCountryFeature) {
-        setContiguousHotspotFeatures([])
-        return
-      }
-
-      const sourceFeatures = map.querySourceFeatures(SOURCE_IDS.HOTSPOTS, {
-        sourceLayer: 'contiguous_hotspots',
-      })
-
-      const features = sourceFeatures.map(
-        (feature) => feature.properties as ContiguousHotspotProperties,
-      )
-
-      const uniqueFeatures = getUniqueHotspotFeatures(features)
-
-      let countryUniqueFeatures = uniqueFeatures.filter(
-        (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
-      )
-
-      const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
-
-      if (hotspotsHigh) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-          return rateTimeChange > HIGH_CHANGE_THRESHOLD
-        })
-      }
-
-      if (hotspotsModerate) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-
-          return (
-            rateTimeChange >= MODERATE_CHANGE_THRESHOLD && rateTimeChange <= HIGH_CHANGE_THRESHOLD
-          )
-        })
-      }
-
-      if (hotspotsLow) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-
-          return (
-            rateTimeChange >= LOW_CHANGE_THRESHOLD && rateTimeChange < MODERATE_CHANGE_THRESHOLD
-          )
-        })
-      }
-
-      if (filterConditions.length > 0) {
-        countryUniqueFeatures = countryUniqueFeatures.filter((feature) =>
-          filterConditions.some((condition) => condition(feature)),
-        )
-      } else {
-        countryUniqueFeatures = []
-      }
-
-      setContiguousHotspotFeatures(countryUniqueFeatures)
-    },
-    [
-      hotspotsLow,
-      hotspotsModerate,
-      hotspotsHigh,
-      selectedCountryFeature,
-      setContiguousHotspotFeatures,
-    ],
-  )
-
   // Bbox options for country fitting
   const createBBoxOptions = useCallback(() => {
     if (!selectedCountryFeature?.bbox) return null
@@ -490,7 +412,16 @@ export const MainMap = ({
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
       if (e.features?.[0]) {
         const featureProperties = e.features[0].properties as ContiguousHotspotProperties
-        handleHotspotDataChange(featureProperties)
+        console.log('Clicked hotspot feature:', featureProperties)
+        console.log('Current selected hotspot:', selectedHotspotData)
+
+        // If the clicked hotspot is already selected, deselect it
+        if (selectedHotspotData?.uid === featureProperties.uid) {
+          handleHotspotDataChange(null)
+        } else {
+          // Otherwise, select the new hotspot
+          handleHotspotDataChange(featureProperties)
+        }
       }
     }
 
@@ -521,6 +452,7 @@ export const MainMap = ({
     addBuildingsLayer,
     addMangrovesLayer,
     addContiguousHotspot,
+    selectedHotspotData,
     handleHotspotDataChange,
   ])
 
@@ -564,6 +496,77 @@ export const MainMap = ({
   const handleBaseMapPopupToggle = useCallback(() => {
     setIsBaseMapPopupOpen((prev) => !prev)
   }, [])
+
+  const handleMapChange = () => {
+    const map = mapRef.current?.getMap()
+    if (!map) {
+      return
+    }
+
+    if (!selectedCountryFeature) {
+      setContiguousHotspotFeatures([])
+      return
+    }
+
+    const sourceFeatures = map.querySourceFeatures(SOURCE_IDS.HOTSPOTS, {
+      sourceLayer: 'contiguous_hotspots',
+    })
+
+    const features = sourceFeatures.map(
+      (feature) => feature.properties as ContiguousHotspotProperties,
+    )
+
+    const uniqueFeatures = getUniqueHotspotFeatures(features)
+    let countryUniqueFeatures = uniqueFeatures.filter(
+      (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
+    )
+
+    const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
+
+    if (hotspotsHigh) {
+      filterConditions.push((feature: ContiguousHotspotProperties) => {
+        const rateTimeChange =
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+        return rateTimeChange > HIGH_CHANGE_THRESHOLD
+      })
+    }
+
+    if (hotspotsModerate) {
+      filterConditions.push((feature: ContiguousHotspotProperties) => {
+        const rateTimeChange =
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+
+        return (
+          rateTimeChange >= MODERATE_CHANGE_THRESHOLD && rateTimeChange <= HIGH_CHANGE_THRESHOLD
+        )
+      })
+    }
+
+    if (hotspotsLow) {
+      filterConditions.push((feature: ContiguousHotspotProperties) => {
+        const rateTimeChange =
+          feature.sig_time < SIGNIFICANCE_THRESHOLD
+            ? Math.abs(feature.rate_time)
+            : feature.rate_time
+
+        return rateTimeChange >= LOW_CHANGE_THRESHOLD && rateTimeChange < MODERATE_CHANGE_THRESHOLD
+      })
+    }
+
+    if (filterConditions.length > 0) {
+      countryUniqueFeatures = countryUniqueFeatures.filter((feature) =>
+        filterConditions.some((condition) => condition(feature)),
+      )
+    } else {
+      countryUniqueFeatures = []
+    }
+
+    setContiguousHotspotFeatures(countryUniqueFeatures)
+  }
 
   // Effects
   useEffect(() => {
@@ -663,16 +666,7 @@ export const MainMap = ({
         }
       }
     })
-
-    if (isHotspotLayerVisible) {
-      const handleMapIdle = () => {
-        updateCountryDataByHotspotFeatures(map)
-        map.off('idle', handleMapIdle)
-      }
-
-      map.once('idle', handleMapIdle)
-    }
-  }, [isHotspotLayerVisible, createHotspotFilterExpression, updateCountryDataByHotspotFeatures])
+  }, [isHotspotLayerVisible, createHotspotFilterExpression])
 
   // Container classes
   const containerClasses = clsx(styles.mapContainer, {
@@ -692,6 +686,7 @@ export const MainMap = ({
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
+        onIdle={handleMapChange}
       >
         <AttributionControl position='bottom-left' compact />
         <NavigationControl

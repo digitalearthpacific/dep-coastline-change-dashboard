@@ -171,15 +171,15 @@
   }
 
   &.highChange {
-    background-color: var(--error-a8, rgba(210, 0, 5, 0.44)); // Red/coral color
+    background-color: var(--error-a10, rgba(209, 0, 5, 0.76)); // Red/coral color
   }
 
   &.moderateChange {
-    background-color: var(--warning-a9, rgba(255, 179, 0, 0.76)); // Orange/yellow color
+    background-color: var(--warning-a10, rgba(255, 179, 0, 0.91)); // Orange/yellow color
   }
 
   &.lowChange {
-    background-color: var(--success-a8, rgba(0, 146, 75, 0.64)); // Green color
+    background-color: var(--success-a10, rgba(0, 134, 71, 0.83)); // Green color
   }
 
   &.stableChange {
