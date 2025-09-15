@@ -4,7 +4,7 @@ export const DEFAULT_MOBILE_WIDTH_THRESHOLD = 768
 export const NONE_VALUE = 'none'
 export const SEARCHBAR_INITIAL_VALUE = 'Select location for coastline data'
 export const COUNTRY_DATA_URL =
-  'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-1/country_summaries.geojson'
+  'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-3/country_summaries.geojson'
 
 export const RATES_OF_CHANGE_YEARS: RatesOfChangeYear[] = [
   { id: '2023', value: '2023' },
@@ -39,21 +39,22 @@ export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'COK', name: 'Cook Islands' },
   { id: 'FJI', name: 'Fiji' },
   { id: 'FSM', name: 'Federated States of Micronesia' },
+  { id: 'PYF', name: 'French Polynesia' },
   { id: 'GUM', name: 'Guam' },
   { id: 'KIR', name: 'Kiribati' },
   { id: 'MHL', name: 'Marshall Islands' },
-  { id: 'MNP', name: 'Northern Mariana Islands' },
+  { id: 'NRU', name: 'Nauru' },
   { id: 'NCL', name: 'New Caledonia' },
   { id: 'NIU', name: 'Niue' },
-  { id: 'NRU', name: 'Nauru' },
-  { id: 'PCN', name: 'Pitcairn' },
+  { id: 'MNP', name: 'Northern Mariana Islands' },
   { id: 'PLW', name: 'Palau' },
   { id: 'PNG', name: 'Papua New Guinea' },
-  { id: 'PYF', name: 'French Polynesia' },
+  { id: 'PCN', name: 'Pitcairn' },
+  { id: 'WSM', name: 'Samoa' },
   { id: 'SLB', name: 'Solomon Islands' },
   { id: 'TKL', name: 'Tokelau' },
   { id: 'TON', name: 'Tonga' },
   { id: 'TUV', name: 'Tuvalu' },
   { id: 'VUT', name: 'Vanuatu' },
-  { id: 'WSM', name: 'Wallis and Futuna' },
+  { id: 'WLF', name: 'Wallis and Futuna' },
 ] as const

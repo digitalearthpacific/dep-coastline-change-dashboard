@@ -9,7 +9,7 @@ import styles from './Dashboard.module.scss'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { useSessionStorage } from '../../hooks/useSessionStorage'
 import type { ContiguousHotspotProperties } from '../../library/types'
-import { fetchCountryData } from '../../library/utils'
+import { fetchCountryData, getNameByCountryCode } from '../../library/utils'
 
 export const Dashboard = () => {
   const { setCountryApiData } = useMapData()
@@ -21,7 +21,9 @@ export const Dashboard = () => {
   useEffect(() => {
     const loadCountryData = async () => {
       const features = await fetchCountryData()
-      setCountryApiData(features)
+      setCountryApiData(
+        features.sort((a, b) => getNameByCountryCode(a).localeCompare(getNameByCountryCode(b))),
+      )
     }
 
     loadCountryData()
