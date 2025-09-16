@@ -1,5 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import { CustomPopover } from '../CustomPopover'
+import { formatCount } from '../../library/utils/formatCount'
 
 type PopulationCardProps = {
   totalPopulation: number | null
@@ -7,13 +8,6 @@ type PopulationCardProps = {
 
 const POPULATION_INFO =
   'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country.'
-
-const formatPopulation = (population: number | null): string => {
-  if (population === null) return '—'
-  if (population === 0) return 'n/a'
-
-  return Math.round(Number(population)).toLocaleString()
-}
 
 export const PopulationCard = ({ totalPopulation }: PopulationCardProps) => {
   return (
@@ -32,7 +26,7 @@ export const PopulationCard = ({ totalPopulation }: PopulationCardProps) => {
         </header>
 
         <Text as='div' size='8' weight='bold'>
-          {formatPopulation(totalPopulation)}
+          {formatCount(totalPopulation)}
         </Text>
       </Flex>
     </Card>
