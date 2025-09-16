@@ -10,6 +10,8 @@ const MANGROVES_INFO =
 
 const formatMangroveArea = (area: number | null): string => {
   if (area === null) return '—'
+  if (area === 0) return 'n/a'
+
   return `${Math.round(Number(area)).toLocaleString()} ha`
 }
 

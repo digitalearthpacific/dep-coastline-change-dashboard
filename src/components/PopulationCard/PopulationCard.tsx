@@ -10,6 +10,8 @@ const POPULATION_INFO =
 
 const formatPopulation = (population: number | null): string => {
   if (population === null) return '—'
+  if (population === 0) return 'n/a'
+
   return Math.round(Number(population)).toLocaleString()
 }
 
