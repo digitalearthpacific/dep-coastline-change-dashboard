@@ -10,6 +10,8 @@ const BUILDINGS_INFO =
 
 const formatBuildingCount = (count: number | null): string => {
   if (count === null) return '—'
+  if (count === 0) return 'n/a'
+
   return Math.round(Number(count)).toLocaleString()
 }
 
