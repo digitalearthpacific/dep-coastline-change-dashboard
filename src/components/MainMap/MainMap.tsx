@@ -405,10 +405,10 @@ export const MainMap = ({
     }
 
     // Add all layers
-    addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
     addContiguousHotspot(map)
+    addShorelineChangeLayer(map)
 
     // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
