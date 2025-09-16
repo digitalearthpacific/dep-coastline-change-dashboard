@@ -220,6 +220,7 @@ export const MainMap = ({
         map.addSource(SOURCE_IDS.BUILDINGS, {
           type: 'vector',
           tiles: [TILE_URLS.BUILDINGS],
+          maxzoom: 13,
         })
       }
 
