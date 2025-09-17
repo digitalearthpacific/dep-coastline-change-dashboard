@@ -1,4 +1,4 @@
-import { Card, Flex, Grid, Text } from '@radix-ui/themes'
+import { Card, Flex, Text } from '@radix-ui/themes'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover'
 
@@ -26,13 +26,10 @@ export const ShorelineChangeCard = () => {
           </Text>
         </Flex>
         <Flex direction='column'>
-          <Grid
-            columns='2'
-            style={{
-              borderBottom: '1px solid var(--gray-6)',
-              paddingBottom: 'var(--space-1)',
-              gridTemplateColumns: '1fr 2fr',
-            }}
+          <Flex
+            align='center'
+            gap='2'
+            style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
             <Text size='4' weight='bold'>
               {shorelineChangeDirection?.retreat_km.toLocaleString() ?? '-'} km
@@ -40,14 +37,11 @@ export const ShorelineChangeCard = () => {
             <Text size='3' color='gray'>
               Retreat
             </Text>
-          </Grid>
-          <Grid
-            columns='2'
-            style={{
-              borderBottom: '1px solid var(--gray-6)',
-              padding: 'var(--space-1) 0',
-              gridTemplateColumns: '1fr 2fr',
-            }}
+          </Flex>
+          <Flex
+            align='center'
+            gap='2'
+            style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
             <Text size='4' weight='bold'>
               {shorelineChangeDirection?.growth_km.toLocaleString() ?? '-'} km
@@ -55,21 +49,15 @@ export const ShorelineChangeCard = () => {
             <Text size='3' color='gray'>
               Growth
             </Text>
-          </Grid>
-          <Grid
-            columns='2'
-            style={{
-              paddingTop: 'var(--space-1)',
-              gridTemplateColumns: '1fr 2fr',
-            }}
-          >
+          </Flex>
+          <Flex align='center' gap='2' style={{ paddingTop: 'var(--space-1)' }}>
             <Text size='4' weight='bold'>
               {shorelineChangeDirection?.stable_km.toLocaleString() ?? '-'} km
             </Text>
             <Text size='3' color='gray'>
               Stable
             </Text>
-          </Grid>
+          </Flex>
         </Flex>
       </Flex>
     </Card>
