@@ -273,7 +273,9 @@ export const MainMap = ({
       if (!map.getSource(SOURCE_IDS.COASTLINES)) {
         map.addSource(SOURCE_IDS.COASTLINES, {
           type: 'vector',
-          url: TILE_URLS.COASTLINES,
+          tiles: [TILE_URLS.COASTLINES],
+          minzoom: 0,
+          maxzoom: 13,
         })
       }
 

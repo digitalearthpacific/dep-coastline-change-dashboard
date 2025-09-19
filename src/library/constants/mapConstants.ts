@@ -110,7 +110,7 @@ export const MAP_LAYERS = {
     BUILDINGS: 'https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf',
     MANGROVES:
       'https://ows.prod.digitalearthpacific.io/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=mangroves&STYLES=style_mangroves_alt&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}',
-    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines/{z}/{x}/{y}.pbf',
     HOTSPOTS:
       'https://tileserver.prod.digitalearthpacific.io/data/dashboard-hotspot-stats/{z}/{x}/{y}.pbf',
   },
