@@ -82,6 +82,19 @@ export const BASE_MAPS = [
   },
 ] as const
 
+export const BASE_MAP_LABEL_PATTERNS = [
+  'label',
+  'text',
+  'place',
+  'poi',
+  'road-label',
+  'water-label',
+  'country-label',
+  'state-label',
+  'city-label',
+  'settlement',
+] as const
+
 export const LEGEND_ITEMS = [
   { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
   { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },

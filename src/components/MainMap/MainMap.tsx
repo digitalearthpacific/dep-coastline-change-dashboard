@@ -33,6 +33,7 @@ import {
   getUniqueHotspotFeatures,
   getBaseMapStyle,
   getHotspotSelectedColorExpression,
+  findFirstLabelLayerId,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 
@@ -216,6 +217,8 @@ export const MainMap = ({
   // Layer management functions
   const addBuildingsLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.BUILDINGS)) {
         map.addSource(SOURCE_IDS.BUILDINGS, {
           type: 'vector',
@@ -226,19 +229,22 @@ export const MainMap = ({
       }
 
       if (!map.getLayer(LAYER_IDS.BUILDINGS)) {
-        map.addLayer({
-          id: LAYER_IDS.BUILDINGS,
-          type: 'fill',
-          source: SOURCE_IDS.BUILDINGS,
-          'source-layer': 'buildings',
-          minzoom: 6,
-          layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
-          paint: {
-            'fill-color': '#FF751F',
-            'fill-outline-color': '#4e4e4e',
-            'fill-opacity': 0.8,
+        map.addLayer(
+          {
+            id: LAYER_IDS.BUILDINGS,
+            type: 'fill',
+            source: SOURCE_IDS.BUILDINGS,
+            'source-layer': 'buildings',
+            minzoom: 6,
+            layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
+            paint: {
+              'fill-color': '#FF751F',
+              'fill-outline-color': '#4e4e4e',
+              'fill-opacity': 0.8,
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
     },
     [isBuildingsLayerVisible],
@@ -246,6 +252,8 @@ export const MainMap = ({
 
   const addMangrovesLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.MANGROVES)) {
         map.addSource(SOURCE_IDS.MANGROVES, {
           type: 'raster',
@@ -255,14 +263,17 @@ export const MainMap = ({
       }
 
       if (!map.getLayer(LAYER_IDS.MANGROVES)) {
-        map.addLayer({
-          id: LAYER_IDS.MANGROVES,
-          type: 'raster',
-          source: SOURCE_IDS.MANGROVES,
-          minzoom: 6,
-          layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
-          paint: { 'raster-opacity': 0.6 },
-        })
+        map.addLayer(
+          {
+            id: LAYER_IDS.MANGROVES,
+            type: 'raster',
+            source: SOURCE_IDS.MANGROVES,
+            minzoom: 6,
+            layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
+            paint: { 'raster-opacity': 0.6 },
+          },
+          firstLabelLayerId,
+        )
       }
     },
     [isMangrovesLayerVisible],
@@ -270,6 +281,8 @@ export const MainMap = ({
 
   const addShorelineChangeLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.COASTLINES)) {
         map.addSource(SOURCE_IDS.COASTLINES, {
           type: 'vector',
@@ -303,17 +316,20 @@ export const MainMap = ({
 
       shorelineLayers.forEach(({ id, filter, paint }) => {
         if (!map.getLayer(id)) {
-          map.addLayer({
-            id,
-            type: 'line',
-            source: SOURCE_IDS.COASTLINES,
-            'source-layer': 'shorelines_annual',
-            minzoom: 13,
-            maxzoom: 22,
-            filter,
-            layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
-            paint,
-          })
+          map.addLayer(
+            {
+              id,
+              type: 'line',
+              source: SOURCE_IDS.COASTLINES,
+              'source-layer': 'shorelines_annual',
+              minzoom: 13,
+              maxzoom: 22,
+              filter,
+              layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
+              paint,
+            },
+            firstLabelLayerId,
+          )
         }
       })
 
@@ -344,6 +360,7 @@ export const MainMap = ({
 
   const addContiguousHotspot = useCallback(
     (map: MapLibreMap, overrideBaseMap?: MapStyleType) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
       const baseMapForExpression = overrideBaseMap || baseMapRef.current
       const hotspotSelectedColorExpression = getHotspotSelectedColorExpression(baseMapForExpression)
 
@@ -355,37 +372,48 @@ export const MainMap = ({
       }
 
       if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
-        map.addLayer({
-          id: LAYER_IDS.HOTSPOT_FILL,
-          type: 'fill',
-          source: SOURCE_IDS.HOTSPOTS,
-          'source-layer': 'contiguous_hotspots',
-          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-          filter: createHotspotFilterExpression(),
-          paint: {
-            'fill-color': HOTSPOT_COLOR_EXPRESSION,
+        map.addLayer(
+          {
+            id: LAYER_IDS.HOTSPOT_FILL,
+            type: 'fill',
+            source: SOURCE_IDS.HOTSPOTS,
+            'source-layer': 'contiguous_hotspots',
+            layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+            filter: createHotspotFilterExpression(),
+            paint: {
+              'fill-color': HOTSPOT_COLOR_EXPRESSION,
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
 
       if (!map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-        map.addLayer({
-          id: LAYER_IDS.HOTSPOT_OUTLINE,
-          type: 'line',
-          source: SOURCE_IDS.HOTSPOTS,
-          'source-layer': 'contiguous_hotspots',
-          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-          filter: createHotspotFilterExpression(),
-          paint: {
-            'line-color': [
-              'case',
-              ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
-              hotspotSelectedColorExpression,
-              HOTSPOT_COLOR_EXPRESSION,
-            ],
-            'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 2, 0.5],
+        map.addLayer(
+          {
+            id: LAYER_IDS.HOTSPOT_OUTLINE,
+            type: 'line',
+            source: SOURCE_IDS.HOTSPOTS,
+            'source-layer': 'contiguous_hotspots',
+            layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+            filter: createHotspotFilterExpression(),
+            paint: {
+              'line-color': [
+                'case',
+                ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
+                hotspotSelectedColorExpression,
+                HOTSPOT_COLOR_EXPRESSION,
+              ],
+              'line-width': [
+                'case',
+                ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
+                2,
+                0.5,
+              ],
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
     },
     [selectedHotspotData, isHotspotLayerVisible, createHotspotFilterExpression],
