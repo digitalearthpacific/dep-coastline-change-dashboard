@@ -60,7 +60,7 @@ export const CountryResultView = ({
         </Text>
         <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
           These numbers show the population, buildings, and mangroves currently visible on the map.
-          They update as you move or zoom the map to five insights about your selected location.
+          They update as you move or zoom the map to find insights about your selected location.
         </Text>
       </Flex>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
