@@ -43,7 +43,9 @@ export const HotSpotsCard = () => {
                 onCheckedChange={() => onCheckboxStateChange('hotspotsHigh')}
               />
               <Text size='4' weight='bold'>
-                {shorelineChangeMagnitude?.high_change_km.toLocaleString() ?? '-'} km
+                {Math.round(Number(shorelineChangeMagnitude?.high_change_km)).toLocaleString() ??
+                  '-'}{' '}
+                km
               </Text>
             </Flex>
             <Badge
@@ -67,7 +69,9 @@ export const HotSpotsCard = () => {
                 onCheckedChange={() => onCheckboxStateChange('hotspotsModerate')}
               />
               <Text size='4' weight='bold'>
-                {shorelineChangeMagnitude?.medium_change_km.toLocaleString() ?? '-'} km
+                {Math.round(Number(shorelineChangeMagnitude?.medium_change_km)).toLocaleString() ??
+                  '-'}{' '}
+                km
               </Text>
             </Flex>
             <Badge
@@ -87,7 +91,9 @@ export const HotSpotsCard = () => {
                 onCheckedChange={() => onCheckboxStateChange('hotspotsLow')}
               />
               <Text size='4' weight='bold'>
-                {shorelineChangeMagnitude?.low_change_km.toLocaleString() ?? '-'} km
+                {Math.round(Number(shorelineChangeMagnitude?.low_change_km)).toLocaleString() ??
+                  '-'}{' '}
+                km
               </Text>
             </Flex>
             <Badge
