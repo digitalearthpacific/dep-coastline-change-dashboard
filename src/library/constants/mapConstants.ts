@@ -96,10 +96,21 @@ export const BASE_MAP_LABEL_PATTERNS = [
 ] as const
 
 export const LEGEND_ITEMS = [
-  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
-  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
-  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'high-retreat', label: '<-5 m', text: 'High', extraStyleClass: 'highRetreat' },
+  {
+    key: 'moderate-retreat',
+    label: '<-3 m',
+    text: 'Moderate',
+    extraStyleClass: 'moderateRetreat',
+  },
+  { key: 'low-retreat', label: '<-2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
+  { key: 'high-growth', label: '>5 m', text: 'High', extraStyleClass: 'highGrowth' },
+  { key: 'moderate-growth', label: '>3 m', text: 'Moderate', extraStyleClass: 'moderateGrowth' },
+  { key: 'low-growth', label: '>2 m', text: 'Low', extraStyleClass: 'lowGrowth' },
 ]
+
+export const RETREAT_LEGEND_ITEMS = LEGEND_ITEMS.slice(0, 3)
+export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3)
 
 export const MAP_LAYERS = {
   IDS: {

@@ -3,7 +3,7 @@ import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibr
 import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
-import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -16,7 +16,6 @@ import {
   LAYER_IDS,
   SOURCE_IDS,
   SHORELINE_FILTERS,
-  LEGEND_ITEMS,
   SHORELINE_COLOR_EXPRESSION,
   HOTSPOT_COLOR_EXPRESSION,
   TILE_URLS,
@@ -24,6 +23,8 @@ import {
   HIGH_CHANGE_THRESHOLD,
   MODERATE_CHANGE_THRESHOLD,
   LOW_CHANGE_THRESHOLD,
+  RETREAT_LEGEND_ITEMS,
+  GROWTH_LEGEND_ITEMS,
 } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
@@ -46,19 +47,48 @@ type MainMapProps = {
 }
 
 const MapLegend = () => (
-  <div className={styles.mapLegend}>
-    <div className={styles.legendTitle}>Hotspots</div>
-    <div className={styles.legendSubtitle}>Levels of change</div>
-    <div className={styles.legendItems}>
-      {LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-        <div key={key} className={styles.legendItem}>
-          <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-          <span className={styles.legendText}>
-            <strong>{label}</strong> {text}
-          </span>
-        </div>
-      ))}
-    </div>
+  <div className={styles.mapLegendContainer}>
+    <Flex direction='column' gap='2'>
+      <Flex direction='column'>
+        <Text size='2' weight='bold'>
+          Hotspots
+        </Text>
+        <Text size='1'>Levels of change</Text>
+      </Flex>
+      <Text size='1' weight='bold'>
+        Retreat
+      </Text>
+      <Flex
+        direction='column'
+        gap='1'
+        style={{
+          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
+          paddingBottom: 'var(--space-2, 8px)',
+        }}
+      >
+        {RETREAT_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
+          <Flex key={key} gap='2'>
+            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
+            <Text size='1'>
+              <strong>{label}</strong> {text}
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+      <Text size='1' weight='bold'>
+        Growth
+      </Text>
+      <Flex direction='column' gap='1'>
+        {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
+          <Flex key={key} gap='2'>
+            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
+            <Text size='1'>
+              <strong>{label}</strong> {text}
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+    </Flex>
   </div>
 )
 
