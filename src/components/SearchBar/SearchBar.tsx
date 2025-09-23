@@ -13,7 +13,7 @@ export const SearchBar = ({
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }) => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
-  const { resetChartDefaultSettings } = useMapVisualization()
+  const { resetStartAndEndDate } = useMapVisualization()
   const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
 
   // Sync local dropdown value with global selected country
@@ -27,8 +27,9 @@ export const SearchBar = ({
 
   const handleSelectNone = () => {
     setDropdownValue(SEARCHBAR_INITIAL_VALUE)
+    handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(null)
-    resetChartDefaultSettings()
+    resetStartAndEndDate()
   }
 
   const handleSelectCountry = (country: CountryGeoJSONFeature) => {

@@ -16,6 +16,4 @@ export type RatesOfChangeYear = {
 
 export type DateType = 'start' | 'end'
 
-export type ChartType = 'bar' | 'line'
-
 export type HotspotRadioState = 'high' | 'moderate' | 'low'

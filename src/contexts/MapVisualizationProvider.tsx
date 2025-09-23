@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { ChartType, DateType, HotspotRadioState } from '../library/types'
+import type { DateType, HotspotRadioState } from '../library/types'
 import { NONE_VALUE } from '../library/constants'
 import { MapVisualizationContext } from './MapVisualizationContext'
 
@@ -10,13 +10,11 @@ interface MapVisualizationProviderProps {
 export const MapVisualizationProvider = ({ children }: MapVisualizationProviderProps) => {
   const [startDate, setStartDate] = useState<string | null>('1999')
   const [endDate, setEndDate] = useState<string | null>('2023')
-  const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
   const [hotspotRadio, setHotspotRadio] = useState<HotspotRadioState>('low')
 
-  const resetChartDefaultSettings = () => {
+  const resetStartAndEndDate = () => {
     setStartDate('1999')
     setEndDate('2023')
-    setSelectedChartType('line')
   }
 
   const onDateChange = (dateType: DateType, value: string) => {
@@ -33,10 +31,6 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
     }
   }
 
-  const onChartTypeChange = (type: ChartType) => {
-    setSelectedChartType(type)
-  }
-
   const onRadioStateChange = (value: HotspotRadioState) => {
     setHotspotRadio(value)
   }
@@ -46,10 +40,8 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
       value={{
         startDate,
         endDate,
-        selectedChartType,
         onDateChange,
-        onChartTypeChange,
-        resetChartDefaultSettings,
+        resetStartAndEndDate,
         hotspotRadio,
         onRadioStateChange,
       }}
