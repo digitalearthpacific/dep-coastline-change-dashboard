@@ -146,24 +146,24 @@
   }
 
   &.highRetreat {
-    background-color: rgba(204, 88, 3, 1);
+    background-color: #cc5803;
   }
 
   &.moderateRetreat {
-    background-color: rgba(255, 158, 27, 1);
+    background-color: #ff9e1b;
   }
 
   &.lowRetreat {
-    background-color: rgba(255, 210, 127, 1);
+    background-color: #ffd27f;
   }
 
   &.highGrowth {
-    background-color: rgba(0, 123, 255, 1);
+    background-color: #007bff;
   }
   &.moderateGrowth {
-    background-color: rgba(89, 172, 255, 1);
+    background-color: #59acff;
   }
   &.lowGrowth {
-    background-color: rgba(151, 223, 255, 1);
+    background-color: #97dfff;
   }
 }
