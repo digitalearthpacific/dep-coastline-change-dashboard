@@ -96,14 +96,14 @@ export const BASE_MAP_LABEL_PATTERNS = [
 ] as const
 
 export const LEGEND_ITEMS = [
-  { key: 'high-retreat', label: '<-5 m', text: 'High', extraStyleClass: 'highRetreat' },
+  { key: 'high-retreat', label: '<5 m', text: 'High', extraStyleClass: 'highRetreat' },
   {
     key: 'moderate-retreat',
-    label: '<-3 m',
+    label: '<3 m',
     text: 'Moderate',
     extraStyleClass: 'moderateRetreat',
   },
-  { key: 'low-retreat', label: '<-2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
+  { key: 'low-retreat', label: '<2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
   { key: 'high-growth', label: '>5 m', text: 'High', extraStyleClass: 'highGrowth' },
   { key: 'moderate-growth', label: '>3 m', text: 'Moderate', extraStyleClass: 'moderateGrowth' },
   { key: 'low-growth', label: '>2 m', text: 'Low', extraStyleClass: 'lowGrowth' },
