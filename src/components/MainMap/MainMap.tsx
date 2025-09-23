@@ -19,7 +19,6 @@ import {
   SHORELINE_COLOR_EXPRESSION,
   HOTSPOT_COLOR_EXPRESSION,
   TILE_URLS,
-  SIGNIFICANCE_THRESHOLD,
   HIGH_CHANGE_THRESHOLD,
   MODERATE_CHANGE_THRESHOLD,
   LOW_CHANGE_THRESHOLD,
@@ -103,7 +102,7 @@ export const MainMap = ({
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
-  const { startDate, endDate, hotspotCheckbox } = useMapVisualization()
+  const { startDate, endDate, hotspotRadio } = useMapVisualization()
 
   // State
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
@@ -117,7 +116,6 @@ export const MainMap = ({
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
-  const { hotspotsHigh, hotspotsModerate, hotspotsLow } = hotspotCheckbox
 
   // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
@@ -148,72 +146,31 @@ export const MainMap = ({
     [startDate, endDate],
   )
 
-  // Build dynamic filters for hotspots based on hotspot checkboxes
-  const createHotspotFilterExpression = useCallback((): FilterSpecification => {
+  // Build dynamic filters for hotspots based on hotspot radio selection
+  const createHotspotFilterExpressionNew = useCallback((): FilterSpecification => {
     const filters: FilterSpecification[] = []
 
-    if (hotspotsHigh) {
+    if (hotspotRadio === 'high') {
       filters.push([
-        '>',
-        [
-          'case',
-          ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-          ['abs', ['get', 'rate_time']],
-          ['get', 'rate_time'],
-        ],
-        HIGH_CHANGE_THRESHOLD,
+        'any',
+        ['>', ['get', 'rate_time'], HIGH_CHANGE_THRESHOLD],
+        ['<', ['get', 'rate_time'], -HIGH_CHANGE_THRESHOLD],
       ])
     }
 
-    if (hotspotsModerate) {
+    if (hotspotRadio === 'moderate') {
       filters.push([
-        'all',
-        [
-          '>=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          MODERATE_CHANGE_THRESHOLD,
-        ],
-        [
-          '<=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          HIGH_CHANGE_THRESHOLD,
-        ],
+        'any',
+        ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
+        ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
       ])
     }
 
-    if (hotspotsLow) {
+    if (hotspotRadio === 'low') {
       filters.push([
-        'all',
-        [
-          '>=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          LOW_CHANGE_THRESHOLD,
-        ],
-        [
-          '<',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          MODERATE_CHANGE_THRESHOLD,
-        ],
+        'any',
+        ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
+        ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
       ])
     }
 
@@ -228,7 +185,7 @@ export const MainMap = ({
       ['==', ['get', 'ISO_Ter1'], selectedCountryFeature?.properties?.id],
       baseFilter,
     ] as FilterSpecification
-  }, [selectedCountryFeature?.properties?.id, hotspotsLow, hotspotsModerate, hotspotsHigh])
+  }, [hotspotRadio, selectedCountryFeature?.properties?.id])
 
   // Bbox options for country fitting
   const createBBoxOptions = useCallback(() => {
@@ -398,6 +355,8 @@ export const MainMap = ({
         map.addSource(SOURCE_IDS.HOTSPOTS, {
           type: 'vector',
           tiles: [TILE_URLS.HOTSPOTS],
+          minzoom: 0,
+          maxzoom: 13,
         })
       }
 
@@ -409,7 +368,7 @@ export const MainMap = ({
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-            filter: createHotspotFilterExpression(),
+            filter: createHotspotFilterExpressionNew(),
             paint: {
               'fill-color': HOTSPOT_COLOR_EXPRESSION,
             },
@@ -426,7 +385,7 @@ export const MainMap = ({
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-            filter: createHotspotFilterExpression(),
+            filter: createHotspotFilterExpressionNew(),
             paint: {
               'line-color': [
                 'case',
@@ -446,7 +405,7 @@ export const MainMap = ({
         )
       }
     },
-    [selectedHotspotData, isHotspotLayerVisible, createHotspotFilterExpression],
+    [selectedHotspotData, isHotspotLayerVisible, createHotspotFilterExpressionNew],
   )
 
   // Event handlers
@@ -580,37 +539,26 @@ export const MainMap = ({
 
     const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
 
-    if (hotspotsHigh) {
+    if (hotspotRadio === 'high') {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
-        const rateTimeChange =
-          feature.sig_time < SIGNIFICANCE_THRESHOLD
-            ? Math.abs(feature.rate_time)
-            : feature.rate_time
-        return rateTimeChange > HIGH_CHANGE_THRESHOLD
-      })
-    }
-
-    if (hotspotsModerate) {
-      filterConditions.push((feature: ContiguousHotspotProperties) => {
-        const rateTimeChange =
-          feature.sig_time < SIGNIFICANCE_THRESHOLD
-            ? Math.abs(feature.rate_time)
-            : feature.rate_time
-
         return (
-          rateTimeChange >= MODERATE_CHANGE_THRESHOLD && rateTimeChange <= HIGH_CHANGE_THRESHOLD
+          feature.rate_time > HIGH_CHANGE_THRESHOLD || feature.rate_time < -HIGH_CHANGE_THRESHOLD
         )
       })
     }
 
-    if (hotspotsLow) {
+    if (hotspotRadio === 'moderate') {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
-        const rateTimeChange =
-          feature.sig_time < SIGNIFICANCE_THRESHOLD
-            ? Math.abs(feature.rate_time)
-            : feature.rate_time
+        return (
+          feature.rate_time > MODERATE_CHANGE_THRESHOLD ||
+          feature.rate_time < -MODERATE_CHANGE_THRESHOLD
+        )
+      })
+    }
 
-        return rateTimeChange >= LOW_CHANGE_THRESHOLD && rateTimeChange < MODERATE_CHANGE_THRESHOLD
+    if (hotspotRadio === 'low') {
+      filterConditions.push((feature: ContiguousHotspotProperties) => {
+        return feature.rate_time > LOW_CHANGE_THRESHOLD || feature.rate_time < -LOW_CHANGE_THRESHOLD
       })
     }
 
@@ -716,11 +664,11 @@ export const MainMap = ({
       if (map.getLayer(layerId)) {
         map.setLayoutProperty(layerId, 'visibility', isHotspotLayerVisible ? 'visible' : 'none')
         if (isHotspotLayerVisible) {
-          map.setFilter(layerId, createHotspotFilterExpression())
+          map.setFilter(layerId, createHotspotFilterExpressionNew())
         }
       }
     })
-  }, [isHotspotLayerVisible, createHotspotFilterExpression])
+  }, [isHotspotLayerVisible, createHotspotFilterExpressionNew])
 
   // Container classes
   const containerClasses = clsx(styles.mapContainer, {

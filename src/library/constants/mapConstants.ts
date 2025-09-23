@@ -166,141 +166,37 @@ export const MAP_EXPRESSION_CONFIGS = {
 
   HOTSPOT_COLOR_EXPRESSION: [
     'case',
-    // High > 5
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    'rgba(209, 0, 5, 0.7)',
+    // High Retreat < -5 - Dark Red
+    ['<', ['get', 'rate_time'], -HIGH_CHANGE_THRESHOLD],
+    'rgba(204, 88, 3, 0.7)',
 
-    // Moderate 3–5
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    'rgba(255, 179, 0, 0.7)',
+    // Moderate Retreat < -3 (but >= -5) - Light Orange
+    ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
+    'rgba(255, 158, 27, 0.7)',
 
-    // Low 2–2.99
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    'rgba(0, 134, 71, 0.7)',
+    // Low Retreat < -2 (but >= -3) - Yellow
+    ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
+    'rgba(255, 210, 127, 0.7)',
 
-    // fallback
+    // High Growth > 5 - Dark Blue
+    ['>', ['get', 'rate_time'], HIGH_CHANGE_THRESHOLD],
+    'rgba(0, 123, 255, 0.7)',
+
+    // Moderate Growth > 3 (but <= 5) - Light Blue
+    ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
+    'rgba(89, 172, 255, 0.7)',
+
+    // Low Growth > 2 (but <= 3) - Light Cyan
+    ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
+    'rgba(151, 223, 255, 0.7)',
+
+    // fallback - Grey
     'rgba(141, 141, 141, 0.7)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors
-  HOTSPOT_SELECTED_COLOR_EXPRESSION: [
-    'case',
-    // High > 5
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    'rgba(85, 0, 13, 0.9)',
-
-    // Moderate 3–5
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    'rgba(52, 21, 0, 0.9)',
-
-    // Low 2–2.99
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    'rgba(0, 38, 22, 0.9)',
-
-    // fallback
-    '#000000',
-  ] as ExpressionSpecification,
-
-  HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE: '#FFFFFF',
-
-  // Add hotspot visibility filter
-  HOTSPOT_VISIBILITY_FILTER: [
-    'any',
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    [
-      '<',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-  ] as FilterSpecification,
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT: '#FFFFFF',
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK: '#000000',
 } as const
 
 export const LAYER_IDS = MAP_LAYERS.IDS
@@ -309,8 +205,7 @@ export const TILE_URLS = MAP_LAYERS.TILE_URLS
 export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
 export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
 export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
-export const HOTSPOT_SELECTED_COLOR_EXPRESSION =
-  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION
-export const HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE =
-  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE
-export const HOTSPOT_VISIBILITY_FILTER = MAP_EXPRESSION_CONFIGS.HOTSPOT_VISIBILITY_FILTER
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK

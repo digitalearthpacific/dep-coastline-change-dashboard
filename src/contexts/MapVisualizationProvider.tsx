@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import type { ChartType, DateType, HotspotCheckboxState } from '../library/types'
+import type { ChartType, DateType, HotspotRadioState } from '../library/types'
 import { NONE_VALUE } from '../library/constants'
 import { MapVisualizationContext } from './MapVisualizationContext'
 
@@ -11,11 +11,7 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
   const [startDate, setStartDate] = useState<string | null>('1999')
   const [endDate, setEndDate] = useState<string | null>('2023')
   const [selectedChartType, setSelectedChartType] = useState<ChartType>('line')
-  const [hotspotCheckbox, setHotspotCheckbox] = useState<HotspotCheckboxState>({
-    hotspotsHigh: true,
-    hotspotsModerate: true,
-    hotspotsLow: true,
-  })
+  const [hotspotRadio, setHotspotRadio] = useState<HotspotRadioState>('low')
 
   const resetChartDefaultSettings = () => {
     setStartDate('1999')
@@ -41,11 +37,8 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
     setSelectedChartType(type)
   }
 
-  const onCheckboxStateChange = (name: keyof HotspotCheckboxState) => {
-    setHotspotCheckbox((prevState) => ({
-      ...prevState,
-      [name]: !prevState[name],
-    }))
+  const onRadioStateChange = (value: HotspotRadioState) => {
+    setHotspotRadio(value)
   }
 
   return (
@@ -57,8 +50,8 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
         onDateChange,
         onChartTypeChange,
         resetChartDefaultSettings,
-        hotspotCheckbox,
-        onCheckboxStateChange,
+        hotspotRadio,
+        onRadioStateChange,
       }}
     >
       {children}

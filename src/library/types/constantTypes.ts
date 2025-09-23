@@ -18,8 +18,4 @@ export type DateType = 'start' | 'end'
 
 export type ChartType = 'bar' | 'line'
 
-export type HotspotCheckboxState = {
-  hotspotsHigh: boolean
-  hotspotsModerate: boolean
-  hotspotsLow: boolean
-}
+export type HotspotRadioState = 'high' | 'moderate' | 'low'

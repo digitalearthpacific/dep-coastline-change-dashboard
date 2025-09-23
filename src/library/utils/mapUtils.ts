@@ -2,8 +2,8 @@ import type { ExpressionSpecification, Map as MapLibreMap, LayerSpecification } 
 import {
   BASE_MAP_LABEL_PATTERNS,
   BASE_MAPS,
-  HOTSPOT_SELECTED_COLOR_EXPRESSION,
-  HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE,
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT,
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK,
 } from '../constants'
 import type { MapStyleType } from '../types'
 
@@ -16,8 +16,8 @@ export function getHotspotSelectedColorExpression(
   baseMap: MapStyleType,
 ): ExpressionSpecification | string {
   return baseMap === 'satellite' || baseMap === 'dark'
-    ? HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE
-    : HOTSPOT_SELECTED_COLOR_EXPRESSION
+    ? HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT
+    : HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK
 }
 
 // Helper function to find the first label layer ID in the current style

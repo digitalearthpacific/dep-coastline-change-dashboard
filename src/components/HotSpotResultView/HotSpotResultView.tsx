@@ -3,10 +3,10 @@ import { Badge, Flex, Grid } from '@radix-ui/themes'
 import { PopulationCard } from '../PopulationCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { BuildingsCard } from '../BuildingsCard'
-import { RateOfChangeCard } from '../RateOfChangeCard'
 import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
+import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null
@@ -57,11 +57,13 @@ export const HotSpotResultView = ({
   goToCountryView,
   goToBackgroundInfoView,
 }: HotSpotResultViewProps) => {
+  console.log('Selected Hotspot Data:', selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const totalPopulation = selectedHotspotData?.total_population ?? null
   const numberOfBuildings = selectedHotspotData?.building_counts ?? null
   const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
   const rateOfChange = selectedHotspotData?.rate_time ?? null
+  const hotspotArea = selectedHotspotData?.area_ha ?? null
   const hotspotIndicator = Number(rateOfChange)
 
   return (
@@ -81,7 +83,7 @@ export const HotSpotResultView = ({
       </Flex>
       <DateRangeSelect />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <RateOfChangeCard rateOfChange={rateOfChange} />
+        <HotspotAreaCard hotspotArea={hotspotArea} />
         <PopulationCard totalPopulation={totalPopulation} />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>

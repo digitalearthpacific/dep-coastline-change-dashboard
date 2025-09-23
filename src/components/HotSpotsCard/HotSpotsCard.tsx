@@ -1,12 +1,10 @@
-import { Badge, Card, Checkbox, Flex, Text } from '@radix-ui/themes'
+import { Card, Flex, Radio, Text } from '@radix-ui/themes'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover'
 
-import styles from './HotSpotsCard.module.scss'
-
 export const HotSpotsCard = () => {
   const { selectedCountryFeature } = useMapData()
-  const { hotspotCheckbox, onCheckboxStateChange } = useMapVisualization()
+  const { hotspotRadio, onRadioStateChange } = useMapVisualization()
   const shorelineChangeMagnitude = selectedCountryFeature?.properties?.shoreline_change_magnitude
 
   return (
@@ -35,25 +33,21 @@ export const HotSpotsCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
             <Flex align='center' gap='2'>
-              <Checkbox
-                size='2'
-                variant='surface'
-                className={styles.checkboxButton}
-                checked={hotspotCheckbox.hotspotsHigh}
-                onCheckedChange={() => onCheckboxStateChange('hotspotsHigh')}
+              <Radio
+                name='hotspotRadio'
+                value='high'
+                checked={hotspotRadio === 'high'}
+                onClick={() => onRadioStateChange('high')}
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.high_change_km)).toLocaleString() ??
                   '-'}{' '}
                 km
               </Text>
+              <Text size='3' color='gray'>
+                High Change (&gt;5m)
+              </Text>
             </Flex>
-            <Badge
-              size='1'
-              style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}
-            >
-              High Change (&gt;5m)
-            </Badge>
           </Flex>
           <Flex
             justify='between'
@@ -61,50 +55,39 @@ export const HotSpotsCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
             <Flex align='center' gap='2'>
-              <Checkbox
-                size='2'
-                variant='surface'
-                className={styles.checkboxButton}
-                checked={hotspotCheckbox.hotspotsModerate}
-                onCheckedChange={() => onCheckboxStateChange('hotspotsModerate')}
+              <Radio
+                name='hotspotRadio'
+                value='moderate'
+                checked={hotspotRadio === 'moderate'}
+                onClick={() => onRadioStateChange('moderate')}
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.medium_change_km)).toLocaleString() ??
                   '-'}{' '}
                 km
               </Text>
+              <Text size='3' color='gray'>
+                Moderate Change (&gt;3m)
+              </Text>
             </Flex>
-            <Badge
-              size='1'
-              style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}
-            >
-              Moderate Change (3.0-5m)
-            </Badge>
           </Flex>
           <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
             <Flex align='center' gap='2'>
-              <Checkbox
-                size='2'
-                variant='surface'
-                className={styles.checkboxButton}
-                checked={hotspotCheckbox.hotspotsLow}
-                onCheckedChange={() => onCheckboxStateChange('hotspotsLow')}
+              <Radio
+                name='hotspotRadio'
+                value='low'
+                checked={hotspotRadio === 'low'}
+                onClick={() => onRadioStateChange('low')}
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.low_change_km)).toLocaleString() ??
                   '-'}{' '}
                 km
               </Text>
+              <Text size='3' color='gray'>
+                Low Change (&gt;2m)
+              </Text>
             </Flex>
-            <Badge
-              size='1'
-              style={{
-                backgroundColor: 'var(--success-a3)',
-                color: 'var(--success-a11)',
-              }}
-            >
-              Low Change (2.0-2.99m)
-            </Badge>
           </Flex>
         </Flex>
       </Flex>
