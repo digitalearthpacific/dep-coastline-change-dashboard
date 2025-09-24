@@ -161,16 +161,32 @@ export const MainMap = ({
     if (hotspotRadio === 'moderate') {
       filters.push([
         'any',
-        ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
-        ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
+        [
+          'all',
+          ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
+          ['<', ['get', 'rate_time'], HIGH_CHANGE_THRESHOLD],
+        ],
+        [
+          'all',
+          ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
+          ['>', ['get', 'rate_time'], -HIGH_CHANGE_THRESHOLD],
+        ],
       ])
     }
 
     if (hotspotRadio === 'low') {
       filters.push([
         'any',
-        ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
-        ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
+        [
+          'all',
+          ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
+          ['<', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
+        ],
+        [
+          'all',
+          ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
+          ['>', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
+        ],
       ])
     }
 
@@ -536,6 +552,7 @@ export const MainMap = ({
     let countryUniqueFeatures = uniqueFeatures.filter(
       (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
     )
+    console.log('countryUniqueFeatures before filtering', countryUniqueFeatures)
 
     const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
 
@@ -550,15 +567,22 @@ export const MainMap = ({
     if (hotspotRadio === 'moderate') {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
         return (
-          feature.rate_time > MODERATE_CHANGE_THRESHOLD ||
-          feature.rate_time < -MODERATE_CHANGE_THRESHOLD
+          (feature.rate_time > MODERATE_CHANGE_THRESHOLD &&
+            feature.rate_time <= HIGH_CHANGE_THRESHOLD) ||
+          (feature.rate_time < -MODERATE_CHANGE_THRESHOLD &&
+            feature.rate_time >= -HIGH_CHANGE_THRESHOLD)
         )
       })
     }
 
     if (hotspotRadio === 'low') {
       filterConditions.push((feature: ContiguousHotspotProperties) => {
-        return feature.rate_time > LOW_CHANGE_THRESHOLD || feature.rate_time < -LOW_CHANGE_THRESHOLD
+        return (
+          (feature.rate_time > LOW_CHANGE_THRESHOLD &&
+            feature.rate_time <= MODERATE_CHANGE_THRESHOLD) ||
+          (feature.rate_time < -LOW_CHANGE_THRESHOLD &&
+            feature.rate_time >= -MODERATE_CHANGE_THRESHOLD)
+        )
       })
     }
 
@@ -570,6 +594,7 @@ export const MainMap = ({
       countryUniqueFeatures = []
     }
 
+    console.log('countryUniqueFeatures after filtering', countryUniqueFeatures)
     setContiguousHotspotFeatures(countryUniqueFeatures)
   }
 
