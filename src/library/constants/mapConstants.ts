@@ -168,30 +168,30 @@ export const MAP_EXPRESSION_CONFIGS = {
     'case',
     // High Retreat < -5 - Dark Red
     ['<', ['get', 'rate_time'], -HIGH_CHANGE_THRESHOLD],
-    'rgba(204, 88, 3, 0.5)',
+    'rgba(204, 88, 3, 0.3)',
 
     // Moderate Retreat < -3 (but >= -5) - Light Orange
     ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
-    'rgba(255, 158, 27, 0.5)',
+    'rgba(255, 158, 27, 0.3)',
 
     // Low Retreat < -2 (but >= -3) - Yellow
     ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
-    'rgba(255, 210, 127, 0.5)',
+    'rgba(255, 210, 127, 0.3)',
 
     // High Growth > 5 - Dark Blue
     ['>', ['get', 'rate_time'], HIGH_CHANGE_THRESHOLD],
-    'rgba(0, 123, 255, 0.5)',
+    'rgba(0, 123, 255, 0.3)',
 
     // Moderate Growth > 3 (but <= 5) - Light Blue
     ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
-    'rgba(89, 172, 255, 0.5)',
+    'rgba(89, 172, 255, 0.3)',
 
     // Low Growth > 2 (but <= 3) - Light Cyan
     ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
-    'rgba(151, 223, 255, 0.5)',
+    'rgba(151, 223, 255, 0.3)',
 
     // fallback - Grey
-    'rgba(141, 141, 141, 0.5)',
+    'rgba(141, 141, 141, 0.3)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors

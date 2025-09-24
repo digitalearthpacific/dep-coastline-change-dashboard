@@ -383,6 +383,7 @@ export const MainMap = ({
             type: 'fill',
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
+            minzoom: 4,
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
             filter: createHotspotFilterExpressionNew(),
             paint: {
@@ -400,6 +401,7 @@ export const MainMap = ({
             type: 'line',
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
+            minzoom: 4,
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
             filter: createHotspotFilterExpressionNew(),
             paint: {
@@ -409,12 +411,7 @@ export const MainMap = ({
                 hotspotSelectedColorExpression,
                 HOTSPOT_COLOR_EXPRESSION,
               ],
-              'line-width': [
-                'case',
-                ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
-                2,
-                0.5,
-              ],
+              'line-width': 2,
             },
           },
           firstLabelLayerId,
@@ -552,7 +549,6 @@ export const MainMap = ({
     let countryUniqueFeatures = uniqueFeatures.filter(
       (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
     )
-    console.log('countryUniqueFeatures before filtering', countryUniqueFeatures)
 
     const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
 
@@ -594,7 +590,6 @@ export const MainMap = ({
       countryUniqueFeatures = []
     }
 
-    console.log('countryUniqueFeatures after filtering', countryUniqueFeatures)
     setContiguousHotspotFeatures(countryUniqueFeatures)
   }
 
@@ -661,12 +656,6 @@ export const MainMap = ({
     const selectedUid = selectedHotspotData?.uid || ''
 
     if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-      map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-width', [
-        'case',
-        ['==', ['get', 'uid'], selectedUid],
-        2,
-        0.5,
-      ])
       map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-color', [
         'case',
         ['==', ['get', 'uid'], selectedUid],
