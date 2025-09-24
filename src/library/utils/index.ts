@@ -7,4 +7,5 @@ export {
 } from './mapUtils'
 export { getNameByCountryCode, findCountryIdByName } from './countryUtils'
 export { getUniqueHotspotFeatures } from './getUniqueHotspotFeatures'
+export { applyHotspotRadioFilter } from './applyHotspotRadioFilter'
 export { normalize } from './normalize'

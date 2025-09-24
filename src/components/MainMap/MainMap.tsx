@@ -33,6 +33,7 @@ import {
   getBaseMapStyle,
   getHotspotSelectedColorExpression,
   findFirstLabelLayerId,
+  applyHotspotRadioFilter,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 
@@ -520,53 +521,27 @@ export const MainMap = ({
       return
     }
 
-    // Query only rendered features in the current viewport
-    const sourceFeatures = map.queryRenderedFeatures(undefined, {
-      layers: [LAYER_IDS.HOTSPOT_FILL], // Specify the layer instead of source
-    })
-
-    const features = sourceFeatures.map(
-      (feature) => feature.properties as ContiguousHotspotProperties,
-    )
-
-    const uniqueFeatures = getUniqueHotspotFeatures(features)
-    let countryUniqueFeatures = uniqueFeatures.filter(
-      (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
-    )
-
-    // Define exact value matching conditions
-    const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
-
-    if (hotspotRadio === 'high') {
-      filterConditions.push((feature: ContiguousHotspotProperties) => {
-        return feature.rate_time === GROWTH_VALUES.HIGH || feature.rate_time === RETREAT_VALUES.HIGH
+    try {
+      // Query rendered features with country filter applied directly
+      const sourceFeatures = map.queryRenderedFeatures(undefined, {
+        layers: [LAYER_IDS.HOTSPOT_FILL],
+        filter: ['==', ['get', 'ISO_Ter1'], selectedCountryFeature.properties?.id],
       })
-    }
 
-    if (hotspotRadio === 'moderate') {
-      filterConditions.push((feature: ContiguousHotspotProperties) => {
-        return (
-          feature.rate_time === GROWTH_VALUES.MODERATE ||
-          feature.rate_time === RETREAT_VALUES.MODERATE
-        )
-      })
-    }
-
-    if (hotspotRadio === 'low') {
-      filterConditions.push((feature: ContiguousHotspotProperties) => {
-        return feature.rate_time === GROWTH_VALUES.LOW || feature.rate_time === RETREAT_VALUES.LOW
-      })
-    }
-
-    if (filterConditions.length > 0) {
-      countryUniqueFeatures = countryUniqueFeatures.filter((feature) =>
-        filterConditions.some((condition) => condition(feature)),
+      // Extract and enrich features with _pbf data
+      const enrichedFeatures = sourceFeatures.map(
+        (feature) => feature.properties as ContiguousHotspotProperties,
       )
-    } else {
-      countryUniqueFeatures = []
-    }
 
-    setContiguousHotspotFeatures(countryUniqueFeatures)
+      // Get unique features and apply hotspot radio filter
+      const uniqueFeatures = getUniqueHotspotFeatures(enrichedFeatures)
+      const filteredFeatures = applyHotspotRadioFilter(uniqueFeatures, hotspotRadio)
+
+      setContiguousHotspotFeatures(filteredFeatures)
+    } catch (error) {
+      console.error('Error processing map features:', error)
+      setContiguousHotspotFeatures([])
+    }
   }
 
   // Effects
