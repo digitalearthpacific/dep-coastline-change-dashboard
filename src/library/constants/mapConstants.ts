@@ -6,10 +6,17 @@ import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 
 const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
-export const SIGNIFICANCE_THRESHOLD = 0.01
-export const HIGH_CHANGE_THRESHOLD = 5
-export const MODERATE_CHANGE_THRESHOLD = 3
-export const LOW_CHANGE_THRESHOLD = 2
+export const RETREAT_VALUES = {
+  HIGH: -6,
+  MODERATE: -4,
+  LOW: -2.5,
+} as const
+
+export const GROWTH_VALUES = {
+  HIGH: 6,
+  MODERATE: 4,
+  LOW: 2.5,
+} as const
 
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
@@ -166,31 +173,27 @@ export const MAP_EXPRESSION_CONFIGS = {
 
   HOTSPOT_COLOR_EXPRESSION: [
     'case',
-    // High Retreat < -5 - Dark Red
-    ['<', ['get', 'rate_time'], -HIGH_CHANGE_THRESHOLD],
-    'rgba(204, 88, 3, 0.3)',
+    // Exact value matching for retreats
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
+    'rgba(204, 88, 3, 0.3)', // High Retreat
 
-    // Moderate Retreat < -3 (but >= -5) - Light Orange
-    ['<', ['get', 'rate_time'], -MODERATE_CHANGE_THRESHOLD],
-    'rgba(255, 158, 27, 0.3)',
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.MODERATE],
+    'rgba(255, 158, 27, 0.3)', // Moderate Retreat
 
-    // Low Retreat < -2 (but >= -3) - Yellow
-    ['<', ['get', 'rate_time'], -LOW_CHANGE_THRESHOLD],
-    'rgba(255, 210, 127, 0.3)',
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.LOW],
+    'rgba(255, 210, 127, 0.3)', // Low Retreat
 
-    // High Growth > 5 - Dark Blue
-    ['>', ['get', 'rate_time'], HIGH_CHANGE_THRESHOLD],
-    'rgba(0, 123, 255, 0.3)',
+    // Exact value matching for growth
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.HIGH],
+    'rgba(0, 123, 255, 0.3)', // High Growth
 
-    // Moderate Growth > 3 (but <= 5) - Light Blue
-    ['>', ['get', 'rate_time'], MODERATE_CHANGE_THRESHOLD],
-    'rgba(89, 172, 255, 0.3)',
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.MODERATE],
+    'rgba(89, 172, 255, 0.3)', // Moderate Growth
 
-    // Low Growth > 2 (but <= 3) - Light Cyan
-    ['>', ['get', 'rate_time'], LOW_CHANGE_THRESHOLD],
-    'rgba(151, 223, 255, 0.3)',
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.LOW],
+    'rgba(151, 223, 255, 0.3)', // Low Growth
 
-    // fallback - Grey
+    // fallback (for any other values like 0 or unexpected values)
     'rgba(141, 141, 141, 0.3)',
   ] as ExpressionSpecification,
 

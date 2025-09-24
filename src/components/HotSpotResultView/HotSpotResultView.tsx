@@ -7,11 +7,7 @@ import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
 import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
-import {
-  HIGH_CHANGE_THRESHOLD,
-  LOW_CHANGE_THRESHOLD,
-  MODERATE_CHANGE_THRESHOLD,
-} from '../../library/constants'
+import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null
@@ -23,7 +19,8 @@ type HotSpotResultViewProps = {
 const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === null) return null
 
-  if (rateOfChange < -HIGH_CHANGE_THRESHOLD) {
+  // Exact value matching for retreats
+  if (rateOfChange === RETREAT_VALUES.HIGH) {
     return (
       <Badge size='3' style={{ backgroundColor: '#CC5803', color: '#ffffff' }}>
         Retreat High Change (&gt;5 m)
@@ -31,7 +28,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  if (rateOfChange < -MODERATE_CHANGE_THRESHOLD) {
+  if (rateOfChange === RETREAT_VALUES.MODERATE) {
     return (
       <Badge size='3' style={{ backgroundColor: '#FF9E1B', color: '#ffffff' }}>
         Retreat Moderate Change (&gt;3 m)
@@ -39,7 +36,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  if (rateOfChange < -LOW_CHANGE_THRESHOLD) {
+  if (rateOfChange === RETREAT_VALUES.LOW) {
     return (
       <Badge size='3' style={{ backgroundColor: '#FFD27F', color: '#773404' }}>
         Retreat Low Change (&gt;2 m)
@@ -47,7 +44,8 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  if (rateOfChange > HIGH_CHANGE_THRESHOLD) {
+  // Exact value matching for growth
+  if (rateOfChange === GROWTH_VALUES.HIGH) {
     return (
       <Badge size='3' style={{ backgroundColor: '#007BFF', color: '#ffffff' }}>
         Growth High Change (&gt;5 m)
@@ -55,7 +53,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  if (rateOfChange > MODERATE_CHANGE_THRESHOLD) {
+  if (rateOfChange === GROWTH_VALUES.MODERATE) {
     return (
       <Badge size='3' style={{ backgroundColor: '#59ACFF', color: '#ffffff' }}>
         Growth Moderate Change (&gt;3 m)
@@ -63,7 +61,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  if (rateOfChange > LOW_CHANGE_THRESHOLD) {
+  if (rateOfChange === GROWTH_VALUES.LOW) {
     return (
       <Badge size='3' style={{ backgroundColor: '#97DFFF', color: '#00448C' }}>
         Growth Low Change (&gt;2 m)
@@ -71,7 +69,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
     )
   }
 
-  // Fallback for no significant change
+  // Fallback for no significant change or unexpected values
   return (
     <Badge size='3' style={{ backgroundColor: '#8D8D8D', color: '#ffffff' }}>
       No Significant Change
