@@ -520,8 +520,9 @@ export const MainMap = ({
       return
     }
 
-    const sourceFeatures = map.querySourceFeatures(SOURCE_IDS.HOTSPOTS, {
-      sourceLayer: 'contiguous_hotspots',
+    // Query only rendered features in the current viewport
+    const sourceFeatures = map.queryRenderedFeatures(undefined, {
+      layers: [LAYER_IDS.HOTSPOT_FILL], // Specify the layer instead of source
     })
 
     const features = sourceFeatures.map(
