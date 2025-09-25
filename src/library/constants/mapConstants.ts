@@ -27,8 +27,12 @@ export const MAP_CONFIG = {
   } as MapViewState,
 
   NAVIGATION_CONTROL_STYLE: {
-    marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
-    marginRight: 'var(--navigation-control-margin-right, 24px)',
+    marginBottom: 'var(--navigation-control-margin-bottom)',
+    marginRight: 'var(--navigation-control-margin-right)',
+  },
+
+  SCALE_CONTROL_STYLE: {
+    marginLeft: 'var(--scale-control-margin-left)',
   },
 
   FLY_TO_ZOOM: {
@@ -171,7 +175,7 @@ export const MAP_EXPRESSION_CONFIGS = {
     '#fcffa4',
   ] as ExpressionSpecification,
 
-  HOTSPOT_COLOR_EXPRESSION: [
+  HOTSPOT_FILL_COLOR_EXPRESSION: [
     'case',
     // Exact value matching for retreats
     ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
@@ -197,6 +201,32 @@ export const MAP_EXPRESSION_CONFIGS = {
     'rgba(141, 141, 141, 0.3)',
   ] as ExpressionSpecification,
 
+  HOTSPOT_OUTLINE_COLOR_EXPRESSION_: [
+    'case',
+    // Exact value matching for retreats
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
+    'rgba(204, 88, 3, 1)', // High Retreat
+
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.MODERATE],
+    'rgba(255, 158, 27, 1)', // Moderate Retreat
+
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.LOW],
+    'rgba(255, 210, 127, 1)', // Low Retreat
+
+    // Exact value matching for growth
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.HIGH],
+    'rgba(0, 123, 255, 1)', // High Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.MODERATE],
+    'rgba(89, 172, 255, 1)', // Moderate Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.LOW],
+    'rgba(151, 223, 255, 1)', // Low Growth
+
+    // fallback (for any other values like 0 or unexpected values)
+    'rgba(141, 141, 141, 1)',
+  ] as ExpressionSpecification,
+
   // Selected hotspot colors
   HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT: '#FFFFFF',
   HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK: '#000000',
@@ -207,7 +237,9 @@ export const SOURCE_IDS = MAP_LAYERS.SOURCES
 export const TILE_URLS = MAP_LAYERS.TILE_URLS
 export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
 export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
-export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
+export const HOTSPOT_FILL_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_FILL_COLOR_EXPRESSION
+export const HOTSPOT_OUTLINE_COLOR_EXPRESSION =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_OUTLINE_COLOR_EXPRESSION_
 export const HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT =
   MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT
 export const HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK =

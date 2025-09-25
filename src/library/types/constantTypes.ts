@@ -4,6 +4,11 @@ export type PacificCountry = {
   readonly name: string
 }
 
+export type CustomCountryBboxType = Record<
+  PacificCountry['id'],
+  [number, number, number, number] | null
+>
+
 // Responsive types
 export type ResponsiveState = {
   isMobileWidth: boolean

@@ -17,11 +17,13 @@
 /* ===== MAPLIBRE ZOOM CONTROLS ===== */
 :root {
   --navigation-control-margin-right: 24px;
-  --navigation-control-margin-bottom: 106px;
+  --navigation-control-margin-bottom: 85px;
+  --scale-control-margin-left: 170px;
 
   @include mobile-only {
     --navigation-control-margin-right: 16px;
     --navigation-control-margin-bottom: 96px;
+    --scale-control-margin-left: 10px;
   }
 }
 
@@ -82,7 +84,7 @@
 .customMapTools {
   position: absolute;
   right: var(--space-5, 24px);
-  bottom: var(--space-5, 24px);
+  bottom: var(--space-8, 32px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -117,7 +119,7 @@
 
 .mapLegendContainer {
   position: absolute;
-  bottom: 40px;
+  bottom: 10px;
   left: var(--space-5, 24px);
   background: var(--white, #fff);
   border-radius: var(--radius-4, 8px);

@@ -1,5 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
+import Map, { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl/maplibre'
 import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
@@ -17,12 +17,14 @@ import {
   SOURCE_IDS,
   SHORELINE_FILTERS,
   SHORELINE_COLOR_EXPRESSION,
-  HOTSPOT_COLOR_EXPRESSION,
+  HOTSPOT_FILL_COLOR_EXPRESSION,
+  HOTSPOT_OUTLINE_COLOR_EXPRESSION,
   TILE_URLS,
   RETREAT_LEGEND_ITEMS,
   GROWTH_LEGEND_ITEMS,
   RETREAT_VALUES,
   GROWTH_VALUES,
+  CUSTOM_COUNTRY_BBOXES,
 } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
@@ -114,6 +116,7 @@ export const MainMap = ({
 
   // Computed values
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
+  const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
 
@@ -189,9 +192,29 @@ export const MainMap = ({
 
   // Bbox options for country fitting
   const createBBoxOptions = useCallback(() => {
-    if (!selectedCountryFeature?.bbox) return null
+    // Early return if no country is selected or no bbox available
+    if (!selectedCountryFeature?.bbox) {
+      return null
+    }
 
-    const [minX, minY, maxX, maxY] = selectedCountryFeature.bbox as [number, number, number, number]
+    const countryId = selectedCountryFeature.properties?.id
+    if (!countryId) {
+      console.warn('Selected country feature missing ID property')
+      return null
+    }
+
+    // Use custom bbox if available, otherwise fall back to feature bbox
+    const customBbox = CUSTOM_COUNTRY_BBOXES[countryId]
+    const bbox = customBbox || selectedCountryFeature.bbox
+
+    // Validate bbox format
+    if (!Array.isArray(bbox) || bbox.length !== 4) {
+      console.error('Invalid bbox format:', bbox)
+      return null
+    }
+
+    const [minX, minY, maxX, maxY] = bbox
+
     return {
       bounds: [
         [minX, minY],
@@ -371,7 +394,7 @@ export const MainMap = ({
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
             filter: createHotspotFilterExpression(),
             paint: {
-              'fill-color': HOTSPOT_COLOR_EXPRESSION,
+              'fill-color': HOTSPOT_FILL_COLOR_EXPRESSION,
             },
           },
           firstLabelLayerId,
@@ -393,7 +416,7 @@ export const MainMap = ({
                 'case',
                 ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
                 hotspotSelectedColorExpression,
-                HOTSPOT_COLOR_EXPRESSION,
+                HOTSPOT_OUTLINE_COLOR_EXPRESSION,
               ],
               'line-width': 2,
             },
@@ -611,7 +634,7 @@ export const MainMap = ({
         'case',
         ['==', ['get', 'uid'], selectedUid],
         hotspotSelectedColorExpression,
-        HOTSPOT_COLOR_EXPRESSION,
+        HOTSPOT_OUTLINE_COLOR_EXPRESSION,
       ])
     }
   }, [selectedHotspotData])
@@ -655,7 +678,13 @@ export const MainMap = ({
         attributionControl={false}
         onIdle={handleMapChange}
       >
-        <AttributionControl position='bottom-left' compact />
+        <AttributionControl position='bottom-right' compact />
+        <ScaleControl
+          key={scaleControlKey}
+          position='bottom-left'
+          maxWidth={120}
+          style={MAP_CONFIG.SCALE_CONTROL_STYLE}
+        />
         <NavigationControl
           key={navigationControlKey}
           position={isMobileWidth ? 'top-right' : 'bottom-right'}
