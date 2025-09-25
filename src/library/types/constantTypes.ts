@@ -4,6 +4,11 @@ export type PacificCountry = {
   readonly name: string
 }
 
+export type CustomCountryBboxType = Record<
+  PacificCountry['id'],
+  [number, number, number, number] | null
+>
+
 // Responsive types
 export type ResponsiveState = {
   isMobileWidth: boolean
@@ -16,10 +21,4 @@ export type RatesOfChangeYear = {
 
 export type DateType = 'start' | 'end'
 
-export type ChartType = 'bar' | 'line'
-
-export type HotspotCheckboxState = {
-  hotspotsHigh: boolean
-  hotspotsModerate: boolean
-  hotspotsLow: boolean
-}
+export type HotspotRadioState = 'high' | 'moderate' | 'low'

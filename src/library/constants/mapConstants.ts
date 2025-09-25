@@ -6,10 +6,17 @@ import DarkMapStyleThumbNail from '../../assets/dark-thumbnail.png'
 import type { ExpressionSpecification, FilterSpecification } from 'maplibre-gl'
 
 const MAP_TILER_API_KEY = import.meta.env.COASTLINE_APP_MAP_TILER_API_KEY
-export const SIGNIFICANCE_THRESHOLD = 0.01
-export const HIGH_CHANGE_THRESHOLD = 5
-export const MODERATE_CHANGE_THRESHOLD = 3
-export const LOW_CHANGE_THRESHOLD = 2
+export const RETREAT_VALUES = {
+  HIGH: -6,
+  MODERATE: -4,
+  LOW: -2.5,
+} as const
+
+export const GROWTH_VALUES = {
+  HIGH: 6,
+  MODERATE: 4,
+  LOW: 2.5,
+} as const
 
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
@@ -20,8 +27,12 @@ export const MAP_CONFIG = {
   } as MapViewState,
 
   NAVIGATION_CONTROL_STYLE: {
-    marginBottom: 'var(--navigation-control-margin-bottom, 106px)',
-    marginRight: 'var(--navigation-control-margin-right, 24px)',
+    marginBottom: 'var(--navigation-control-margin-bottom)',
+    marginRight: 'var(--navigation-control-margin-right)',
+  },
+
+  SCALE_CONTROL_STYLE: {
+    marginLeft: 'var(--scale-control-margin-left)',
   },
 
   FLY_TO_ZOOM: {
@@ -82,11 +93,35 @@ export const BASE_MAPS = [
   },
 ] as const
 
+export const BASE_MAP_LABEL_PATTERNS = [
+  'label',
+  'text',
+  'place',
+  'poi',
+  'road-label',
+  'water-label',
+  'country-label',
+  'state-label',
+  'city-label',
+  'settlement',
+] as const
+
 export const LEGEND_ITEMS = [
-  { key: 'high', label: '>5 m', text: 'High', extraStyleClass: 'highChange' },
-  { key: 'moderate', label: '3.0-5 m', text: 'Moderate', extraStyleClass: 'moderateChange' },
-  { key: 'low', label: '2.0-2.99 m', text: 'Low', extraStyleClass: 'lowChange' },
+  { key: 'high-retreat', label: '>5 m', text: 'High', extraStyleClass: 'highRetreat' },
+  {
+    key: 'moderate-retreat',
+    label: '>3 m',
+    text: 'Moderate',
+    extraStyleClass: 'moderateRetreat',
+  },
+  { key: 'low-retreat', label: '>2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
+  { key: 'high-growth', label: '>5 m', text: 'High', extraStyleClass: 'highGrowth' },
+  { key: 'moderate-growth', label: '>3 m', text: 'Moderate', extraStyleClass: 'moderateGrowth' },
+  { key: 'low-growth', label: '>2 m', text: 'Low', extraStyleClass: 'lowGrowth' },
 ]
+
+export const RETREAT_LEGEND_ITEMS = LEGEND_ITEMS.slice(0, 3)
+export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3)
 
 export const MAP_LAYERS = {
   IDS: {
@@ -109,8 +144,8 @@ export const MAP_LAYERS = {
   TILE_URLS: {
     BUILDINGS: 'https://tileserver.prod.digitalearthpacific.io/data/buildings/{z}/{x}/{y}.pbf',
     MANGROVES:
-      'https://ows.prod.digitalearthpacific.io/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=mangroves&STYLES=style_mangroves&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}',
-    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines.json',
+      'https://ows.prod.digitalearthpacific.io/wms?SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap&LAYERS=mangroves&STYLES=style_mangroves_alt&FORMAT=image/png&TRANSPARENT=true&CRS=EPSG:3857&WIDTH=512&HEIGHT=512&BBOX={bbox-epsg-3857}',
+    COASTLINES: 'https://tileserver.prod.digitalearthpacific.io/data/coastlines/{z}/{x}/{y}.pbf',
     HOTSPOTS:
       'https://tileserver.prod.digitalearthpacific.io/data/dashboard-hotspot-stats/{z}/{x}/{y}.pbf',
   },
@@ -140,143 +175,61 @@ export const MAP_EXPRESSION_CONFIGS = {
     '#fcffa4',
   ] as ExpressionSpecification,
 
-  HOTSPOT_COLOR_EXPRESSION: [
+  HOTSPOT_FILL_COLOR_EXPRESSION: [
     'case',
-    // High > 5
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    'rgba(210, 0, 5, 0.7)',
+    // Exact value matching for retreats
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
+    'rgba(204, 88, 3, 0.3)', // High Retreat
 
-    // Moderate 3–5
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    'rgba(255, 179, 0, 0.7)',
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.MODERATE],
+    'rgba(255, 158, 27, 0.3)', // Moderate Retreat
 
-    // Low 2–2.99
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    'rgba(0, 146, 75, 0.7)',
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.LOW],
+    'rgba(255, 210, 127, 0.3)', // Low Retreat
 
-    // fallback
-    'rgba(141, 141, 141, 0.7)',
+    // Exact value matching for growth
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.HIGH],
+    'rgba(0, 123, 255, 0.3)', // High Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.MODERATE],
+    'rgba(89, 172, 255, 0.3)', // Moderate Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.LOW],
+    'rgba(151, 223, 255, 0.3)', // Low Growth
+
+    // fallback (for any other values like 0 or unexpected values)
+    'rgba(141, 141, 141, 0.3)',
+  ] as ExpressionSpecification,
+
+  HOTSPOT_OUTLINE_COLOR_EXPRESSION_: [
+    'case',
+    // Exact value matching for retreats
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
+    'rgba(204, 88, 3, 1)', // High Retreat
+
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.MODERATE],
+    'rgba(255, 158, 27, 1)', // Moderate Retreat
+
+    ['==', ['get', 'rate_time'], RETREAT_VALUES.LOW],
+    'rgba(255, 210, 127, 1)', // Low Retreat
+
+    // Exact value matching for growth
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.HIGH],
+    'rgba(0, 123, 255, 1)', // High Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.MODERATE],
+    'rgba(89, 172, 255, 1)', // Moderate Growth
+
+    ['==', ['get', 'rate_time'], GROWTH_VALUES.LOW],
+    'rgba(151, 223, 255, 1)', // Low Growth
+
+    // fallback (for any other values like 0 or unexpected values)
+    'rgba(141, 141, 141, 1)',
   ] as ExpressionSpecification,
 
   // Selected hotspot colors
-  HOTSPOT_SELECTED_COLOR_EXPRESSION: [
-    'case',
-    // High > 5
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    'rgba(85, 0, 13, 0.9)',
-
-    // Moderate 3–5
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    'rgba(52, 21, 0, 0.9)',
-
-    // Low 2–2.99
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    'rgba(0, 38, 22, 0.9)',
-
-    // fallback
-    '#000000',
-  ] as ExpressionSpecification,
-
-  HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE: '#FFFFFF',
-
-  // Add hotspot visibility filter
-  HOTSPOT_VISIBILITY_FILTER: [
-    'any',
-    [
-      '>',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      HIGH_CHANGE_THRESHOLD,
-    ],
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      MODERATE_CHANGE_THRESHOLD,
-    ],
-    [
-      '>=',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-    [
-      '<',
-      [
-        'case',
-        ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-        ['abs', ['get', 'rate_time']],
-        ['get', 'rate_time'],
-      ],
-      LOW_CHANGE_THRESHOLD,
-    ],
-  ] as FilterSpecification,
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT: '#FFFFFF',
+  HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK: '#000000',
 } as const
 
 export const LAYER_IDS = MAP_LAYERS.IDS
@@ -284,9 +237,10 @@ export const SOURCE_IDS = MAP_LAYERS.SOURCES
 export const TILE_URLS = MAP_LAYERS.TILE_URLS
 export const SHORELINE_FILTERS = MAP_EXPRESSION_CONFIGS.SHORELINE_FILTERS
 export const SHORELINE_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.SHORELINE_COLOR_EXPRESSION
-export const HOTSPOT_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_COLOR_EXPRESSION
-export const HOTSPOT_SELECTED_COLOR_EXPRESSION =
-  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION
-export const HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE =
-  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_SIMPLE
-export const HOTSPOT_VISIBILITY_FILTER = MAP_EXPRESSION_CONFIGS.HOTSPOT_VISIBILITY_FILTER
+export const HOTSPOT_FILL_COLOR_EXPRESSION = MAP_EXPRESSION_CONFIGS.HOTSPOT_FILL_COLOR_EXPRESSION
+export const HOTSPOT_OUTLINE_COLOR_EXPRESSION =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_OUTLINE_COLOR_EXPRESSION_
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT
+export const HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK =
+  MAP_EXPRESSION_CONFIGS.HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK

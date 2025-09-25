@@ -1,9 +1,9 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
-import Map, { AttributionControl, NavigationControl } from 'react-map-gl/maplibre'
+import Map, { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl/maplibre'
 import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
-import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -16,14 +16,15 @@ import {
   LAYER_IDS,
   SOURCE_IDS,
   SHORELINE_FILTERS,
-  LEGEND_ITEMS,
   SHORELINE_COLOR_EXPRESSION,
-  HOTSPOT_COLOR_EXPRESSION,
+  HOTSPOT_FILL_COLOR_EXPRESSION,
+  HOTSPOT_OUTLINE_COLOR_EXPRESSION,
   TILE_URLS,
-  SIGNIFICANCE_THRESHOLD,
-  HIGH_CHANGE_THRESHOLD,
-  MODERATE_CHANGE_THRESHOLD,
-  LOW_CHANGE_THRESHOLD,
+  RETREAT_LEGEND_ITEMS,
+  GROWTH_LEGEND_ITEMS,
+  RETREAT_VALUES,
+  GROWTH_VALUES,
+  CUSTOM_COUNTRY_BBOXES,
 } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
@@ -33,6 +34,8 @@ import {
   getUniqueHotspotFeatures,
   getBaseMapStyle,
   getHotspotSelectedColorExpression,
+  findFirstLabelLayerId,
+  applyHotspotRadioFilter,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 
@@ -45,19 +48,48 @@ type MainMapProps = {
 }
 
 const MapLegend = () => (
-  <div className={styles.mapLegend}>
-    <div className={styles.legendTitle}>Hotspots</div>
-    <div className={styles.legendSubtitle}>Levels of change</div>
-    <div className={styles.legendItems}>
-      {LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-        <div key={key} className={styles.legendItem}>
-          <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-          <span className={styles.legendText}>
-            <strong>{label}</strong> {text}
-          </span>
-        </div>
-      ))}
-    </div>
+  <div className={styles.mapLegendContainer}>
+    <Flex direction='column' gap='2'>
+      <Flex direction='column'>
+        <Text size='2' weight='bold'>
+          Hotspots
+        </Text>
+        <Text size='1'>Levels of change</Text>
+      </Flex>
+      <Text size='1' weight='bold'>
+        Retreat
+      </Text>
+      <Flex
+        direction='column'
+        gap='1'
+        style={{
+          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
+          paddingBottom: 'var(--space-2, 8px)',
+        }}
+      >
+        {RETREAT_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
+          <Flex key={key} gap='2'>
+            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
+            <Text size='1'>
+              <strong>{label}</strong> {text}
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+      <Text size='1' weight='bold'>
+        Growth
+      </Text>
+      <Flex direction='column' gap='1'>
+        {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
+          <Flex key={key} gap='2'>
+            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
+            <Text size='1'>
+              <strong>{label}</strong> {text}
+            </Text>
+          </Flex>
+        ))}
+      </Flex>
+    </Flex>
   </div>
 )
 
@@ -69,12 +101,12 @@ export const MainMap = ({
   handleHotspotDataChange,
 }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
+  const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
-  const { startDate, endDate, hotspotCheckbox } = useMapVisualization()
+  const { startDate, endDate, hotspotRadio } = useMapVisualization()
 
   // State
-  const [shouldAnimate, setShouldAnimate] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
@@ -84,9 +116,9 @@ export const MainMap = ({
 
   // Computed values
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
+  const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
-  const { hotspotsHigh, hotspotsModerate, hotspotsLow } = hotspotCheckbox
 
   // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
@@ -117,72 +149,31 @@ export const MainMap = ({
     [startDate, endDate],
   )
 
-  // Build dynamic filters for hotspots based on hotspot checkboxes
+  // Build dynamic filters for hotspots based on hotspot radio selection
   const createHotspotFilterExpression = useCallback((): FilterSpecification => {
     const filters: FilterSpecification[] = []
 
-    if (hotspotsHigh) {
+    if (hotspotRadio === 'high') {
       filters.push([
-        '>',
-        [
-          'case',
-          ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-          ['abs', ['get', 'rate_time']],
-          ['get', 'rate_time'],
-        ],
-        HIGH_CHANGE_THRESHOLD,
+        'any',
+        ['==', ['get', 'rate_time'], GROWTH_VALUES.HIGH],
+        ['==', ['get', 'rate_time'], RETREAT_VALUES.HIGH],
       ])
     }
 
-    if (hotspotsModerate) {
+    if (hotspotRadio === 'moderate') {
       filters.push([
-        'all',
-        [
-          '>=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          MODERATE_CHANGE_THRESHOLD,
-        ],
-        [
-          '<=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          HIGH_CHANGE_THRESHOLD,
-        ],
+        'any',
+        ['==', ['get', 'rate_time'], GROWTH_VALUES.MODERATE],
+        ['==', ['get', 'rate_time'], RETREAT_VALUES.MODERATE],
       ])
     }
 
-    if (hotspotsLow) {
+    if (hotspotRadio === 'low') {
       filters.push([
-        'all',
-        [
-          '>=',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          LOW_CHANGE_THRESHOLD,
-        ],
-        [
-          '<',
-          [
-            'case',
-            ['<', ['get', 'sig_time'], SIGNIFICANCE_THRESHOLD],
-            ['abs', ['get', 'rate_time']],
-            ['get', 'rate_time'],
-          ],
-          MODERATE_CHANGE_THRESHOLD,
-        ],
+        'any',
+        ['==', ['get', 'rate_time'], GROWTH_VALUES.LOW],
+        ['==', ['get', 'rate_time'], RETREAT_VALUES.LOW],
       ])
     }
 
@@ -197,91 +188,33 @@ export const MainMap = ({
       ['==', ['get', 'ISO_Ter1'], selectedCountryFeature?.properties?.id],
       baseFilter,
     ] as FilterSpecification
-  }, [selectedCountryFeature?.properties?.id, hotspotsLow, hotspotsModerate, hotspotsHigh])
-
-  const updateCountryDataByHotspotFeatures = useCallback(
-    (map: MapLibreMap) => {
-      if (!selectedCountryFeature) {
-        setContiguousHotspotFeatures([])
-        return
-      }
-
-      const sourceFeatures = map.querySourceFeatures(SOURCE_IDS.HOTSPOTS, {
-        sourceLayer: 'contiguous_hotspots',
-      })
-
-      const features = sourceFeatures.map(
-        (feature) => feature.properties as ContiguousHotspotProperties,
-      )
-
-      const uniqueFeatures = getUniqueHotspotFeatures(features)
-
-      let countryUniqueFeatures = uniqueFeatures.filter(
-        (feature) => feature.ISO_Ter1 === selectedCountryFeature?.properties?.id,
-      )
-
-      const filterConditions: ((feature: ContiguousHotspotProperties) => boolean)[] = []
-
-      if (hotspotsHigh) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-          return rateTimeChange > HIGH_CHANGE_THRESHOLD
-        })
-      }
-
-      if (hotspotsModerate) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-
-          return (
-            rateTimeChange >= MODERATE_CHANGE_THRESHOLD && rateTimeChange <= HIGH_CHANGE_THRESHOLD
-          )
-        })
-      }
-
-      if (hotspotsLow) {
-        filterConditions.push((feature: ContiguousHotspotProperties) => {
-          const rateTimeChange =
-            feature.sig_time < SIGNIFICANCE_THRESHOLD
-              ? Math.abs(feature.rate_time)
-              : feature.rate_time
-
-          return (
-            rateTimeChange >= LOW_CHANGE_THRESHOLD && rateTimeChange < MODERATE_CHANGE_THRESHOLD
-          )
-        })
-      }
-
-      if (filterConditions.length > 0) {
-        countryUniqueFeatures = countryUniqueFeatures.filter((feature) =>
-          filterConditions.some((condition) => condition(feature)),
-        )
-      } else {
-        countryUniqueFeatures = []
-      }
-
-      setContiguousHotspotFeatures(countryUniqueFeatures)
-    },
-    [
-      hotspotsLow,
-      hotspotsModerate,
-      hotspotsHigh,
-      selectedCountryFeature,
-      setContiguousHotspotFeatures,
-    ],
-  )
+  }, [hotspotRadio, selectedCountryFeature?.properties?.id])
 
   // Bbox options for country fitting
   const createBBoxOptions = useCallback(() => {
-    if (!selectedCountryFeature?.bbox) return null
+    // Early return if no country is selected or no bbox available
+    if (!selectedCountryFeature?.bbox) {
+      return null
+    }
 
-    const [minX, minY, maxX, maxY] = selectedCountryFeature.bbox as [number, number, number, number]
+    const countryId = selectedCountryFeature.properties?.id
+    if (!countryId) {
+      console.warn('Selected country feature missing ID property')
+      return null
+    }
+
+    // Use custom bbox if available, otherwise fall back to feature bbox
+    const customBbox = CUSTOM_COUNTRY_BBOXES[countryId]
+    const bbox = customBbox || selectedCountryFeature.bbox
+
+    // Validate bbox format
+    if (!Array.isArray(bbox) || bbox.length !== 4) {
+      console.error('Invalid bbox format:', bbox)
+      return null
+    }
+
+    const [minX, minY, maxX, maxY] = bbox
+
     return {
       bounds: [
         [minX, minY],
@@ -294,27 +227,34 @@ export const MainMap = ({
   // Layer management functions
   const addBuildingsLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.BUILDINGS)) {
         map.addSource(SOURCE_IDS.BUILDINGS, {
           type: 'vector',
           tiles: [TILE_URLS.BUILDINGS],
+          minzoom: 0,
+          maxzoom: 13,
         })
       }
 
       if (!map.getLayer(LAYER_IDS.BUILDINGS)) {
-        map.addLayer({
-          id: LAYER_IDS.BUILDINGS,
-          type: 'fill',
-          source: SOURCE_IDS.BUILDINGS,
-          'source-layer': 'buildings',
-          minzoom: 6,
-          layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
-          paint: {
-            'fill-color': '#FF751F',
-            'fill-outline-color': '#4e4e4e',
-            'fill-opacity': 0.8,
+        map.addLayer(
+          {
+            id: LAYER_IDS.BUILDINGS,
+            type: 'fill',
+            source: SOURCE_IDS.BUILDINGS,
+            'source-layer': 'buildings',
+            minzoom: 6,
+            layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
+            paint: {
+              'fill-color': '#FF751F',
+              'fill-outline-color': '#4e4e4e',
+              'fill-opacity': 0.8,
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
     },
     [isBuildingsLayerVisible],
@@ -322,6 +262,8 @@ export const MainMap = ({
 
   const addMangrovesLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.MANGROVES)) {
         map.addSource(SOURCE_IDS.MANGROVES, {
           type: 'raster',
@@ -331,14 +273,17 @@ export const MainMap = ({
       }
 
       if (!map.getLayer(LAYER_IDS.MANGROVES)) {
-        map.addLayer({
-          id: LAYER_IDS.MANGROVES,
-          type: 'raster',
-          source: SOURCE_IDS.MANGROVES,
-          minzoom: 6,
-          layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
-          paint: { 'raster-opacity': 0.6 },
-        })
+        map.addLayer(
+          {
+            id: LAYER_IDS.MANGROVES,
+            type: 'raster',
+            source: SOURCE_IDS.MANGROVES,
+            minzoom: 6,
+            layout: { visibility: isMangrovesLayerVisible ? 'visible' : 'none' },
+            paint: { 'raster-opacity': 0.6 },
+          },
+          firstLabelLayerId,
+        )
       }
     },
     [isMangrovesLayerVisible],
@@ -346,10 +291,14 @@ export const MainMap = ({
 
   const addShorelineChangeLayer = useCallback(
     (map: MapLibreMap) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
+
       if (!map.getSource(SOURCE_IDS.COASTLINES)) {
         map.addSource(SOURCE_IDS.COASTLINES, {
           type: 'vector',
-          url: TILE_URLS.COASTLINES,
+          tiles: [TILE_URLS.COASTLINES],
+          minzoom: 0,
+          maxzoom: 13,
         })
       }
 
@@ -377,17 +326,20 @@ export const MainMap = ({
 
       shorelineLayers.forEach(({ id, filter, paint }) => {
         if (!map.getLayer(id)) {
-          map.addLayer({
-            id,
-            type: 'line',
-            source: SOURCE_IDS.COASTLINES,
-            'source-layer': 'shorelines_annual',
-            minzoom: 13,
-            maxzoom: 22,
-            filter,
-            layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
-            paint,
-          })
+          map.addLayer(
+            {
+              id,
+              type: 'line',
+              source: SOURCE_IDS.COASTLINES,
+              'source-layer': 'shorelines_annual',
+              minzoom: 13,
+              maxzoom: 22,
+              filter,
+              layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
+              paint,
+            },
+            firstLabelLayerId,
+          )
         }
       })
 
@@ -418,6 +370,7 @@ export const MainMap = ({
 
   const addContiguousHotspot = useCallback(
     (map: MapLibreMap, overrideBaseMap?: MapStyleType) => {
+      const firstLabelLayerId = findFirstLabelLayerId(map)
       const baseMapForExpression = overrideBaseMap || baseMapRef.current
       const hotspotSelectedColorExpression = getHotspotSelectedColorExpression(baseMapForExpression)
 
@@ -425,41 +378,51 @@ export const MainMap = ({
         map.addSource(SOURCE_IDS.HOTSPOTS, {
           type: 'vector',
           tiles: [TILE_URLS.HOTSPOTS],
+          minzoom: 0,
+          maxzoom: 13,
         })
       }
 
       if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
-        map.addLayer({
-          id: LAYER_IDS.HOTSPOT_FILL,
-          type: 'fill',
-          source: SOURCE_IDS.HOTSPOTS,
-          'source-layer': 'contiguous_hotspots',
-          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-          filter: createHotspotFilterExpression(),
-          paint: {
-            'fill-color': HOTSPOT_COLOR_EXPRESSION,
+        map.addLayer(
+          {
+            id: LAYER_IDS.HOTSPOT_FILL,
+            type: 'fill',
+            source: SOURCE_IDS.HOTSPOTS,
+            'source-layer': 'contiguous_hotspots',
+            minzoom: 4,
+            layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+            filter: createHotspotFilterExpression(),
+            paint: {
+              'fill-color': HOTSPOT_FILL_COLOR_EXPRESSION,
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
 
       if (!map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-        map.addLayer({
-          id: LAYER_IDS.HOTSPOT_OUTLINE,
-          type: 'line',
-          source: SOURCE_IDS.HOTSPOTS,
-          'source-layer': 'contiguous_hotspots',
-          layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
-          filter: createHotspotFilterExpression(),
-          paint: {
-            'line-color': [
-              'case',
-              ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
-              hotspotSelectedColorExpression,
-              HOTSPOT_COLOR_EXPRESSION,
-            ],
-            'line-width': ['case', ['==', ['get', 'uid'], selectedHotspotData?.uid || ''], 2, 0.5],
+        map.addLayer(
+          {
+            id: LAYER_IDS.HOTSPOT_OUTLINE,
+            type: 'line',
+            source: SOURCE_IDS.HOTSPOTS,
+            'source-layer': 'contiguous_hotspots',
+            minzoom: 4,
+            layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
+            filter: createHotspotFilterExpression(),
+            paint: {
+              'line-color': [
+                'case',
+                ['==', ['get', 'uid'], selectedHotspotData?.uid || ''],
+                hotspotSelectedColorExpression,
+                HOTSPOT_OUTLINE_COLOR_EXPRESSION,
+              ],
+              'line-width': 2,
+            },
           },
-        })
+          firstLabelLayerId,
+        )
       }
     },
     [selectedHotspotData, isHotspotLayerVisible, createHotspotFilterExpression],
@@ -481,16 +444,21 @@ export const MainMap = ({
     }
 
     // Add all layers
-    addShorelineChangeLayer(map)
     addBuildingsLayer(map)
     addMangrovesLayer(map)
     addContiguousHotspot(map)
+    addShorelineChangeLayer(map)
 
     // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
       if (e.features?.[0]) {
         const featureProperties = e.features[0].properties as ContiguousHotspotProperties
-        handleHotspotDataChange(featureProperties)
+
+        if (selectedHotspotDataRef.current?.uid === featureProperties.uid) {
+          handleHotspotDataChange(null)
+        } else {
+          handleHotspotDataChange(featureProperties)
+        }
       }
     }
 
@@ -565,41 +533,72 @@ export const MainMap = ({
     setIsBaseMapPopupOpen((prev) => !prev)
   }, [])
 
+  const handleMapChange = () => {
+    const map = mapRef.current?.getMap()
+    if (!map) {
+      return
+    }
+
+    if (!selectedCountryFeature) {
+      setContiguousHotspotFeatures([])
+      return
+    }
+
+    try {
+      // Query rendered features with country filter applied directly
+      const sourceFeatures = map.queryRenderedFeatures(undefined, {
+        layers: [LAYER_IDS.HOTSPOT_FILL],
+        filter: ['==', ['get', 'ISO_Ter1'], selectedCountryFeature.properties?.id],
+      })
+
+      // Extract and enrich features with _pbf data
+      const enrichedFeatures = sourceFeatures.map(
+        (feature) => feature.properties as ContiguousHotspotProperties,
+      )
+
+      // Get unique features and apply hotspot radio filter
+      const uniqueFeatures = getUniqueHotspotFeatures(enrichedFeatures)
+      const filteredFeatures = applyHotspotRadioFilter(uniqueFeatures, hotspotRadio)
+
+      setContiguousHotspotFeatures(filteredFeatures)
+    } catch (error) {
+      console.error('Error processing map features:', error)
+      setContiguousHotspotFeatures([])
+    }
+  }
+
   // Effects
+  // Update map size and fit to country bounds on load or when selected country changes
   useEffect(() => {
-    if (!isMapLoaded || !selectedCountryFeature || shouldAnimate) return
+    if (!isMapLoaded) return
 
     const mapContainer = mapRef.current?.getContainer().parentElement
     if (mapContainer) {
       mapContainer.style.transition = 'none'
       mapRef.current?.resize()
       mapContainer.style.transition = ''
-
-      const bboxOptions = createBBoxOptions()
-      if (bboxOptions) {
-        mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
-      }
-      setShouldAnimate(true)
     }
-  }, [isMapLoaded, selectedCountryFeature, shouldAnimate, createBBoxOptions])
-
-  useEffect(() => {
-    if (!isMapLoaded || !shouldAnimate || !selectedCountryFeature) return
 
     const bboxOptions = createBBoxOptions()
     if (bboxOptions) {
       mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
+    } else {
+      mapRef.current?.flyTo({
+        center: [MAP_CONFIG.INITIAL_VIEW_STATE.longitude, MAP_CONFIG.INITIAL_VIEW_STATE.latitude],
+        zoom: MAP_CONFIG.INITIAL_VIEW_STATE.zoom,
+        duration: MAP_CONFIG.FLY_TO_DURATION,
+      })
     }
-  }, [selectedCountryFeature, shouldAnimate, createBBoxOptions, isMapLoaded])
+  }, [isMapLoaded, createBBoxOptions])
 
-  useEffect(() => {
-    if (!selectedCountryFeature) setShouldAnimate(false)
-  }, [selectedCountryFeature])
-
-  // Update the ref whenever baseMap changes (separate effect)
+  // Update the ref (separate effect)
   useEffect(() => {
     baseMapRef.current = baseMap
   }, [baseMap])
+
+  useEffect(() => {
+    selectedHotspotDataRef.current = selectedHotspotData
+  }, [selectedHotspotData])
 
   // Update shoreline layer visibility and filters
   useEffect(() => {
@@ -631,17 +630,11 @@ export const MainMap = ({
     const selectedUid = selectedHotspotData?.uid || ''
 
     if (map.getLayer(LAYER_IDS.HOTSPOT_OUTLINE)) {
-      map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-width', [
-        'case',
-        ['==', ['get', 'uid'], selectedUid],
-        2,
-        0.5,
-      ])
       map.setPaintProperty(LAYER_IDS.HOTSPOT_OUTLINE, 'line-color', [
         'case',
         ['==', ['get', 'uid'], selectedUid],
         hotspotSelectedColorExpression,
-        HOTSPOT_COLOR_EXPRESSION,
+        HOTSPOT_OUTLINE_COLOR_EXPRESSION,
       ])
     }
   }, [selectedHotspotData])
@@ -663,16 +656,7 @@ export const MainMap = ({
         }
       }
     })
-
-    if (isHotspotLayerVisible) {
-      const handleMapIdle = () => {
-        updateCountryDataByHotspotFeatures(map)
-        map.off('idle', handleMapIdle)
-      }
-
-      map.once('idle', handleMapIdle)
-    }
-  }, [isHotspotLayerVisible, createHotspotFilterExpression, updateCountryDataByHotspotFeatures])
+  }, [isHotspotLayerVisible, createHotspotFilterExpression])
 
   // Container classes
   const containerClasses = clsx(styles.mapContainer, {
@@ -692,8 +676,15 @@ export const MainMap = ({
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
+        onIdle={handleMapChange}
       >
-        <AttributionControl position='bottom-left' compact />
+        <AttributionControl position='bottom-right' compact />
+        <ScaleControl
+          key={scaleControlKey}
+          position='bottom-left'
+          maxWidth={120}
+          style={MAP_CONFIG.SCALE_CONTROL_STYLE}
+        />
         <NavigationControl
           key={navigationControlKey}
           position={isMobileWidth ? 'top-right' : 'bottom-right'}

@@ -1,5 +1,6 @@
 import { Card, Flex, Text } from '@radix-ui/themes'
 import { CustomPopover } from '../CustomPopover'
+import { formatCount } from '../../library/utils/formatCount'
 
 type BuildingsCardProps = {
   numberOfBuildings: number | null
@@ -7,11 +8,6 @@ type BuildingsCardProps = {
 
 const BUILDINGS_INFO =
   'Buildings data were extracted from OpenStreetMap in August, 2025 and represent all building types.'
-
-const formatBuildingCount = (count: number | null): string => {
-  if (count === null) return '—'
-  return Math.round(Number(count)).toLocaleString()
-}
 
 export const BuildingsCard = ({ numberOfBuildings }: BuildingsCardProps) => {
   return (
@@ -30,7 +26,7 @@ export const BuildingsCard = ({ numberOfBuildings }: BuildingsCardProps) => {
         </header>
 
         <Text as='div' size='8' weight='bold'>
-          {formatBuildingCount(numberOfBuildings)}
+          {formatCount(numberOfBuildings)}
         </Text>
       </Flex>
     </Card>

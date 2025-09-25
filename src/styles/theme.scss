@@ -73,18 +73,19 @@
   --blue-indicator: #0097d2;
   --blue-track: #0097d2;
 
-  /* Alert Semantic Colors */
+  /* Alert Semantic Alpha Colors */
   --error-a3: rgba(243, 0, 13, 0.08);
+  --error-a8: rgba(210, 0, 5, 0.44);
+  --error-a10: rgba(209, 0, 5, 0.76);
   --error-a11: rgba(196, 0, 6, 0.83);
   --warning-a3: rgba(255, 222, 0, 0.24);
+  --warning-a9: rgba(255, 179, 0, 0.76);
+  --warning-a10: rgba(255, 179, 0, 0.91);
   --warning-a11: rgba(171, 100, 0, 1);
   --success-a3: rgba(0, 164, 51, 0.1);
-  --success-a11: rgba(0, 113, 63, 0.87);
-
-  /* Alert Semantic Alpha Colors */
-  --error-a8: rgba(210, 0, 5, 0.44);
-  --warning-a9: rgba(255, 179, 0, 0.76);
   --success-a8: rgba(0, 146, 75, 0.64);
+  --success-a10: rgba(0, 134, 71, 0.83);
+  --success-a11: rgba(0, 113, 63, 0.87);
 
   /* ===== SPACING ===== */
   --space-1: 4px;
@@ -94,4 +95,22 @@
   --space-5: 20px;
 
   --radius-1: 4px;
+
+  /* ===== HOTSPOT COLORS ===== */
+
+  /* Hotspot Colors (with Alpha) */
+  --hotspot-retreat-high: rgba(204, 88, 3, 0.7);
+  --hotspot-retreat-moderate: rgba(255, 158, 27, 0.7);
+  --hotspot-retreat-low: rgba(255, 210, 127, 0.7);
+  --hotspot-growth-high: rgba(0, 123, 255, 0.7);
+  --hotspot-growth-moderate: rgba(89, 172, 255, 0.7);
+  --hotspot-growth-low: rgba(151, 223, 255, 0.7);
+
+  /* Hotspot Solid Colors */
+  --hotspot-retreat-high-solid: rgb(204, 88, 3);
+  --hotspot-retreat-moderate-solid: rgb(255, 158, 27);
+  --hotspot-retreat-low-solid: rgb(255, 210, 127);
+  --hotspot-growth-high-solid: rgb(0, 123, 255);
+  --hotspot-growth-moderate-solid: rgb(89, 172, 255);
+  --hotspot-growth-low-solid: rgb(151, 223, 255);
 }

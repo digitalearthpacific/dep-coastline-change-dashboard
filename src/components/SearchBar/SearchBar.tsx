@@ -5,11 +5,15 @@ import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils'
-import type { CountryGeoJSONFeature } from '../../library/types'
+import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
-export const SearchBar = () => {
+export const SearchBar = ({
+  handleHotspotDataChange,
+}: {
+  handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
+}) => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
-  const { resetChartDefaultSettings } = useMapVisualization()
+  const { resetStartAndEndDate } = useMapVisualization()
   const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
 
   // Sync local dropdown value with global selected country
@@ -23,14 +27,16 @@ export const SearchBar = () => {
 
   const handleSelectNone = () => {
     setDropdownValue(SEARCHBAR_INITIAL_VALUE)
+    handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(null)
-    resetChartDefaultSettings()
+    resetStartAndEndDate()
   }
 
   const handleSelectCountry = (country: CountryGeoJSONFeature) => {
     const countryName = getNameByCountryCode(country)
 
     setDropdownValue(countryName)
+    handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(country)
   }
 

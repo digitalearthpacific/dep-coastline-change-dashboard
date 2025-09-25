@@ -17,11 +17,13 @@
 /* ===== MAPLIBRE ZOOM CONTROLS ===== */
 :root {
   --navigation-control-margin-right: 24px;
-  --navigation-control-margin-bottom: 106px;
+  --navigation-control-margin-bottom: 85px;
+  --scale-control-margin-left: 170px;
 
   @include mobile-only {
     --navigation-control-margin-right: 16px;
     --navigation-control-margin-bottom: 96px;
+    --scale-control-margin-left: 10px;
   }
 }
 
@@ -82,7 +84,7 @@
 .customMapTools {
   position: absolute;
   right: var(--space-5, 24px);
-  bottom: var(--space-5, 24px);
+  bottom: var(--space-8, 32px);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -115,9 +117,9 @@
   }
 }
 
-.mapLegend {
+.mapLegendContainer {
   position: absolute;
-  bottom: 40px;
+  bottom: 10px;
   left: var(--space-5, 24px);
   background: var(--white, #fff);
   border-radius: var(--radius-4, 8px);
@@ -134,31 +136,6 @@
   }
 }
 
-.legendTitle {
-  font-size: var(--font-size-2, 14px);
-  font-weight: 700;
-  color: var(--gray-12, #202020);
-}
-
-.legendSubtitle {
-  font-size: var(--font-size-1, 12px);
-  font-weight: 400;
-  color: var(--gray-11, #646464);
-  margin-bottom: var(--space-2, 8px);
-}
-
-.legendItems {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.legendItem {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
 .legendCircle {
   width: 16px;
   height: 16px;
@@ -170,25 +147,25 @@
     height: 12px;
   }
 
-  &.highChange {
-    background-color: var(--error-a8, rgba(210, 0, 5, 0.44)); // Red/coral color
+  &.highRetreat {
+    background-color: #cc5803;
   }
 
-  &.moderateChange {
-    background-color: var(--warning-a9, rgba(255, 179, 0, 0.76)); // Orange/yellow color
+  &.moderateRetreat {
+    background-color: #ff9e1b;
   }
 
-  &.lowChange {
-    background-color: var(--success-a8, rgba(0, 146, 75, 0.64)); // Green color
+  &.lowRetreat {
+    background-color: #ffd27f;
   }
 
-  &.stableChange {
-    background-color: var(--gray-9, rgba(141, 141, 141, 1)); // Grey color
+  &.highGrowth {
+    background-color: #007bff;
   }
-}
-
-.legendText {
-  font-size: var(--font-size-1, 12px);
-  color: var(--gray-a12, rgba(0, 0, 0, 0.87));
-  font-weight: 500;
+  &.moderateGrowth {
+    background-color: #59acff;
+  }
+  &.lowGrowth {
+    background-color: #97dfff;
+  }
 }

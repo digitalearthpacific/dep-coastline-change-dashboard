@@ -1,15 +1,13 @@
 import { createContext } from 'react'
-import type { ChartType, DateType, HotspotCheckboxState } from '../library/types'
+import type { DateType, HotspotRadioState } from '../library/types'
 
 interface MapVisualizationContextType {
   startDate: string | null
   endDate: string | null
-  selectedChartType: ChartType
   onDateChange: (dateType: DateType, value: string) => void
-  onChartTypeChange: (type: ChartType) => void
-  resetChartDefaultSettings: () => void
-  hotspotCheckbox: HotspotCheckboxState
-  onCheckboxStateChange: (name: keyof HotspotCheckboxState) => void
+  resetStartAndEndDate: () => void
+  hotspotRadio: HotspotRadioState
+  onRadioStateChange: (value: HotspotRadioState) => void
 }
 
 export const MapVisualizationContext = createContext<MapVisualizationContextType | undefined>(

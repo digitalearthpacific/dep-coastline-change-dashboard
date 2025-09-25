@@ -3,10 +3,11 @@ import { Badge, Flex, Grid } from '@radix-ui/themes'
 import { PopulationCard } from '../PopulationCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { BuildingsCard } from '../BuildingsCard'
-import { RateOfChangeCard } from '../RateOfChangeCard'
 import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
+import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
+import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 
 type HotSpotResultViewProps = {
   selectedCountryFeature: CountryGeoJSONFeature | null
@@ -15,38 +16,63 @@ type HotSpotResultViewProps = {
   goToBackgroundInfoView: () => void
 }
 
-const HotSpotBadge = ({ hotspotIndicator }: { hotspotIndicator: number | undefined }) => {
-  if (hotspotIndicator === undefined) return null
+const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
+  if (rateOfChange === null) return null
 
-  const absoluteHotspotIndicator = Math.abs(hotspotIndicator)
-
-  if (absoluteHotspotIndicator > 5) {
+  // Exact value matching for retreats
+  if (rateOfChange === RETREAT_VALUES.HIGH) {
     return (
-      <Badge size='3' style={{ backgroundColor: 'var(--error-a3)', color: 'var(--error-a11)' }}>
-        High Change (&gt;5 m)
+      <Badge size='3' style={{ backgroundColor: '#CC5803', color: '#ffffff' }}>
+        Retreat High Change (&gt;5 m)
       </Badge>
     )
   }
 
-  if (absoluteHotspotIndicator >= 2.99 && absoluteHotspotIndicator <= 5) {
+  if (rateOfChange === RETREAT_VALUES.MODERATE) {
     return (
-      <Badge size='3' style={{ backgroundColor: 'var(--warning-a3)', color: 'var(--warning-a11)' }}>
-        Moderate Change (3 - 5 m)
+      <Badge size='3' style={{ backgroundColor: '#FF9E1B', color: '#ffffff' }}>
+        Retreat Moderate Change (&gt;3 m)
       </Badge>
     )
   }
 
-  if (absoluteHotspotIndicator >= 2) {
+  if (rateOfChange === RETREAT_VALUES.LOW) {
     return (
-      <Badge size='3' style={{ backgroundColor: 'var(--success-a3)', color: 'var(--success-a11)' }}>
-        Low Change (2 - 2.99 m)
+      <Badge size='3' style={{ backgroundColor: '#FFD27F', color: '#773404' }}>
+        Retreat Low Change (&gt;2 m)
       </Badge>
     )
   }
 
+  // Exact value matching for growth
+  if (rateOfChange === GROWTH_VALUES.HIGH) {
+    return (
+      <Badge size='3' style={{ backgroundColor: '#007BFF', color: '#ffffff' }}>
+        Growth High Change (&gt;5 m)
+      </Badge>
+    )
+  }
+
+  if (rateOfChange === GROWTH_VALUES.MODERATE) {
+    return (
+      <Badge size='3' style={{ backgroundColor: '#59ACFF', color: '#ffffff' }}>
+        Growth Moderate Change (&gt;3 m)
+      </Badge>
+    )
+  }
+
+  if (rateOfChange === GROWTH_VALUES.LOW) {
+    return (
+      <Badge size='3' style={{ backgroundColor: '#97DFFF', color: '#00448C' }}>
+        Growth Low Change (&gt;2 m)
+      </Badge>
+    )
+  }
+
+  // Fallback for no significant change or unexpected values
   return (
-    <Badge size='3' style={{ backgroundColor: 'var(--gray-a3)', color: 'var(--gray-a11)' }}>
-      Stable (&lt;2 m)
+    <Badge size='3' style={{ backgroundColor: '#8D8D8D', color: '#ffffff' }}>
+      No Significant Change
     </Badge>
   )
 }
@@ -62,12 +88,12 @@ export const HotSpotResultView = ({
   const numberOfBuildings = selectedHotspotData?.building_counts ?? null
   const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
   const rateOfChange = selectedHotspotData?.rate_time ?? null
-  const hotspotIndicator = Number(rateOfChange)
+  const hotspotArea = selectedHotspotData?.area_ha ?? null
 
   return (
     <>
       <Flex direction={isMobileWidth ? 'column' : 'row'} justify='between' align='center' gap='2'>
-        <HotSpotBadge hotspotIndicator={hotspotIndicator} />
+        <HotSpotBadge rateOfChange={rateOfChange} />
         <Flex direction={isMobileWidth ? 'column' : 'row'} gap='4' py={isMobileWidth ? '3' : '3'}>
           {selectedCountryFeature && (
             <TextButton ariaLabel='View Country Information' onClick={goToCountryView}>
@@ -81,7 +107,7 @@ export const HotSpotResultView = ({
       </Flex>
       <DateRangeSelect />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <RateOfChangeCard rateOfChange={rateOfChange} />
+        <HotspotAreaCard hotspotArea={hotspotArea} />
         <PopulationCard totalPopulation={totalPopulation} />
       </Grid>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>

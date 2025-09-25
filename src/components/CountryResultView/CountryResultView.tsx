@@ -1,5 +1,5 @@
 import useResponsive from '../../hooks/useResponsive'
-import { Flex, Grid } from '@radix-ui/themes'
+import { Flex, Grid, Text } from '@radix-ui/themes'
 import { ShorelineChangeCard } from '../ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
@@ -54,6 +54,15 @@ export const CountryResultView = ({
         <ShorelineChangeCard />
         <HotSpotsCard />
       </Grid>
+      <Flex direction='column' gap='1' justify='between'>
+        <Text as='div' size={isMobileWidth ? '4' : '5'} weight='bold'>
+          Key Statistics
+        </Text>
+        <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
+          These numbers show the population, buildings, and mangroves currently visible on the map.
+          They update as you pan or zoom the map to provide insights into your selected location.
+        </Text>
+      </Flex>
       <Grid columns={isMobileWidth ? '1' : '3'} gap='4'>
         <PopulationCard totalPopulation={totalPopulationFromHotspot} />
         <BuildingsCard numberOfBuildings={numberOfBuildingsFromHotspot} />

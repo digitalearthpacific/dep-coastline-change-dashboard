@@ -1,6 +1,7 @@
-import { Button, Flex, Link, Separator, Text } from '@radix-ui/themes'
-import { ArrowLeftIcon } from '@radix-ui/react-icons'
+import { Button, Flex, Link, Separator, Text, Callout } from '@radix-ui/themes'
+import { ArrowLeftIcon, InfoCircledIcon } from '@radix-ui/react-icons'
 import useResponsive from '../../hooks/useResponsive'
+import styles from './BackgroundInformationView.module.scss'
 
 type BackButtonProps = {
   onClick?: () => void
@@ -191,6 +192,12 @@ export const BackgroundInformationView = ({
       <Text as='div' size={isMobileWidth ? '6' : '7'} weight='bold'>
         Background Information
       </Text>
+      <Callout.Root className={styles.backgroundInformationIntroCallout}>
+        <Callout.Icon>
+          <InfoCircledIcon />
+        </Callout.Icon>
+        <Callout.Text>Intro message here</Callout.Text>
+      </Callout.Root>
       <ShorelineChangeSection />
       <Separator orientation='horizontal' size='4' />
       <HotSpotsSection />

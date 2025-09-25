@@ -1,8 +1,10 @@
-import { Checkbox, Flex, Text } from '@radix-ui/themes'
+import { Avatar, Checkbox, Flex, Text } from '@radix-ui/themes'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
 import styles from './BaseMapPopup.module.scss'
+import BuildingsThumbnail from '../../assets/buildings-thumbnail.png'
+import MangrovesThumbnail from '../../assets/mangroves-thumbnail.png'
 import { BASE_MAPS } from '../../library/constants'
 import type { MapStyleType } from '../../library/types'
 
@@ -23,10 +25,10 @@ export const BaseMapPopup = ({
   onBuildingToggle,
   onMangroveToggle,
 }: BaseMapPopupProps) => (
-  <div className={styles.baseMapPopup}>
-    <div className={styles.popupSection}>
-      <div className={styles.mapTypeTitle}>Basemaps</div>
-      <div className={styles.mapTypeContainer}>
+  <div className={styles.popupContainer}>
+    <Flex gap='2' direction='column'>
+      <div className={styles.popupTitle}>Basemaps</div>
+      <Flex gap='2'>
         {BASE_MAPS.map((bm) => (
           <button
             key={bm.key}
@@ -40,11 +42,12 @@ export const BaseMapPopup = ({
             <div>{bm.label}</div>
           </button>
         ))}
-      </div>
-    </div>
-    <div className={styles.popupSection}>
-      <div className={styles.mapTypeTitle}>Map Layers</div>
+      </Flex>
+    </Flex>
+    <Flex gap='2' direction='column'>
+      <div className={styles.popupTitle}>Map Layers</div>
       <Flex gap='2' align='center'>
+        <Avatar size='2' fallback='B' src={BuildingsThumbnail} />
         <Checkbox
           size='2'
           variant='surface'
@@ -55,6 +58,7 @@ export const BaseMapPopup = ({
         <Text size='2'>Buildings</Text>
       </Flex>
       <Flex gap='2' align='center'>
+        <Avatar size='2' fallback='M' src={MangrovesThumbnail} />
         <Checkbox
           size='2'
           variant='classic'
@@ -64,6 +68,6 @@ export const BaseMapPopup = ({
         />
         <Text size='2'>Mangroves</Text>
       </Flex>
-    </div>
+    </Flex>
   </div>
 )
