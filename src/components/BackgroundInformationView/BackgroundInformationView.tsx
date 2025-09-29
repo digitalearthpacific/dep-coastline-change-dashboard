@@ -1,5 +1,5 @@
 import { Button, Flex, Link, Separator, Text, Callout } from '@radix-ui/themes'
-import { ArrowLeftIcon, InfoCircledIcon } from '@radix-ui/react-icons'
+import { ArrowLeftIcon } from '@radix-ui/react-icons'
 import useResponsive from '../../hooks/useResponsive'
 import styles from './BackgroundInformationView.module.scss'
 
@@ -27,12 +27,12 @@ const ShorelineChangeSection = () => (
         with tidal modelling to estimate the location of the shoreline at mean sea level each year.
         It is currently a beta product generated for the years 1999-2023. However, data may not
         exist prior to 2013 or later for some locations, since Landsat satellite coverage was not
-        complete for the Pacific prior to the launch of Landsat 8 in 2013.
+        complete for Pacific Countries and Territories prior to the launch of Landsat 8 in 2013.
       </Text>
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Source
+        References
       </Text>
       <Link
         href='https://www.sciencedirect.com/science/article/pii/S0034425721004545'
@@ -59,11 +59,13 @@ const HotSpotsSection = () => (
         values indicate growth/accretion over time.
       </Text>
       <Text as='div'>
-        The hotspots product is derived from the rates of change product. The median value of
-        shoreline distance from baseline is computed using all rates of change points within 1km of
-        each point. Those showing a significant relationship between these median positions and time
-        are retained. The final hotspot product is produced by grouping overlapping hotspots and
-        recalculating median values, rates of change, and significance for these groups.
+        The depicted hotspot areas are produced by separating rates of change points showing
+        significant change and high certainty into three groups: those showing greater than 2 meters
+        / year of change, greater than 3 meters / year of change and greater than 5 meters per year
+        of change. These points are further separated into those showing coastal retreat and growth.
+        Areas shown are within 500-meters of the points in the corresponding category. Where
+        locations are within this distance of both growth and retreat points, it is categorized
+        based on which type it is closest to.
       </Text>
     </Flex>
   </Flex>
@@ -78,13 +80,14 @@ const PopulationSection = () => (
       <Text as='div'>
         Population counts represent the estimated total population within all hotspots of the
         selected type within the county, or for the selected hotspot. Counts are based on the best
-        available population data and vary by country.
-      </Text>
-      <Text as='div'>
-        Data for Cook Islands, Fiji, Federated States of Micronesia, Kiribati, Marshall Islands,
-        Niue, Nauru, Palau, Samoa, Solomon Islands, Tuvalu, Vanuatu, and Wallis and Futuna are from
-        the SPC Statistics for Development Division (SDD), obtained from the Pacific Data Hub
-        (https://pacificdata.org).
+        available population data and vary by country. Data for Cook Islands, Fiji, Federated States
+        of Micronesia, Kiribati, Marshall Islands, Niue, Nauru, Palau, Samoa, Solomon Islands,
+        Tuvalu, Vanuatu, and Wallis and Futuna are from the SPC Statistics for Development Division
+        (SDD), obtained from the Pacific Data Hub (
+        <Link href='https://pacificdata.org' target='_blank' rel='noopener noreferrer'>
+          https://pacificdata.org
+        </Link>
+        ).
       </Text>
       <Text as='div'>
         Data for American Samoa, Guam, Northern Mariana Islands, New Caledonia, Pitcairn Islands,
@@ -133,7 +136,7 @@ const BuildingsSection = () => (
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Source
+        References
       </Text>
       <Link href='https://www.openstreetmap.org/' target='_blank' rel='noopener noreferrer'>
         https://www.openstreetmap.org/
@@ -147,35 +150,19 @@ const MangrovesSection = () => (
       <Text as='div' size='4' weight='bold'>
         Mangroves
       </Text>
-      <Text as='div'>
-        Mangrove data are from Global Mangrove Watch (version 3) for the year 2020.
-      </Text>
+      <Text as='div'>The Mangrove data was produced by Digital Earth Pacific.</Text>
     </Flex>
     <Flex direction='column' gap='2'>
       <Text as='div' weight='bold'>
-        Data Source
+        References
       </Text>
-      <Link href='https://zenodo.org/records/6894273' target='_blank' rel='noopener noreferrer'>
-        https://zenodo.org/records/6894273
+      <Link
+        href='https://digitalearthpacific.org/#/applications'
+        target='_blank'
+        rel='noopener noreferrer'
+      >
+        https://digitalearthpacific.org/#/applications
       </Link>
-    </Flex>
-  </Flex>
-)
-
-const RateOfChangeSection = () => (
-  <Flex direction='column' gap='4'>
-    <Flex direction='column' gap='2'>
-      <Text as='div' size='4' weight='bold'>
-        Rate of Change
-      </Text>
-      <Text as='div'>
-        The rate of change product is a point dataset providing rates of coastal change (in metres
-        per year) at every 30 m along shorelines. These rates are calculated by performing a linear
-        regression between annual shoreline positions and time (year), using the most recent
-        shoreline as the baseline. Negative values indicate shoreline retreat/erosion, and positive
-        values indicate growth/accretion over time. By default, rates of change are only shown for
-        points with statistically significant trend over time.
-      </Text>
     </Flex>
   </Flex>
 )
@@ -192,11 +179,11 @@ export const BackgroundInformationView = ({
       <Text as='div' size={isMobileWidth ? '6' : '7'} weight='bold'>
         Background Information
       </Text>
-      <Callout.Root className={styles.backgroundInformationIntroCallout}>
-        <Callout.Icon>
-          <InfoCircledIcon />
-        </Callout.Icon>
-        <Callout.Text>Intro message here</Callout.Text>
+      <Callout.Root size='3' className={styles.backgroundInformationIntroCallout}>
+        <Callout.Text>
+          Explore how coastlines are changing and potential risks. Your feedback helps us improve
+          the data and make this tool even more accurate and valuable for everyone.
+        </Callout.Text>
       </Callout.Root>
       <ShorelineChangeSection />
       <Separator orientation='horizontal' size='4' />
@@ -207,8 +194,6 @@ export const BackgroundInformationView = ({
       <BuildingsSection />
       <Separator orientation='horizontal' size='4' />
       <MangrovesSection />
-      <Separator orientation='horizontal' size='4' />
-      <RateOfChangeSection />
     </Flex>
   )
 }
