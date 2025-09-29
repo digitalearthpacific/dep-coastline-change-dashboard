@@ -2,7 +2,7 @@ import type { CustomCountryBboxType, PacificCountry, RatesOfChangeYear } from '.
 
 export const DEFAULT_MOBILE_WIDTH_THRESHOLD = 768
 export const NONE_VALUE = 'none'
-export const SEARCHBAR_INITIAL_VALUE = 'Select location for coastline data'
+export const SEARCHBAR_INITIAL_VALUE = 'Select location for shoreline data'
 export const COUNTRY_DATA_URL =
   'https://dep-public-staging.s3.us-west-2.amazonaws.com/dep_ls_coastlines/dashboard_stats/0-0-8/country_summaries.geojson'
 

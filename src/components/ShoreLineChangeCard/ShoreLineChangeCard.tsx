@@ -17,7 +17,7 @@ export const ShorelineChangeCard = () => {
             <CustomPopover
               ariaLabel='Information about shoreline change'
               content={
-                'The percent of shorelines within each country showing retreat, growth, or stability between the years 1999-2023. For some countries fewer years of data were available. Only statistically significant trends are displayed for retreat and growth, so values do not sum to 100%. Values less than +/- 2km/year were considered stable.'
+                'The kilometers of shoreline within each country showing retreat, growth, or stability between the years 1999-2023.'
               }
             />
           </Flex>
