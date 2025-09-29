@@ -179,7 +179,7 @@ export const BackgroundInformationView = ({
       <Text as='div' size={isMobileWidth ? '6' : '7'} weight='bold'>
         Background Information
       </Text>
-      <Callout.Root className={styles.backgroundInformationIntroCallout}>
+      <Callout.Root size='3' className={styles.backgroundInformationIntroCallout}>
         <Callout.Text>
           Explore how coastlines are changing and potential risks. Your feedback helps us improve
           the data and make this tool even more accurate and valuable for everyone.
