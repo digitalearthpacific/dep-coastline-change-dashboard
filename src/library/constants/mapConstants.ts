@@ -20,9 +20,17 @@ export const GROWTH_VALUES = {
 
 export const MAP_CONFIG = {
   MAP_STYLE: { width: '100%', height: '100%' },
+
+  // Default bbox for when no specific country is selected
+  DEFAULT_BBOX: [
+    [134, -27.9],
+    [-128.2, 4.7],
+  ] as [[number, number], [number, number]],
+
+  // Initial view state centered on the default bbox region
   INITIAL_VIEW_STATE: {
-    longitude: 160,
-    latitude: -10,
+    longitude: -177,
+    latitude: -12,
     zoom: 4,
   } as MapViewState,
 
