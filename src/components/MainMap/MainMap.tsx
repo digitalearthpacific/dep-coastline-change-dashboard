@@ -11,6 +11,7 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
+import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
 import {
   MAP_CONFIG,
   LAYER_IDS,
@@ -79,7 +80,14 @@ const MapLegend = () => (
       <Text size='1' weight='bold'>
         Growth
       </Text>
-      <Flex direction='column' gap='1'>
+      <Flex
+        direction='column'
+        gap='1'
+        style={{
+          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
+          paddingBottom: 'var(--space-2, 8px)',
+        }}
+      >
         {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
           <Flex key={key} gap='2'>
             <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
@@ -88,6 +96,16 @@ const MapLegend = () => (
             </Text>
           </Flex>
         ))}
+      </Flex>
+      <Flex direction='column'>
+        <Text size='1' weight='bold'>
+          Shorelines
+        </Text>
+        <Text size='1'>Dashed shorelines indicate low quality data</Text>
+      </Flex>
+      <Flex align='center' gap='2'>
+        <img src={LowQualityShorelineIcon} alt='Dashed line' />
+        <Text size='1'>Low Quality</Text>
       </Flex>
     </Flex>
   </div>

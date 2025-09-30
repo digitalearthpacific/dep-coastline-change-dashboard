@@ -128,6 +128,7 @@
     0 12px 32px -16px var(--gray-a5, rgba(0, 0, 0, 0.12)),
     0 12px 60px 0 var(--black-a3, rgba(0, 0, 0, 0.15));
   z-index: 1;
+  width: 115px;
 
   @include mobile-only {
     top: 10px;
