@@ -7,7 +7,7 @@ type PopulationCardProps = {
 }
 
 const POPULATION_INFO =
-  'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country.'
+  'Population counts represent the estimated total population within all hotspots of the selected type within the county, or for the selected hotspot. Counts are based on the best available population data and vary by country. The population data is raster based and densities are calculated over relatively large areas, so exact populations may be under or over-represented in the statistics.'
 
 export const PopulationCard = ({ totalPopulation }: PopulationCardProps) => {
   return (

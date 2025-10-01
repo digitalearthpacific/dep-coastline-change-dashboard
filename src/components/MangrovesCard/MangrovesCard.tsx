@@ -7,7 +7,7 @@ type MangrovesCardProps = {
 }
 
 const MANGROVES_INFO =
-  'Mangrove areas were defined by the Global Mangrove Watch dataset v3.0 for the year 2020. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
+  'Mangrove areas were defined by Digital Earth Pacific Mangroves dataset. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
 
 export const MangrovesCard = ({ mangroveArea }: MangrovesCardProps) => {
   return (
@@ -21,7 +21,7 @@ export const MangrovesCard = ({ mangroveArea }: MangrovesCardProps) => {
             <CustomPopover ariaLabel='Information about mangroves' content={MANGROVES_INFO} />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
-            Estimated square area of mangroves in hotspot coastal areas
+            Estimated hectares of mangroves in hotspot coastal areas
           </Text>
         </header>
 

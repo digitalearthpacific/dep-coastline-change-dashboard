@@ -7,7 +7,7 @@ type BuildingsCardProps = {
 }
 
 const BUILDINGS_INFO =
-  'Buildings data were extracted from OpenStreetMap in August, 2025 and represent all building types.'
+  'Buildings data were extracted from OpenStreetMap in August, 2025 and represent all building types. The buildings dataset is not complete for all areas.'
 
 export const BuildingsCard = ({ numberOfBuildings }: BuildingsCardProps) => {
   return (
