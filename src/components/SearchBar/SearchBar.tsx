@@ -9,8 +9,10 @@ import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../l
 
 export const SearchBar = ({
   handleHotspotDataChange,
+  setShowAlert,
 }: {
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
+  setShowAlert: (value: boolean) => void
 }) => {
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
   const { resetStartAndEndDate } = useMapVisualization()
@@ -30,6 +32,7 @@ export const SearchBar = ({
     handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(null)
     resetStartAndEndDate()
+    setShowAlert(false)
   }
 
   const handleSelectCountry = (country: CountryGeoJSONFeature) => {
@@ -38,6 +41,7 @@ export const SearchBar = ({
     setDropdownValue(countryName)
     handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(country)
+    setShowAlert(true)
   }
 
   return (

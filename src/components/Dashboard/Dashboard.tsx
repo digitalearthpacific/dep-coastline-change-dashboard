@@ -16,7 +16,7 @@ export const Dashboard = () => {
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [selectedHotspotData, setSelectedHotspotData] =
     useState<ContiguousHotspotProperties | null>(null)
-  const [showAlert, setShowAlert] = useSessionStorage('dashboardAlert', true)
+  const [showAlert, setShowAlert] = useSessionStorage('dashboardAlert', false)
 
   useEffect(() => {
     const loadCountryData = async () => {
@@ -53,7 +53,9 @@ export const Dashboard = () => {
 
   return (
     <div className={styles.dashboardContainer}>
-      {!isFullscreen && <SearchBar handleHotspotDataChange={handleHotspotDataChange} />}
+      {!isFullscreen && (
+        <SearchBar handleHotspotDataChange={handleHotspotDataChange} setShowAlert={setShowAlert} />
+      )}
       {!isFullscreen && showAlert && (
         <Callout.Root className={styles.alertBanner}>
           <Callout.Icon>

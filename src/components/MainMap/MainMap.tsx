@@ -13,7 +13,12 @@ import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
 import {
-  MAP_CONFIG,
+  DEFAULT_BBOX,
+  FLY_TO_DURATION,
+  MAP_STYLE,
+  INITIAL_VIEW_STATE,
+  SCALE_CONTROL_STYLE,
+  NAVIGATION_CONTROL_STYLE,
   LAYER_IDS,
   SOURCE_IDS,
   SHORELINE_FILTERS,
@@ -118,15 +123,6 @@ export const MainMap = ({
   selectedHotspotData,
   handleHotspotDataChange,
 }: MainMapProps) => {
-  const {
-    DEFAULT_BBOX,
-    FLY_TO_DURATION,
-    MAP_STYLE,
-    INITIAL_VIEW_STATE,
-    SCALE_CONTROL_STYLE,
-    NAVIGATION_CONTROL_STYLE,
-  } = MAP_CONFIG
-
   const mapRef = useRef<MapRef>(null)
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
