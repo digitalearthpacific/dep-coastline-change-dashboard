@@ -4,6 +4,7 @@ import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
+import { usePrevious } from '../../hooks/usePrevious'
 import { getNameByCountryCode } from '../../library/utils'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
@@ -17,6 +18,7 @@ export const SearchBar = ({
   const { selectedCountryFeature, countryApiData, updateCountrySelectAndSearchParam } = useMapData()
   const { resetStartAndEndDate } = useMapVisualization()
   const [dropdownValue, setDropdownValue] = useState<string>(SEARCHBAR_INITIAL_VALUE)
+  const previousSelectedCountry = usePrevious(selectedCountryFeature)
 
   // Sync local dropdown value with global selected country
   useEffect(() => {
@@ -41,7 +43,10 @@ export const SearchBar = ({
     setDropdownValue(countryName)
     handleHotspotDataChange(null)
     updateCountrySelectAndSearchParam(country)
-    setShowAlert(true)
+
+    if (previousSelectedCountry === null) {
+      setShowAlert(true)
+    }
   }
 
   return (
