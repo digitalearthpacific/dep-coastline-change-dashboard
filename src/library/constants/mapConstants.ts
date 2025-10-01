@@ -18,53 +18,35 @@ export const GROWTH_VALUES = {
   LOW: 2.5,
 } as const
 
-export const MAP_CONFIG = {
-  MAP_STYLE: { width: '100%', height: '100%' },
-  INITIAL_VIEW_STATE: {
-    longitude: 160,
-    latitude: -10,
-    zoom: 4,
-  } as MapViewState,
+export const MAP_STYLE = { width: '100%', height: '100%' } as const
 
-  NAVIGATION_CONTROL_STYLE: {
-    marginBottom: 'var(--navigation-control-margin-bottom)',
-    marginRight: 'var(--navigation-control-margin-right)',
-  },
+export const DEFAULT_BBOX = [
+  [134, -27.9],
+  [-128.2, 4.7],
+] as [[number, number], [number, number]]
 
-  SCALE_CONTROL_STYLE: {
-    marginLeft: 'var(--scale-control-margin-left)',
-  },
+export const INITIAL_VIEW_STATE = {
+  longitude: -177,
+  latitude: -12,
+  zoom: 4,
+} as MapViewState
 
-  FLY_TO_ZOOM: {
-    DESKTOP: 8,
-    MOBILE: 6,
-  },
-
-  FLY_TO_DURATION: 2000,
+export const NAVIGATION_CONTROL_STYLE = {
+  marginBottom: 'var(--navigation-control-margin-bottom)',
+  marginRight: 'var(--navigation-control-margin-right)',
 } as const
 
-export const EASING_FUNCTIONS = {
-  smoothstep: (t: number) => t * t * (3 - 2 * t),
-  easeInOutCubic: (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2),
-  easeInOutQuad: (t: number) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
+export const SCALE_CONTROL_STYLE = {
+  marginLeft: 'var(--scale-control-margin-left)',
 } as const
 
-export const FLY_TO_PRESETS = {
-  firstSelection: {
-    essential: true,
-    easing: EASING_FUNCTIONS.smoothstep,
-    curve: 1.2,
-    speed: 1.5,
-    maxDuration: 4000,
-  },
-  subsequentSelection: {
-    essential: true,
-    easing: EASING_FUNCTIONS.easeInOutCubic,
-    curve: 1.1,
-    speed: 1.2,
-    maxDuration: 3000,
-  },
+export const FLY_TO_ZOOM = {
+  DESKTOP: 8,
+  MOBILE: 6,
 } as const
+
+// Map animation duration
+export const FLY_TO_DURATION = 2000 as const
 
 export const BASE_MAPS = [
   {

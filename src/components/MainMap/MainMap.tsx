@@ -11,8 +11,14 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
+import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
 import {
-  MAP_CONFIG,
+  DEFAULT_BBOX,
+  FLY_TO_DURATION,
+  MAP_STYLE,
+  INITIAL_VIEW_STATE,
+  SCALE_CONTROL_STYLE,
+  NAVIGATION_CONTROL_STYLE,
   LAYER_IDS,
   SOURCE_IDS,
   SHORELINE_FILTERS,
@@ -79,7 +85,14 @@ const MapLegend = () => (
       <Text size='1' weight='bold'>
         Growth
       </Text>
-      <Flex direction='column' gap='1'>
+      <Flex
+        direction='column'
+        gap='1'
+        style={{
+          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
+          paddingBottom: 'var(--space-2, 8px)',
+        }}
+      >
         {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
           <Flex key={key} gap='2'>
             <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
@@ -88,6 +101,16 @@ const MapLegend = () => (
             </Text>
           </Flex>
         ))}
+      </Flex>
+      <Flex direction='column'>
+        <Text size='1' weight='bold'>
+          Shorelines
+        </Text>
+        <Text size='1'>Dashed shorelines indicate low quality data</Text>
+      </Flex>
+      <Flex align='center' gap='2'>
+        <img src={LowQualityShorelineIcon} alt='Dashed line' />
+        <Text size='1'>Low Quality</Text>
       </Flex>
     </Flex>
   </div>
@@ -190,18 +213,13 @@ export const MainMap = ({
     ] as FilterSpecification
   }, [hotspotRadio, selectedCountryFeature?.properties?.id])
 
-  // Bbox options for country fitting
-  const createBBoxOptions = useCallback(() => {
-    // Early return if no country is selected or no bbox available
-    if (!selectedCountryFeature?.bbox) {
-      return null
+  // Bounding box for country fitting
+  const createBoundingBox = useCallback(() => {
+    if (!selectedCountryFeature?.bbox || !selectedCountryFeature.properties?.id) {
+      return DEFAULT_BBOX
     }
 
-    const countryId = selectedCountryFeature.properties?.id
-    if (!countryId) {
-      console.warn('Selected country feature missing ID property')
-      return null
-    }
+    const countryId = selectedCountryFeature.properties.id
 
     // Use custom bbox if available, otherwise fall back to feature bbox
     const customBbox = CUSTOM_COUNTRY_BBOXES[countryId]
@@ -210,18 +228,15 @@ export const MainMap = ({
     // Validate bbox format
     if (!Array.isArray(bbox) || bbox.length !== 4) {
       console.error('Invalid bbox format:', bbox)
-      return null
+      return DEFAULT_BBOX
     }
 
     const [minX, minY, maxX, maxY] = bbox
 
-    return {
-      bounds: [
-        [minX, minY],
-        [maxX, maxY],
-      ] as [[number, number], [number, number]],
-      duration: MAP_CONFIG.FLY_TO_DURATION,
-    }
+    return [
+      [minX, minY],
+      [maxX, maxY],
+    ] as [[number, number], [number, number]]
   }, [selectedCountryFeature])
 
   // Layer management functions
@@ -579,17 +594,9 @@ export const MainMap = ({
       mapContainer.style.transition = ''
     }
 
-    const bboxOptions = createBBoxOptions()
-    if (bboxOptions) {
-      mapRef.current?.fitBounds(bboxOptions.bounds, { duration: bboxOptions.duration })
-    } else {
-      mapRef.current?.flyTo({
-        center: [MAP_CONFIG.INITIAL_VIEW_STATE.longitude, MAP_CONFIG.INITIAL_VIEW_STATE.latitude],
-        zoom: MAP_CONFIG.INITIAL_VIEW_STATE.zoom,
-        duration: MAP_CONFIG.FLY_TO_DURATION,
-      })
-    }
-  }, [isMapLoaded, createBBoxOptions])
+    const bounds = createBoundingBox()
+    mapRef.current?.fitBounds(bounds, { duration: FLY_TO_DURATION })
+  }, [isMapLoaded, createBoundingBox])
 
   // Update the ref (separate effect)
   useEffect(() => {
@@ -671,8 +678,8 @@ export const MainMap = ({
       <Map
         id='main-map'
         ref={mapRef}
-        style={MAP_CONFIG.MAP_STYLE}
-        initialViewState={MAP_CONFIG.INITIAL_VIEW_STATE}
+        style={MAP_STYLE}
+        initialViewState={INITIAL_VIEW_STATE}
         mapStyle={getBaseMapStyle(baseMap)}
         onLoad={handleMapLoad}
         attributionControl={false}
@@ -683,13 +690,13 @@ export const MainMap = ({
           key={scaleControlKey}
           position='bottom-left'
           maxWidth={120}
-          style={MAP_CONFIG.SCALE_CONTROL_STYLE}
+          style={SCALE_CONTROL_STYLE}
         />
         <NavigationControl
           key={navigationControlKey}
           position={isMobileWidth ? 'top-right' : 'bottom-right'}
           showCompass={false}
-          style={MAP_CONFIG.NAVIGATION_CONTROL_STYLE}
+          style={NAVIGATION_CONTROL_STYLE}
         />
       </Map>
 
