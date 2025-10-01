@@ -4,7 +4,7 @@ import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
 import { NONE_VALUE, SEARCHBAR_INITIAL_VALUE } from '../../library/constants'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
-import { usePrevious } from '../../hooks/usePrevious'
+import usePrevious from '../../hooks/usePrevious'
 import { getNameByCountryCode } from '../../library/utils'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
 
