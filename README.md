@@ -1,6 +1,6 @@
-# DEP Coastline Change Dashboard
+# DEP Shoreline Change Dashboard
 
-A React dashboard for visualizing coastline change data.
+A React dashboard for visualizing shoreline change data.
 
 ## Local Development
 
