@@ -36,9 +36,17 @@ export const NAVIGATION_CONTROL_STYLE = {
   marginRight: 'var(--navigation-control-margin-right)',
 } as const
 
-export const SCALE_CONTROL_STYLE = {
-  marginLeft: 'var(--scale-control-margin-left)',
+export const SCALE_CONTROL_STYLES = {
+  DEFAULT: {
+    marginLeft: 'var(--scale-control-margin-left)',
+  },
+  MINIMAL: {
+    marginLeft: '10px',
+  },
 } as const
+
+export const getScaleControlStyle = (isHotspotLayerVisible: boolean) =>
+  isHotspotLayerVisible ? SCALE_CONTROL_STYLES.DEFAULT : SCALE_CONTROL_STYLES.MINIMAL
 
 export const FLY_TO_ZOOM = {
   DESKTOP: 8,

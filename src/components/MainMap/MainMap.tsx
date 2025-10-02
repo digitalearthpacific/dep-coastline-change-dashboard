@@ -17,7 +17,7 @@ import {
   FLY_TO_DURATION,
   MAP_STYLE,
   INITIAL_VIEW_STATE,
-  SCALE_CONTROL_STYLE,
+  getScaleControlStyle,
   NAVIGATION_CONTROL_STYLE,
   LAYER_IDS,
   SOURCE_IDS,
@@ -138,10 +138,10 @@ export const MainMap = ({
   const baseMapRef = useRef(baseMap)
 
   // Computed values
-  const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
-  const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
+  const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
+  const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
 
   // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
@@ -690,7 +690,7 @@ export const MainMap = ({
           key={scaleControlKey}
           position='bottom-left'
           maxWidth={120}
-          style={SCALE_CONTROL_STYLE}
+          style={getScaleControlStyle(isHotspotLayerVisible)}
         />
         <NavigationControl
           key={navigationControlKey}
@@ -700,7 +700,7 @@ export const MainMap = ({
         />
       </Map>
 
-      <MapLegend />
+      {isHotspotLayerVisible && <MapLegend />}
 
       {isFullscreen && !isMobileWidth && (
         <div className={styles.exitFullscreenContainer}>
