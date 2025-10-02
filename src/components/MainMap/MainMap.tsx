@@ -405,7 +405,7 @@ export const MainMap = ({
             type: 'fill',
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
-            minzoom: 4,
+            minzoom: 3,
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
             filter: createHotspotFilterExpression(),
             paint: {
@@ -423,7 +423,7 @@ export const MainMap = ({
             type: 'line',
             source: SOURCE_IDS.HOTSPOTS,
             'source-layer': 'contiguous_hotspots',
-            minzoom: 4,
+            minzoom: 3,
             layout: { visibility: isHotspotLayerVisible ? 'visible' : 'none' },
             filter: createHotspotFilterExpression(),
             paint: {
