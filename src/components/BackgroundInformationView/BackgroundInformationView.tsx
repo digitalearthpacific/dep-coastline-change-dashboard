@@ -1,18 +1,7 @@
-import { Button, Flex, Link, Separator, Text, Callout } from '@radix-ui/themes'
-import { ArrowLeftIcon } from '@radix-ui/react-icons'
+import { Flex, Link, Separator, Text, Callout } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
+import { BackButton } from '../BackButton'
 import styles from './BackgroundInformationView.module.scss'
-
-type BackButtonProps = {
-  onClick?: () => void
-}
-
-const BackButton = ({ onClick }: BackButtonProps) => (
-  <Button variant='ghost' aria-label='Back Button' onClick={onClick}>
-    <ArrowLeftIcon />
-    BACK
-  </Button>
-)
 
 const ShorelineChangeSection = () => (
   <Flex direction='column' gap='4'>

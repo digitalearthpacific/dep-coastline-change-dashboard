@@ -4,13 +4,13 @@ import { PopulationCard } from '../PopulationCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { TextButton } from '../TextButton'
-import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../../library/types'
+import type { ContiguousHotspotProperties } from '../../library/types'
 import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
 import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
+import { BackButton } from '../BackButton'
 
 type HotSpotResultViewProps = {
-  selectedCountryFeature: CountryGeoJSONFeature | null
   selectedHotspotData: ContiguousHotspotProperties | null
   goToCountryView: () => void
   goToBackgroundInfoView: () => void
@@ -78,7 +78,6 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
 }
 
 export const HotSpotResultView = ({
-  selectedCountryFeature,
   selectedHotspotData,
   goToCountryView,
   goToBackgroundInfoView,
@@ -92,14 +91,10 @@ export const HotSpotResultView = ({
 
   return (
     <>
+      <BackButton onClick={goToCountryView} />
       <Flex direction={isMobileWidth ? 'column' : 'row'} justify='between' align='center' gap='2'>
         <HotSpotBadge rateOfChange={rateOfChange} />
         <Flex direction={isMobileWidth ? 'column' : 'row'} gap='4' py={isMobileWidth ? '3' : '3'}>
-          {selectedCountryFeature && (
-            <TextButton ariaLabel='View Country Information' onClick={goToCountryView}>
-              COUNTRY VIEW
-            </TextButton>
-          )}
           <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
             VIEW BACKGROUND INFORMATION
           </TextButton>
