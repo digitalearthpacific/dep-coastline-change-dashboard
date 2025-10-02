@@ -80,7 +80,6 @@ export const ResultPanel = ({
         <>
           <LocationCard />
           <HotSpotResultView
-            selectedCountryFeature={selectedCountryFeature}
             selectedHotspotData={selectedHotspotData}
             goToCountryView={goToCountryView}
             goToBackgroundInfoView={goToBackgroundInfoView}
