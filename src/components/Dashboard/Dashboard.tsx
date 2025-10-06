@@ -61,7 +61,7 @@ export const Dashboard = () => {
           <Callout.Icon>
             <InfoCircledIcon />
           </Callout.Icon>
-          <Callout.Text>Zoom in to see hotspots, shorelines, and map layers</Callout.Text>
+          <Callout.Text>Zoom in to see hotspots, coastlines, and map layers</Callout.Text>
         </Callout.Root>
       )}
       <MainMap

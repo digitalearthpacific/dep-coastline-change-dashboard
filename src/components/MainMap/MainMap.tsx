@@ -104,9 +104,9 @@ const MapLegend = () => (
       </Flex>
       <Flex direction='column'>
         <Text size='1' weight='bold'>
-          Shorelines
+          Coastlines
         </Text>
-        <Text size='1'>Dashed shorelines indicate low quality data</Text>
+        <Text size='1'>Dashed coastlines indicate low quality data</Text>
       </Flex>
       <Flex align='center' gap='2'>
         <img src={LowQualityShorelineIcon} alt='Dashed line' />

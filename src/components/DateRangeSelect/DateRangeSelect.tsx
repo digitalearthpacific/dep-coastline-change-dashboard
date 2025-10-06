@@ -21,7 +21,7 @@ export const DateRangeSelect = () => {
   return (
     <Flex direction='column' gap='2'>
       <Text as='div' size='4' weight='bold'>
-        Select a date range to update shorelines on the map
+        Select a date range to update coastlines on the map
       </Text>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <Flex justify='between' gap='3'>

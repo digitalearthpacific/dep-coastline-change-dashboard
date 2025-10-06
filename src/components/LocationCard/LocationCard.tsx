@@ -16,7 +16,7 @@ export const LocationCard = () => {
           {isMobileWidth ? (
             <Flex direction='column' gap='1'>
               <Text as='div' size='6' weight='bold'>
-                Shoreline Change:
+                Coastline Change:
               </Text>
               <Text as='div' size='6' weight='bold'>
                 {countryName}
@@ -24,13 +24,13 @@ export const LocationCard = () => {
             </Flex>
           ) : (
             <Text as='div' size='7' weight='bold'>
-              Shoreline Change: {countryName}
+              Coastline Change: {countryName}
             </Text>
           )}
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
-            Estimated shoreline change from data collected between 1999 and 2023
+            Estimated coastline change from data collected between 1999 and 2023
           </Text>
         </Flex>
       </Flex>
