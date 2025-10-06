@@ -12,17 +12,17 @@ export const ShorelineChangeCard = () => {
         <Flex direction='column' align='stretch' style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
             <Text as='div' size='4' weight='bold'>
-              Shoreline Change
+              Coastline Change
             </Text>
             <CustomPopover
-              ariaLabel='Information about shoreline change'
+              ariaLabel='Information about coastline change'
               content={
-                'The kilometers of shoreline within each country showing retreat, growth, or stability between the years 1999-2023.'
+                'The kilometers of coastline within each country showing retreat, growth, or stability between the years 1999-2023.'
               }
             />
           </Flex>
           <Text as='div' size='2' color='gray' style={{ marginBottom: 'var(--space-3)' }}>
-            The average annual rate of shoreline change
+            The average annual rate of coastline change
           </Text>
         </Flex>
         <Flex direction='column'>

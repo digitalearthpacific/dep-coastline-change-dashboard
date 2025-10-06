@@ -18,7 +18,7 @@ export const HotSpotsCard = () => {
             <CustomPopover
               ariaLabel='Information about coastal change hotspots'
               content={
-                'The total length of shoreline within the country experiencing either retreat or growth at various rates.'
+                'The total length of coastline within the country experiencing either retreat or growth at various rates.'
               }
             />
           </Flex>
