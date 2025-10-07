@@ -1,7 +1,9 @@
 name: Deploy to GitHub Pages
 
 on:
-  workflow_dispatch:
+  push:
+    tags:
+      - 'current-release'
 
 jobs:
   build:
