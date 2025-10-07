@@ -18,6 +18,8 @@ jobs:
 
       - name: Build project
         run: npm run build
+        env:
+          COASTLINE_APP_MAP_TILER_API_KEY: ${{ secrets.MapTilerApiKey }}
 
       - name: Upload built files
         id: deployment
