@@ -1,0 +1,13 @@
+.errorCard {
+  --margin-top-override: 20px;
+  background-color: var(--red-3, #ffebee);
+  color: var(--red-11, #d32f2f);
+}
+
+.errorIcon {
+  background-color: var(--red-11, #d32f2f);
+  mask: url('../../assets/info-circled.svg') no-repeat center;
+  mask-size: contain;
+  width: 16px;
+  height: 16px;
+}

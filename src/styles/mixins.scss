@@ -1,0 +1,23 @@
+$mobile-breakpoint: 768px;
+
+@mixin mobile-only {
+  @media (max-width: $mobile-breakpoint) {
+    @content;
+  }
+}
+
+@mixin desktop-only {
+  @media (min-width: ($mobile-breakpoint + 1)) {
+    @content;
+  }
+}
+
+@mixin button-styles {
+  --accent-9: var(--white);
+  --accent-10: var(--gray-3);
+  --accent-contrast: var(--gray-12);
+
+  cursor: pointer;
+  box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
+  transition: all 0.2s ease;
+}

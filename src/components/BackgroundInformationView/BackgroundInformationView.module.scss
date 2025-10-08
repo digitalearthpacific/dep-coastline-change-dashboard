@@ -1,0 +1,7 @@
+@use '../../styles' as *;
+
+.backgroundInformationIntroCallout {
+  width: 100%;
+  color: var(--gray-12, #202020) !important;
+  padding: var(--space-4, 16px);
+}

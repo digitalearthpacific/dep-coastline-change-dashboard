@@ -1,0 +1,1 @@
+export { BuildingsCard } from './BuildingsCard'

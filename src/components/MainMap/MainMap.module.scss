@@ -1,0 +1,172 @@
+@use '../../styles/mixins' as *;
+
+.mapContainer {
+  height: 100%;
+  transition: width 0.3s ease-in-out;
+  position: relative;
+
+  &.withResultPanel {
+    width: 50%;
+  }
+
+  &.fullWidth {
+    width: 100%;
+  }
+}
+
+/* ===== MAPLIBRE ZOOM CONTROLS ===== */
+:root {
+  --navigation-control-margin-right: 24px;
+  --navigation-control-margin-bottom: 85px;
+  --scale-control-margin-left: 170px;
+
+  @include mobile-only {
+    --navigation-control-margin-right: 16px;
+    --navigation-control-margin-bottom: 96px;
+    --scale-control-margin-left: 10px;
+  }
+}
+
+:global(.maplibregl-ctrl-zoom-in),
+:global(.maplibregl-ctrl-zoom-out) {
+  width: var(--space-6, 32px) !important;
+  height: var(--space-6, 32px) !important;
+  position: relative;
+}
+
+/* Desktop-only tooltips */
+@include desktop-only {
+  :global(.maplibregl-ctrl-zoom-in),
+  :global(.maplibregl-ctrl-zoom-out) {
+    /* Tooltip arrow */
+    &:hover::before {
+      content: '';
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      margin-right: 0;
+      border: 6px solid transparent;
+      border-left-color: var(--gray-12);
+      z-index: 1000;
+      pointer-events: none;
+    }
+
+    /* Tooltip content */
+    &:hover::after {
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--gray-12);
+      color: var(--gray-1);
+      padding: var(--space-1, 0.25rem) var(--space-2, 0.5rem);
+      border-radius: var(--radius-2, 4px);
+      font-size: var(--font-size-xs, 0.75rem);
+      white-space: nowrap;
+      margin-right: 11px;
+      z-index: 999;
+      pointer-events: none;
+    }
+  }
+
+  /* Tooltip text content */
+  :global(.maplibregl-ctrl-zoom-in):hover::after {
+    content: 'Zoom In';
+  }
+
+  :global(.maplibregl-ctrl-zoom-out):hover::after {
+    content: 'Zoom Out';
+  }
+}
+
+/* ===== CUSTOM MAP TOOLS ===== */
+.customMapTools {
+  position: absolute;
+  right: var(--space-5, 24px);
+  bottom: var(--space-8, 32px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2, 8px);
+
+  @include mobile-only {
+    top: 82px;
+    bottom: auto;
+    right: var(--space-4, 16px);
+  }
+
+  button {
+    @include button-styles;
+  }
+}
+
+.exitFullscreenContainer {
+  position: absolute;
+  top: var(--space-4, 16px);
+  right: var(--space-4, 16px);
+  z-index: 1000;
+
+  @include mobile-only {
+    top: var(--space-3, 12px);
+    right: var(--space-3, 12px);
+  }
+
+  button {
+    @include button-styles;
+  }
+}
+
+.mapLegendContainer {
+  position: absolute;
+  bottom: 10px;
+  left: var(--space-5, 24px);
+  background: var(--white, #fff);
+  border-radius: var(--radius-4, 8px);
+  padding: var(--space-3, 16px);
+  box-shadow:
+    0 12px 32px -16px var(--gray-a5, rgba(0, 0, 0, 0.12)),
+    0 12px 60px 0 var(--black-a3, rgba(0, 0, 0, 0.15));
+  z-index: 1;
+  width: 115px;
+
+  @include mobile-only {
+    top: 10px;
+    bottom: auto;
+    left: var(--space-4, 16px);
+  }
+}
+
+.legendCircle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+
+  @include mobile-only {
+    width: 12px;
+    height: 12px;
+  }
+
+  &.highRetreat {
+    background-color: #cc5803;
+  }
+
+  &.moderateRetreat {
+    background-color: #ff9e1b;
+  }
+
+  &.lowRetreat {
+    background-color: #ffd27f;
+  }
+
+  &.highGrowth {
+    background-color: #007bff;
+  }
+  &.moderateGrowth {
+    background-color: #59acff;
+  }
+  &.lowGrowth {
+    background-color: #97dfff;
+  }
+}
