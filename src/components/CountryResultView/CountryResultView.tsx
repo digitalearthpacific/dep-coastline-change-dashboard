@@ -1,6 +1,6 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid, Text } from '@radix-ui/themes'
-import { ShorelineChangeCard } from '../ShoreLineChangeCard'
+// import { ShorelineChangeCard } from '../ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
 import { BuildingsCard } from '../BuildingsCard'
@@ -50,8 +50,9 @@ export const CountryResultView = ({
         )}
       </Flex>
       <DateRangeSelect />
-      <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard />
+      {/*<Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
+        <ShorelineChangeCard />*/}
+      <Grid columns='1'>
         <HotSpotsCard />
       </Grid>
       <Flex direction='column' gap='1' justify='between'>
