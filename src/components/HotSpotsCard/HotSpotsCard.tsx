@@ -45,7 +45,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                High Change (&gt;5m)
+                High Change (&gt;5m per year)
               </Text>
             </Flex>
           </Flex>
@@ -67,7 +67,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                Moderate Change (&gt;3m)
+                Moderate Change (&gt;3m per year)
               </Text>
             </Flex>
           </Flex>
@@ -85,7 +85,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                Low Change (&gt;2m)
+                Low Change (&gt;2m per year)
               </Text>
             </Flex>
           </Flex>
