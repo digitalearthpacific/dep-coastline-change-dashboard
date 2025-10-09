@@ -12,6 +12,7 @@ import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
+import WaterRoundedIcon from '../../assets/water-rounded.svg'
 import {
   DEFAULT_BBOX,
   FLY_TO_DURATION,
@@ -44,6 +45,7 @@ import {
   applyHotspotRadioFilter,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
+import { DateRangePopup } from '../DateRangePopup'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -130,6 +132,7 @@ export const MainMap = ({
   const { startDate, endDate, hotspotRadio } = useMapVisualization()
 
   // State
+  const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
@@ -545,7 +548,13 @@ export const MainMap = ({
   }, [isMangrovesLayerVisible, toggleLayerVisibility])
 
   const handleBaseMapPopupToggle = useCallback(() => {
+    setIsDateRangePopupOpen(false)
     setIsBaseMapPopupOpen((prev) => !prev)
+  }, [])
+
+  const handleDateRangePopupToggle = useCallback(() => {
+    setIsBaseMapPopupOpen(false)
+    setIsDateRangePopupOpen((prev) => !prev)
   }, [])
 
   const handleMapChange = () => {
@@ -713,6 +722,12 @@ export const MainMap = ({
       )}
 
       <div className={styles.customMapTools}>
+        <Tooltip content='Adjust Coastlines' side='left'>
+          <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines '>
+            <img src={WaterRoundedIcon} alt='Coastlines' />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip content={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'} side='left'>
           <IconButton
             onClick={onFullscreenToggle}
@@ -730,6 +745,8 @@ export const MainMap = ({
             <LayersIcon />
           </IconButton>
         </Tooltip>
+
+        {isDateRangePopupOpen && <DateRangePopup />}
 
         {isBaseMapPopupOpen && (
           <BaseMapPopup

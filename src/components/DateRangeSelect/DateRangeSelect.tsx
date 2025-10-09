@@ -3,11 +3,9 @@ import { Flex, Grid, Select, Text } from '@radix-ui/themes'
 
 import { useMapVisualization } from '../../hooks/useGlobalContext'
 import { NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
-import useResponsive from '../../hooks/useResponsive'
 
 export const DateRangeSelect = () => {
   const { startDate, endDate, onDateChange } = useMapVisualization()
-  const { isMobileWidth } = useResponsive()
   const startDateSelectRef = useRef<HTMLDivElement>(null)
   const endDateSelectRef = useRef<HTMLDivElement>(null)
 
@@ -20,16 +18,16 @@ export const DateRangeSelect = () => {
 
   return (
     <Flex direction='column' gap='2'>
-      <Text as='div' size='4' weight='bold'>
+      <Text as='div' size='2' weight='bold'>
         Select a date range to update coastlines on the map
       </Text>
-      <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <Flex justify='between' gap='3'>
+      <Grid columns='1' gap='4'>
+        <Flex direction='column' justify='between' gap='3'>
           <Select.Root
             value={startDate || ''}
             onValueChange={(value) => onDateChange('start', value)}
           >
-            <Select.Trigger placeholder='Start Date' style={{ flex: 1 }} />
+            <Select.Trigger placeholder='Start Date' />
             <Select.Content
               position='popper'
               ref={startDateSelectRef}
@@ -48,7 +46,7 @@ export const DateRangeSelect = () => {
           </Select.Root>
 
           <Select.Root value={endDate || ''} onValueChange={(value) => onDateChange('end', value)}>
-            <Select.Trigger placeholder='End Date' style={{ flex: 1 }} />
+            <Select.Trigger placeholder='End Date' />
             <Select.Content
               position='popper'
               ref={endDateSelectRef}

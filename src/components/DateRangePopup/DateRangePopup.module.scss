@@ -1,0 +1,20 @@
+@use '../../styles/mixins' as *;
+
+.popupContainer {
+  position: absolute;
+  width: 249px;
+  right: 40px;
+  bottom: 80px;
+  display: flex;
+  background: var(--white, #fff);
+  border-radius: var(--radius-4, 8px);
+  border: 1px solid var(--grey-a6, #00000026);
+  padding: var(--space-3, 12px);
+  gap: var(--space-4, 16px);
+  z-index: 1000;
+
+  @include mobile-only {
+    top: 0;
+    bottom: inherit;
+  }
+}
