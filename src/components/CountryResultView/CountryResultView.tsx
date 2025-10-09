@@ -8,7 +8,6 @@ import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties } from '../../library/types'
 import { useMapData } from '../../hooks/useGlobalContext'
-import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
 
 type CountryResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
@@ -49,7 +48,6 @@ export const CountryResultView = ({
           </TextButton>
         )}
       </Flex>
-      <DateRangeSelect />
       {/*<Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <ShorelineChangeCard />*/}
       <Grid columns='1'>
