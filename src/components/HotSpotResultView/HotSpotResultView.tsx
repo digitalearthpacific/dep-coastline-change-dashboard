@@ -5,7 +5,6 @@ import { MangrovesCard } from '../MangrovesCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { TextButton } from '../TextButton'
 import type { ContiguousHotspotProperties } from '../../library/types'
-import { DateRangeSelect } from '../DateRangeSelect/DateRangeSelect'
 import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 import { BackButton } from '../BackButton'
@@ -100,7 +99,6 @@ export const HotSpotResultView = ({
           </TextButton>
         </Flex>
       </Flex>
-      <DateRangeSelect />
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <HotspotAreaCard hotspotArea={hotspotArea} />
         <PopulationCard totalPopulation={totalPopulation} />
