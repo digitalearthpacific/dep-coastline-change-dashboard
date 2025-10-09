@@ -101,6 +101,10 @@
   }
 }
 
+.activeButton {
+  color: var(--blue-9);
+}
+
 .exitFullscreenContainer {
   position: absolute;
   top: var(--space-4, 16px);

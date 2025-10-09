@@ -14,8 +14,9 @@ import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
-import WaterRoundedIcon from '../../assets/water-rounded.svg'
-import StraightenRoundedIcon from '../../assets/straighten-rounded.svg'
+import { StraightenRoundedIcon } from '../../assets/StraightenRoundedIcon'
+import { WaterRoundedIcon } from '../../assets/WaterRoundedIcon'
+
 import {
   DEFAULT_BBOX,
   FLY_TO_DURATION,
@@ -767,13 +768,13 @@ export const MainMap = ({
       <div className={styles.customMapTools}>
         <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
           <IconButton onClick={handleMeasureTool} aria-label='Measure'>
-            {isMeasuring ? <Cross1Icon /> : <img src={StraightenRoundedIcon} alt='Measure' />}
+            <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
         <Tooltip content='Adjust Coastlines' side='left'>
           <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines'>
-            <img src={WaterRoundedIcon} alt='Coastlines' />
+            <WaterRoundedIcon className={clsx(isDateRangePopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
@@ -791,7 +792,7 @@ export const MainMap = ({
 
         <Tooltip content='Change basemap or add layers' side='left'>
           <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
-            <LayersIcon />
+            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
