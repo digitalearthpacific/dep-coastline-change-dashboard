@@ -7,12 +7,16 @@ import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
+import { MaplibreMeasureControl } from '@watergis/maplibre-gl-terradraw'
+import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css'
 
 import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
-import WaterRoundedIcon from '../../assets/water-rounded.svg'
+import { StraightenRoundedIcon } from '../../assets/StraightenRoundedIcon'
+import { WaterRoundedIcon } from '../../assets/WaterRoundedIcon'
+
 import {
   DEFAULT_BBOX,
   FLY_TO_DURATION,
@@ -126,6 +130,7 @@ export const MainMap = ({
   handleHotspotDataChange,
 }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
+  const drawRef = useRef<MaplibreMeasureControl>(null)
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
@@ -134,6 +139,7 @@ export const MainMap = ({
   // State
   const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
+  const [isMeasuring, setIsMeasuring] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
@@ -467,6 +473,20 @@ export const MainMap = ({
     addContiguousHotspot(map)
     addShorelineChangeLayer(map)
 
+    // Add terradraw for measure tools
+    const draw = new MaplibreMeasureControl({
+      modes: ['linestring'],
+      open: false,
+      measureUnitType: 'metric',
+      distancePrecision: 2,
+      forceDistanceUnit: 'auto',
+      areaPrecision: 2,
+      forceAreaUnit: 'auto',
+      computeElevation: true,
+    })
+    map.addControl(draw, 'bottom-right')
+    drawRef.current = draw
+
     // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
       if (e.features?.[0]) {
@@ -556,6 +576,30 @@ export const MainMap = ({
     setIsBaseMapPopupOpen(false)
     setIsDateRangePopupOpen((prev) => !prev)
   }, [])
+
+  const handleMeasureTool = useCallback(() => {
+    if (!drawRef.current) return
+
+    if (!isMeasuring) {
+      setIsMeasuring(true)
+      drawRef.current.activate()
+      drawRef.current.getTerraDrawInstance().setMode('linestring')
+    } else {
+      setIsMeasuring(false)
+      const terraDrawInstance = drawRef.current.getTerraDrawInstance()
+
+      // get feature IDs and remove by ID to trigger the removal of
+      // measure labels added by @watergis/maplibre-gl-terradraw
+      const featureIds = terraDrawInstance
+        .getSnapshot()
+        .map((f) => f.id)
+        .filter((id): id is string => typeof id === 'string')
+      terraDrawInstance.removeFeatures(featureIds)
+
+      drawRef.current.resetActiveMode()
+      drawRef.current.deactivate()
+    }
+  }, [isMeasuring])
 
   const handleMapChange = () => {
     const map = mapRef.current?.getMap()
@@ -722,9 +766,15 @@ export const MainMap = ({
       )}
 
       <div className={styles.customMapTools}>
+        <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
+          <IconButton onClick={handleMeasureTool} aria-label='Measure'>
+            <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
+          </IconButton>
+        </Tooltip>
+
         <Tooltip content='Adjust Coastlines' side='left'>
-          <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines '>
-            <img src={WaterRoundedIcon} alt='Coastlines' />
+          <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines'>
+            <WaterRoundedIcon className={clsx(isDateRangePopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
@@ -742,7 +792,7 @@ export const MainMap = ({
 
         <Tooltip content='Change basemap or add layers' side='left'>
           <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
-            <LayersIcon />
+            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
