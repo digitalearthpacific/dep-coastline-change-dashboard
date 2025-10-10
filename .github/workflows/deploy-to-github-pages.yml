@@ -35,7 +35,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: http://dashboards.digitalearthpacific.org/
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     needs: build
     steps:
