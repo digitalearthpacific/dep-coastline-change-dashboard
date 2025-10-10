@@ -8,7 +8,7 @@ import './styles/index.scss'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename='/dep-coastline-change-dashboard'>
+    <BrowserRouter>
       <Theme accentColor='blue'>
         <App />
       </Theme>
