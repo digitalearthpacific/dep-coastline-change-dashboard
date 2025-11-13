@@ -134,7 +134,7 @@ export const MainMap = ({
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
-  const { startDate, endDate, hotspotRadio } = useMapVisualization()
+  const { singleDate, startDate, endDate, hotspotRadio, dateSelectType } = useMapVisualization()
 
   // State
   const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
@@ -161,7 +161,11 @@ export const MainMap = ({
         filters.push(certaintyCriteria)
       }
 
-      if (startDate && endDate) {
+      if (dateSelectType === 'single' && singleDate) {
+        filters.push(['==', ['get', 'year'], parseInt(singleDate)])
+      }
+
+      if (dateSelectType !== 'single' && startDate && endDate) {
         filters.push(
           ['>=', ['get', 'year'], parseInt(startDate)],
           ['<=', ['get', 'year'], parseInt(endDate)],
@@ -178,7 +182,7 @@ export const MainMap = ({
 
       return ['all', ...filters] as FilterSpecification
     },
-    [startDate, endDate],
+    [singleDate, startDate, endDate, dateSelectType],
   )
 
   // Build dynamic filters for hotspots based on hotspot radio selection
