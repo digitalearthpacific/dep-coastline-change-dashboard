@@ -7,7 +7,7 @@ type MangrovesCardProps = {
 }
 
 const MANGROVES_INFO =
-  'Mangrove areas were defined by Digital Earth Pacific Mangroves dataset. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
+  'Mangrove areas were defined by the Digital Earth Pacific Mangroves dataset. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
 
 export const MangrovesCard = ({ mangroveArea }: MangrovesCardProps) => {
   return (
