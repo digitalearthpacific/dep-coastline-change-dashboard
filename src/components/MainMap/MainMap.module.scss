@@ -81,6 +81,11 @@
 }
 
 /* ===== CUSTOM MAP TOOLS ===== */
+/* Target only the measure control group (class added via JS) */
+:global(.measure-control-group) {
+  margin: 0 !important;
+}
+
 .customMapTools {
   position: absolute;
   right: var(--space-5, 24px);

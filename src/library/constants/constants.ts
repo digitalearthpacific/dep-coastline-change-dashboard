@@ -90,8 +90,8 @@ export const CUSTOM_COUNTRY_BBOXES: CustomCountryBboxType = {
 } as const
 
 export const DATE_SELECT_OPTIONS: DateSelectOptions[] = [
-  { id: 'single', value: 'single', label: 'Single Year' },
   { id: 'between', value: 'between', label: 'Between' },
+  { id: 'custom', value: 'custom', label: 'Custom' },
   { id: 'before', value: 'before', label: 'Before' },
   { id: 'after', value: 'after', label: 'After' },
 ] as const

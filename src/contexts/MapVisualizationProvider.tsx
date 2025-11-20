@@ -1,11 +1,9 @@
 import { useState, useCallback } from 'react'
 import type { DateSelectType, DateType, HotspotRadioState } from '../library/types'
-import { NONE_VALUE } from '../library/constants'
 import { MapVisualizationContext } from './MapVisualizationContext'
 
 const DEFAULT_START_DATE = '1999'
 const DEFAULT_END_DATE = '2023'
-const DEFAULT_SINGLE_DATE = '2023'
 
 interface MapVisualizationProviderProps {
   children: React.ReactNode
@@ -14,78 +12,45 @@ interface MapVisualizationProviderProps {
 export const MapVisualizationProvider = ({ children }: MapVisualizationProviderProps) => {
   const [startDate, setStartDate] = useState<string | null>(DEFAULT_START_DATE)
   const [endDate, setEndDate] = useState<string | null>(DEFAULT_END_DATE)
-  const [singleDate, setSingleDate] = useState<string | null>(DEFAULT_SINGLE_DATE)
+  const [customDates, setCustomDates] = useState<string[]>([])
   const [hotspotRadio, setHotspotRadio] = useState<HotspotRadioState>('low')
   const [dateSelectType, setDateSelectType] = useState<DateSelectType>('between')
-
-  const clearAllDates = useCallback(() => {
-    setStartDate(null)
-    setEndDate(null)
-    setSingleDate(null)
-  }, [])
+  const [hideCoastlines, setHideCoastlines] = useState<boolean>(false)
 
   const resetToDefaultDates = useCallback(() => {
     setStartDate(DEFAULT_START_DATE)
     setEndDate(DEFAULT_END_DATE)
-    setSingleDate(DEFAULT_SINGLE_DATE)
+    setCustomDates([])
   }, [])
-
-  const handleNoneValue = useCallback(
-    (value: string, callback: () => void) => {
-      if (value === NONE_VALUE) {
-        clearAllDates()
-        return
-      }
-
-      callback()
-    },
-    [clearAllDates],
-  )
 
   const resetStartAndEndDate = useCallback(() => {
     setStartDate(DEFAULT_START_DATE)
     setEndDate(DEFAULT_END_DATE)
   }, [])
 
-  const onSingleDateChange = useCallback(
-    (value: string) => {
-      handleNoneValue(value, () => setSingleDate(value))
-    },
-    [handleNoneValue],
-  )
+  const onToggleCustomDate = useCallback((value: string) => {
+    setCustomDates((prev) =>
+      prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
+    )
+  }, [])
 
-  const onDateChange = useCallback(
-    (dateType: DateType, value: string) => {
-      handleNoneValue(value, () => {
-        if (dateType === 'start') {
-          setStartDate(value)
-        } else {
-          setEndDate(value)
-        }
-      })
-    },
-    [handleNoneValue],
-  )
+  const onDateChange = useCallback((dateType: DateType, value: string) => {
+    if (dateType === 'start') {
+      setStartDate(value)
+    } else {
+      setEndDate(value)
+    }
+  }, [])
 
-  const onBeforeDateChange = useCallback(
-    (value: string) => {
-      handleNoneValue(value, () => {
-        setStartDate(DEFAULT_START_DATE)
-        setEndDate(value)
-      })
-    },
-    [handleNoneValue],
-  )
+  const onBeforeDateChange = useCallback((value: string) => {
+    setStartDate(DEFAULT_START_DATE)
+    setEndDate(value)
+  }, [])
 
-  const onAfterDateChange = useCallback(
-    (value: string) => {
-      handleNoneValue(value, () => {
-        setStartDate(value)
-        setEndDate(DEFAULT_END_DATE)
-      })
-    },
-    [handleNoneValue],
-  )
+  const onAfterDateChange = useCallback((value: string) => {
+    setStartDate(value)
+    setEndDate(DEFAULT_END_DATE)
+  }, [])
 
   const onDateSelectTypeChange = useCallback(
     (value: DateSelectType) => {
@@ -99,13 +64,17 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
     setHotspotRadio(value)
   }, [])
 
+  const onHideCoastlinesChange = useCallback(() => {
+    setHideCoastlines((prev) => !prev)
+  }, [])
+
   return (
     <MapVisualizationContext.Provider
       value={{
         startDate,
         endDate,
-        singleDate,
-        onSingleDateChange,
+        customDates,
+        onToggleCustomDate,
         onDateChange,
         onBeforeDateChange,
         onAfterDateChange,
@@ -114,6 +83,8 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
         onRadioStateChange,
         dateSelectType,
         onDateSelectTypeChange,
+        hideCoastlines,
+        onHideCoastlinesChange,
       }}
     >
       {children}

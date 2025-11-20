@@ -1,32 +1,35 @@
 import { useRef, useMemo, useCallback } from 'react'
-import { Flex, Grid, Select, Text } from '@radix-ui/themes'
+import { Flex, Grid, Select, Switch, Text, Popover, Checkbox, Badge } from '@radix-ui/themes'
+import { ChevronDownIcon } from '@radix-ui/react-icons'
 import type { RatesOfChangeYear } from '../../library/types'
+import styles from './DateRangeSelect.module.scss'
 
 import { useMapVisualization } from '../../hooks/useGlobalContext'
-import { DATE_SELECT_OPTIONS, NONE_VALUE, RATES_OF_CHANGE_YEARS } from '../../library/constants'
-
-// Common styles for select content
-const SELECT_CONTENT_STYLE = { maxHeight: '170px', overflowY: 'auto' } as const
+import {
+  DATE_SELECT_OPTIONS,
+  RATES_OF_CHANGE_YEARS,
+  SELECT_CONTENT_STYLE,
+} from '../../library/constants'
 
 export const DateRangeSelect = () => {
   const {
-    singleDate,
+    customDates,
     startDate,
     endDate,
     onDateChange,
     onBeforeDateChange,
     onAfterDateChange,
-    onSingleDateChange,
+    onToggleCustomDate,
     dateSelectType,
     onDateSelectTypeChange,
+    hideCoastlines,
+    onHideCoastlinesChange,
   } = useMapVisualization()
 
-  const refs = {
-    singleDate: useRef<HTMLDivElement>(null),
-    startDate: useRef<HTMLDivElement>(null),
-    endDate: useRef<HTMLDivElement>(null),
-    dateSelectType: useRef<HTMLDivElement>(null),
-  }
+  // Stable refs (avoid recreating object each render to satisfy exhaustive-deps lint)
+  const startDateRef = useRef<HTMLDivElement>(null)
+  const endDateRef = useRef<HTMLDivElement>(null)
+  const dateSelectTypeRef = useRef<HTMLDivElement>(null)
 
   const dateOptions = useMemo(
     () => ({
@@ -43,10 +46,6 @@ export const DateRangeSelect = () => {
   const renderSelectOptions = useCallback(
     (years: typeof RATES_OF_CHANGE_YEARS) => (
       <>
-        <Select.Item key={NONE_VALUE} value={NONE_VALUE}>
-          None
-        </Select.Item>
-        <Select.Separator />
         {years.map((year) => (
           <Select.Item key={year.id} value={year.id}>
             {year.value}
@@ -78,13 +77,32 @@ export const DateRangeSelect = () => {
   // Date input renderer based on type
   const renderDateInput = useCallback(() => {
     switch (dateSelectType) {
-      case 'single':
-        return renderSelect(
-          singleDate,
-          onSingleDateChange,
-          'Select Year',
-          refs.singleDate,
-          RATES_OF_CHANGE_YEARS,
+      case 'custom':
+        return (
+          <Popover.Root>
+            <Popover.Trigger>
+              <button type='button' className={styles.customTrigger}>
+                <span className={styles.triggerText}>Select Years</span>
+                <ChevronDownIcon />
+              </button>
+            </Popover.Trigger>
+            <Popover.Content style={{ ...SELECT_CONTENT_STYLE, width: '220px' }}>
+              <Flex direction='column'>
+                {RATES_OF_CHANGE_YEARS.map((year) => {
+                  const checked = customDates.includes(year.id)
+                  return (
+                    <Flex key={year.id} align='center' gap='2' px='1' py='2'>
+                      <Checkbox
+                        checked={checked}
+                        onCheckedChange={() => onToggleCustomDate(year.id)}
+                      />
+                      <Text size='2'>{year.value}</Text>
+                    </Flex>
+                  )
+                })}
+              </Flex>
+            </Popover.Content>
+          </Popover.Root>
         )
 
       case 'between':
@@ -94,14 +112,14 @@ export const DateRangeSelect = () => {
               startDate,
               (value) => onDateChange('start', value),
               'Start Date',
-              refs.startDate,
+              startDateRef,
               dateOptions.startDate,
             )}
             {renderSelect(
               endDate,
               (value) => onDateChange('end', value),
               'End Date',
-              refs.endDate,
+              endDateRef,
               dateOptions.endDate,
             )}
           </Grid>
@@ -112,7 +130,7 @@ export const DateRangeSelect = () => {
           endDate,
           onBeforeDateChange,
           'End Date',
-          refs.endDate,
+          endDateRef,
           RATES_OF_CHANGE_YEARS,
         )
 
@@ -121,7 +139,7 @@ export const DateRangeSelect = () => {
           startDate,
           onAfterDateChange,
           'Start Date',
-          refs.startDate,
+          startDateRef,
           RATES_OF_CHANGE_YEARS,
         )
 
@@ -130,32 +148,42 @@ export const DateRangeSelect = () => {
     }
   }, [
     dateSelectType,
-    singleDate,
+    customDates,
     startDate,
     endDate,
-    onSingleDateChange,
+    onToggleCustomDate,
     onDateChange,
     onBeforeDateChange,
     onAfterDateChange,
     renderSelect,
     dateOptions,
-    refs,
   ])
 
   return (
     <Flex direction='column' gap='2'>
-      <Text as='div' size='2' weight='bold'>
-        Select a date range to update coastlines on the map
+      <Text as='div' size='3' weight='bold'>
+        Coastline Layers
       </Text>
+      <Text as='div' size='2'>
+        Changing the date updates which coastline layers are visible on the map. It does not modify
+        or filter the underlying data.
+      </Text>
+      <Flex align='center' gap='2'>
+        <Switch
+          size='2'
+          checked={hideCoastlines}
+          onCheckedChange={onHideCoastlinesChange}
+          style={{ boxShadow: 'none' }}
+        />
+        <Text as='div' size='2'>
+          Hide Coastlines
+        </Text>
+      </Flex>
       <Grid columns='1' gap='4'>
         <Flex direction='column' justify='between' gap='3'>
           <Select.Root value={dateSelectType} onValueChange={onDateSelectTypeChange}>
             <Select.Trigger placeholder='Date Select Type' />
-            <Select.Content
-              position='popper'
-              ref={refs.dateSelectType}
-              style={SELECT_CONTENT_STYLE}
-            >
+            <Select.Content position='popper' ref={dateSelectTypeRef} style={SELECT_CONTENT_STYLE}>
               {DATE_SELECT_OPTIONS.map((option) => (
                 <Select.Item key={option.id} value={option.value}>
                   {option.label}
@@ -164,6 +192,15 @@ export const DateRangeSelect = () => {
             </Select.Content>
           </Select.Root>
           {renderDateInput()}
+          {dateSelectType === 'custom' && (
+            <Flex className={styles.selectedYearsList}>
+              {[...customDates].sort().map((date) => (
+                <Badge color='gray' variant='soft' key={date} size='2'>
+                  {date}
+                </Badge>
+              ))}
+            </Flex>
+          )}
         </Flex>
       </Grid>
     </Flex>

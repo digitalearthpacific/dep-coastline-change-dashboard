@@ -23,7 +23,7 @@ export type DateType = 'start' | 'end'
 
 export type HotspotRadioState = 'high' | 'moderate' | 'low'
 
-export type DateSelectType = 'single' | 'between' | 'before' | 'after'
+export type DateSelectType = 'custom' | 'between' | 'before' | 'after'
 
 export type DateSelectOptions = {
   readonly id: string
