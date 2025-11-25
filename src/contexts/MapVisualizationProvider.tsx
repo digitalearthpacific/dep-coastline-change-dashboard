@@ -23,11 +23,6 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
     setCustomDates([])
   }, [])
 
-  const resetStartAndEndDate = useCallback(() => {
-    setStartDate(DEFAULT_START_DATE)
-    setEndDate(DEFAULT_END_DATE)
-  }, [])
-
   const onToggleCustomDate = useCallback((value: string) => {
     setCustomDates((prev) =>
       prev.includes(value) ? prev.filter((v) => v !== value) : [...prev, value],
@@ -78,7 +73,6 @@ export const MapVisualizationProvider = ({ children }: MapVisualizationProviderP
         onDateChange,
         onBeforeDateChange,
         onAfterDateChange,
-        resetStartAndEndDate,
         hotspotRadio,
         onRadioStateChange,
         dateSelectType,
