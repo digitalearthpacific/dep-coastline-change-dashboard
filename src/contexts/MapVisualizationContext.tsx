@@ -9,7 +9,6 @@ interface MapVisualizationContextType {
   onDateChange: (dateType: DateType, value: string) => void
   onBeforeDateChange: (value: string) => void
   onAfterDateChange: (value: string) => void
-  resetStartAndEndDate: () => void
   hotspotRadio: HotspotRadioState
   onRadioStateChange: (value: HotspotRadioState) => void
   dateSelectType: DateSelectType
