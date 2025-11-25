@@ -1,4 +1,9 @@
-import type { CustomCountryBboxType, PacificCountry, RatesOfChangeYear } from '../types'
+import type {
+  CustomCountryBboxType,
+  DateSelectOptions,
+  PacificCountry,
+  RatesOfChangeYear,
+} from '../types'
 
 export const DEFAULT_MOBILE_WIDTH_THRESHOLD = 768
 export const NONE_VALUE = 'none'
@@ -83,3 +88,10 @@ export const CUSTOM_COUNTRY_BBOXES: CustomCountryBboxType = {
   VUT: [163.27406991262757, -21.482912638414476, 173.62590719274743, -11.197939655121047],
   WLF: [-178.57947025325987, -15.462207175271132, -175.78990484412154, -12.656409381163911],
 } as const
+
+export const DATE_SELECT_OPTIONS: DateSelectOptions[] = [
+  { id: 'between', value: 'between', label: 'Between' },
+  { id: 'custom', value: 'custom', label: 'Custom' },
+  { id: 'before', value: 'before', label: 'Before' },
+  { id: 'after', value: 'after', label: 'After' },
+] as const

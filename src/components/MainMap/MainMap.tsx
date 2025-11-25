@@ -69,7 +69,8 @@ export const MainMap = ({
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
-  const { startDate, endDate, hotspotRadio } = useMapVisualization()
+  const { customDates, startDate, endDate, hotspotRadio, dateSelectType, hideCoastlines } =
+    useMapVisualization()
 
   // State
   const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
@@ -83,7 +84,6 @@ export const MainMap = ({
   const baseMapRef = useRef(baseMap)
 
   // Computed values
-  const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
@@ -91,13 +91,24 @@ export const MainMap = ({
   // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
     (certaintyCriteria?: FilterSpecification): FilterSpecification => {
+      // If in custom mode with no selected years, return a filter that matches nothing
+      if (dateSelectType === 'custom' && customDates.length === 0) {
+        return ['==', ['get', 'year'], -1]
+      }
+
       const filters: FilterSpecification[] = []
 
       if (certaintyCriteria) {
         filters.push(certaintyCriteria)
       }
 
-      if (startDate && endDate) {
+      if (dateSelectType === 'custom' && customDates.length) {
+        const years = customDates.map((y) => parseInt(y))
+        const yearFilters: FilterSpecification[] = years.map((y) => ['==', ['get', 'year'], y])
+        filters.push(['any', ...yearFilters] as FilterSpecification)
+      }
+
+      if (dateSelectType !== 'custom' && startDate && endDate) {
         filters.push(
           ['>=', ['get', 'year'], parseInt(startDate)],
           ['<=', ['get', 'year'], parseInt(endDate)],
@@ -114,7 +125,7 @@ export const MainMap = ({
 
       return ['all', ...filters] as FilterSpecification
     },
-    [startDate, endDate],
+    [customDates, startDate, endDate, dateSelectType],
   )
 
   // Build dynamic filters for hotspots based on hotspot radio selection
@@ -208,7 +219,7 @@ export const MainMap = ({
             minzoom: 6,
             layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
             paint: {
-              'fill-color': '#FF751F',
+              'fill-color': '#A8B2B9',
               'fill-outline-color': '#4e4e4e',
               'fill-opacity': 0.8,
             },
@@ -295,7 +306,7 @@ export const MainMap = ({
               minzoom: 13,
               maxzoom: 22,
               filter,
-              layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
+              layout: { visibility: hideCoastlines ? 'none' : 'visible' },
               paint,
             },
             firstLabelLayerId,
@@ -315,7 +326,7 @@ export const MainMap = ({
             'text-field': '{year}',
             'symbol-placement': 'line',
             'text-size': 12,
-            visibility: isShorelineLayerVisible ? 'visible' : 'none',
+            visibility: hideCoastlines ? 'none' : 'visible',
           },
           paint: {
             'text-color': 'white',
@@ -325,7 +336,7 @@ export const MainMap = ({
         })
       }
     },
-    [createShorelineFilterExpression, isShorelineLayerVisible],
+    [createShorelineFilterExpression, hideCoastlines],
   )
 
   const addContiguousHotspot = useCallback(
@@ -423,6 +434,20 @@ export const MainMap = ({
     map.addControl(draw, 'bottom-right')
     drawRef.current = draw
 
+    // Add class to the control group containing the measure button to target margins
+    requestAnimationFrame(() => {
+      const measureBtn = mapRef.current
+        ?.getContainer()
+        .querySelector('.maplibregl-terradraw-measure-add-linestring-button')
+      const group = measureBtn?.closest(
+        '.maplibregl-ctrl.maplibregl-ctrl-group',
+      ) as HTMLElement | null
+      if (group) {
+        group.classList.add('measure-control-group')
+        group.style.margin = '0'
+      }
+    })
+
     // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
       if (e.features?.[0]) {
@@ -511,6 +536,11 @@ export const MainMap = ({
   const handleDateRangePopupToggle = useCallback(() => {
     setIsBaseMapPopupOpen(false)
     setIsDateRangePopupOpen((prev) => !prev)
+  }, [])
+
+  const handleCloseAllPopups = useCallback(() => {
+    setIsDateRangePopupOpen(false)
+    setIsBaseMapPopupOpen(false)
   }, [])
 
   const handleLegendToggle = useCallback(() => {
@@ -613,13 +643,13 @@ export const MainMap = ({
 
     shorelineLayers.forEach(({ id, filter }) => {
       if (map.getLayer(id)) {
-        map.setLayoutProperty(id, 'visibility', isShorelineLayerVisible ? 'visible' : 'none')
-        if (isShorelineLayerVisible) {
+        map.setLayoutProperty(id, 'visibility', hideCoastlines ? 'none' : 'visible')
+        if (!hideCoastlines) {
           map.setFilter(id, createShorelineFilterExpression(filter))
         }
       }
     })
-  }, [createShorelineFilterExpression, isShorelineLayerVisible])
+  }, [createShorelineFilterExpression, hideCoastlines])
 
   // Update hotspot selection
   useEffect(() => {
@@ -737,6 +767,15 @@ export const MainMap = ({
             <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
+
+        {/* Invisible overlay that captures clicks outside popups to close them */}
+        {(isDateRangePopupOpen || isBaseMapPopupOpen) && (
+          <div
+            className={styles.popupBackdrop}
+            onClick={handleCloseAllPopups}
+            aria-label='Close popup by clicking outside'
+          />
+        )}
 
         {isDateRangePopupOpen && <DateRangePopup />}
 
