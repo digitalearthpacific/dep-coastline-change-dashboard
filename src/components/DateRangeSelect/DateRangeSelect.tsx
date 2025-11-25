@@ -192,7 +192,7 @@ export const DateRangeSelect = () => {
             </Select.Content>
           </Select.Root>
           {renderDateInput()}
-          {dateSelectType === 'custom' && (
+          {dateSelectType === 'custom' && customDates.length > 0 && (
             <Flex className={styles.selectedYearsList}>
               {[...customDates]
                 .sort()
