@@ -45,6 +45,8 @@ export const SCALE_CONTROL_STYLES = {
   },
 } as const
 
+export const SELECT_CONTENT_STYLE = { maxHeight: '380px', overflowY: 'auto' } as const
+
 export const getScaleControlStyle = (isHotspotLayerVisible: boolean) =>
   isHotspotLayerVisible ? SCALE_CONTROL_STYLES.DEFAULT : SCALE_CONTROL_STYLES.MINIMAL
 
