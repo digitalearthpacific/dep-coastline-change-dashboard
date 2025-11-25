@@ -602,6 +602,11 @@ export const MainMap = ({
     setIsDateRangePopupOpen((prev) => !prev)
   }, [])
 
+  const handleCloseAllPopups = useCallback(() => {
+    setIsDateRangePopupOpen(false)
+    setIsBaseMapPopupOpen(false)
+  }, [])
+
   const handleMeasureTool = useCallback(() => {
     if (!drawRef.current) return
 
@@ -820,6 +825,15 @@ export const MainMap = ({
             <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
+
+        {/* Invisible overlay that captures clicks outside popups to close them */}
+        {(isDateRangePopupOpen || isBaseMapPopupOpen) && (
+          <div
+            className={styles.popupBackdrop}
+            onClick={handleCloseAllPopups}
+            aria-label='Close popup by clicking outside'
+          />
+        )}
 
         {isDateRangePopupOpen && <DateRangePopup />}
 
