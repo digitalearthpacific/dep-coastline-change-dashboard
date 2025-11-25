@@ -3,7 +3,7 @@ import Map, { AttributionControl, NavigationControl, ScaleControl } from 'react-
 import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
-import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
+import { IconButton, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
@@ -13,7 +13,6 @@ import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css'
 import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
-import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
 import { StraightenRoundedIcon } from '../../assets/StraightenRoundedIcon'
 import { WaterRoundedIcon } from '../../assets/WaterRoundedIcon'
 
@@ -31,8 +30,6 @@ import {
   HOTSPOT_FILL_COLOR_EXPRESSION,
   HOTSPOT_OUTLINE_COLOR_EXPRESSION,
   TILE_URLS,
-  RETREAT_LEGEND_ITEMS,
-  GROWTH_LEGEND_ITEMS,
   RETREAT_VALUES,
   GROWTH_VALUES,
   CUSTOM_COUNTRY_BBOXES,
@@ -50,6 +47,7 @@ import {
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
+import { MapLegend } from '../MapLegend'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -58,69 +56,6 @@ type MainMapProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }
-
-const MapLegend = () => (
-  <div className={styles.mapLegendContainer}>
-    <Flex direction='column' gap='2'>
-      <Flex direction='column'>
-        <Text size='2' weight='bold'>
-          Hotspots
-        </Text>
-        <Text size='1'>Levels of change</Text>
-      </Flex>
-      <Text size='1' weight='bold'>
-        Retreat
-      </Text>
-      <Flex
-        direction='column'
-        gap='1'
-        style={{
-          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
-          paddingBottom: 'var(--space-2, 8px)',
-        }}
-      >
-        {RETREAT_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-          <Flex key={key} gap='2'>
-            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-            <Text size='1'>
-              <strong>{label}</strong> {text}
-            </Text>
-          </Flex>
-        ))}
-      </Flex>
-      <Text size='1' weight='bold'>
-        Growth
-      </Text>
-      <Flex
-        direction='column'
-        gap='1'
-        style={{
-          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
-          paddingBottom: 'var(--space-2, 8px)',
-        }}
-      >
-        {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-          <Flex key={key} gap='2'>
-            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-            <Text size='1'>
-              <strong>{label}</strong> {text}
-            </Text>
-          </Flex>
-        ))}
-      </Flex>
-      <Flex direction='column'>
-        <Text size='1' weight='bold'>
-          Coastlines
-        </Text>
-        <Text size='1'>Dashed coastlines indicate low quality data</Text>
-      </Flex>
-      <Flex align='center' gap='2'>
-        <img src={LowQualityShorelineIcon} alt='Dashed line' />
-        <Text size='1'>Low Quality</Text>
-      </Flex>
-    </Flex>
-  </div>
-)
 
 export const MainMap = ({
   isFullscreen,
@@ -144,6 +79,7 @@ export const MainMap = ({
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const [isLegendExpanded, setIsLegendExpanded] = useState(true)
   const baseMapRef = useRef(baseMap)
 
   // Computed values
@@ -577,6 +513,10 @@ export const MainMap = ({
     setIsDateRangePopupOpen((prev) => !prev)
   }, [])
 
+  const handleLegendToggle = useCallback(() => {
+    setIsLegendExpanded((prev) => !prev)
+  }, [])
+
   const handleMeasureTool = useCallback(() => {
     if (!drawRef.current) return
 
@@ -753,7 +693,9 @@ export const MainMap = ({
         />
       </Map>
 
-      {isHotspotLayerVisible && <MapLegend />}
+      {isHotspotLayerVisible && (
+        <MapLegend isExpanded={isLegendExpanded} onToggle={handleLegendToggle} />
+      )}
 
       {isFullscreen && !isMobileWidth && (
         <div className={styles.exitFullscreenContainer}>

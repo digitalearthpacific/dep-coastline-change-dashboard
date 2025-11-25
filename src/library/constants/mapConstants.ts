@@ -97,21 +97,63 @@ export const BASE_MAP_LABEL_PATTERNS = [
 ] as const
 
 export const LEGEND_ITEMS = [
-  { key: 'high-retreat', label: '>5 m', text: 'High', extraStyleClass: 'highRetreat' },
+  {
+    key: 'high-retreat',
+    label: 'High',
+    boldLabel: '>5 m',
+    extraStyleClass: 'highRetreat',
+  },
   {
     key: 'moderate-retreat',
-    label: '>3 m',
-    text: 'Moderate',
+    label: 'Moderate',
+    boldLabel: '>3 m',
     extraStyleClass: 'moderateRetreat',
   },
-  { key: 'low-retreat', label: '>2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
-  { key: 'high-growth', label: '>5 m', text: 'High', extraStyleClass: 'highGrowth' },
-  { key: 'moderate-growth', label: '>3 m', text: 'Moderate', extraStyleClass: 'moderateGrowth' },
-  { key: 'low-growth', label: '>2 m', text: 'Low', extraStyleClass: 'lowGrowth' },
+  {
+    key: 'low-retreat',
+    label: 'Low',
+    boldLabel: '>2 m',
+    extraStyleClass: 'lowRetreat',
+  },
+  {
+    key: 'high-growth',
+    label: 'High',
+    boldLabel: '>5 m',
+    extraStyleClass: 'highGrowth',
+  },
+  {
+    key: 'moderate-growth',
+    label: 'Moderate',
+    boldLabel: '>3 m',
+    extraStyleClass: 'moderateGrowth',
+  },
+  {
+    key: 'low-growth',
+    label: 'Low',
+    boldLabel: '>2 m',
+    extraStyleClass: 'lowGrowth',
+  },
+  {
+    key: 'high-density',
+    label: 'High Density',
+    extraStyleClass: 'highDensity',
+  },
+  {
+    key: 'low-density',
+    label: 'Low Density',
+    extraStyleClass: 'lowDensity',
+  },
+  {
+    key: 'buildings',
+    label: 'Buildings',
+    extraStyleClass: 'buildings',
+  },
 ]
 
 export const RETREAT_LEGEND_ITEMS = LEGEND_ITEMS.slice(0, 3)
-export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3)
+export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3, 6)
+export const DENSITY_LEGEND_ITEMS = LEGEND_ITEMS.slice(6, 8)
+export const BUILDINGS_LEGEND_ITEMS = LEGEND_ITEMS.slice(8, 9)
 
 export const MAP_LAYERS = {
   IDS: {
