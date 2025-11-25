@@ -194,11 +194,14 @@ export const DateRangeSelect = () => {
           {renderDateInput()}
           {dateSelectType === 'custom' && (
             <Flex className={styles.selectedYearsList}>
-              {[...customDates].sort().map((date) => (
-                <Badge color='gray' variant='soft' key={date} size='2'>
-                  {date}
-                </Badge>
-              ))}
+              {[...customDates]
+                .sort()
+                .reverse()
+                .map((date) => (
+                  <Badge color='gray' variant='soft' key={date} size='2'>
+                    {date}
+                  </Badge>
+                ))}
             </Flex>
           )}
         </Flex>

@@ -283,7 +283,7 @@ export const MainMap = ({
             minzoom: 6,
             layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
             paint: {
-              'fill-color': '#FF751F',
+              'fill-color': '#A8B2B9',
               'fill-outline-color': '#4e4e4e',
               'fill-opacity': 0.8,
             },
