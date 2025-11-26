@@ -18,7 +18,7 @@ export const HotSpotsCard = () => {
             <CustomPopover
               ariaLabel='Information about coastal change hotspots'
               content={
-                'The total length of coastline within the country experiencing either retreat or growth at various rates.'
+                'The total length of coastline within the country experiencing either retreat or growth at various rates. Some distances may appear smaller than expected where hotspot buffers overlap areas with less significant change.'
               }
             />
           </Flex>
@@ -45,7 +45,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                High Change (&gt;5m per year)
+                High Change (&gt;5 m per year)
               </Text>
             </Flex>
           </Flex>
@@ -67,7 +67,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                Moderate Change (&gt;3m per year)
+                Moderate Change (&gt;3 m per year)
               </Text>
             </Flex>
           </Flex>
@@ -85,7 +85,7 @@ export const HotSpotsCard = () => {
                 km
               </Text>
               <Text size='3' color='gray'>
-                Low Change (&gt;2m per year)
+                Low Change (&gt;2 m per year)
               </Text>
             </Flex>
           </Flex>

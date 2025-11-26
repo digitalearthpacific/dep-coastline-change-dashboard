@@ -1,24 +1,20 @@
 import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid, Text } from '@radix-ui/themes'
-// import { ShorelineChangeCard } from '../ShoreLineChangeCard'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
-import type { ContiguousHotspotProperties } from '../../library/types'
 import { useMapData } from '../../hooks/useGlobalContext'
 
 type CountryResultViewProps = {
-  selectedHotspotData: ContiguousHotspotProperties | null
-  goToHotspotView: () => void
   goToBackgroundInfoView: () => void
+  goToGlossaryView: () => void
 }
 
 export const CountryResultView = ({
-  selectedHotspotData,
-  goToHotspotView,
   goToBackgroundInfoView,
+  goToGlossaryView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
   const { contiguousHotspotFeatures } = useMapData()
@@ -39,17 +35,13 @@ export const CountryResultView = ({
   return (
     <>
       <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
+        <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+          GLOSSARY
+        </TextButton>
         <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
           VIEW BACKGROUND INFORMATION
         </TextButton>
-        {selectedHotspotData && (
-          <TextButton ariaLabel='View Hotspot Information' onClick={goToHotspotView}>
-            HOTSPOT VIEW
-          </TextButton>
-        )}
       </Flex>
-      {/*<Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard />*/}
       <Grid columns='1'>
         <HotSpotsCard />
       </Grid>

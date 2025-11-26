@@ -8,6 +8,7 @@ import { CountryResultView } from '../CountryResultView'
 import { LocationCard } from '../LocationCard'
 import { HotSpotResultView } from '../HotSpotResultView'
 import { BackgroundInformationView } from '../BackgroundInformationView'
+import { GlossaryView } from '../GlossaryView'
 import { useMapData } from '../../hooks/useGlobalContext'
 import type { ContiguousHotspotProperties } from '../../library/types'
 
@@ -22,11 +23,14 @@ export const ResultPanel = ({
   const { selectedCountryFeature } = useMapData()
   const [resultPanelView, setResultPanelView] = useState<'country' | 'hotspot'>('country')
   const [viewBackgroundInfo, setViewBackgroundInfo] = useState(false)
+  const [viewGlossary, setViewGlossary] = useState(false)
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false)
 
   useEffect(() => {
     if (selectedCountryFeature || selectedHotspotData) {
       setIsMobilePanelOpen(true)
+      setViewBackgroundInfo(false)
+      setViewGlossary(false)
     } else {
       setIsMobilePanelOpen(false)
     }
@@ -44,10 +48,6 @@ export const ResultPanel = ({
     setResultPanelView(view)
   }
 
-  const goToHotspotView = () => {
-    handleResultPanelViewChange('hotspot')
-  }
-
   const goToCountryView = () => {
     handleHotspotDataChange(null)
     handleResultPanelViewChange('country')
@@ -55,10 +55,17 @@ export const ResultPanel = ({
 
   const goBackToResultView = () => {
     setViewBackgroundInfo(false)
+    setViewGlossary(false)
   }
 
   const goToBackgroundInfoView = () => {
     setViewBackgroundInfo(true)
+    setViewGlossary(false)
+  }
+
+  const goToGlossaryView = () => {
+    setViewBackgroundInfo(false)
+    setViewGlossary(true)
   }
 
   const resultViewContent = () => {
@@ -67,9 +74,8 @@ export const ResultPanel = ({
         <>
           <LocationCard />
           <CountryResultView
-            selectedHotspotData={selectedHotspotData}
-            goToHotspotView={goToHotspotView}
             goToBackgroundInfoView={goToBackgroundInfoView}
+            goToGlossaryView={goToGlossaryView}
           />
         </>
       )
@@ -83,6 +89,7 @@ export const ResultPanel = ({
             selectedHotspotData={selectedHotspotData}
             goToCountryView={goToCountryView}
             goToBackgroundInfoView={goToBackgroundInfoView}
+            goToGlossaryView={goToGlossaryView}
           />
         </>
       )
@@ -91,11 +98,19 @@ export const ResultPanel = ({
     return <ErrorCard />
   }
 
-  const content = viewBackgroundInfo ? (
-    <BackgroundInformationView goBackToResultView={goBackToResultView} />
-  ) : (
-    resultViewContent()
-  )
+  const getContent = () => {
+    if (viewBackgroundInfo) {
+      return <BackgroundInformationView goBackToResultView={goBackToResultView} />
+    }
+
+    if (viewGlossary) {
+      return <GlossaryView goBackToResultView={goBackToResultView} />
+    }
+
+    return resultViewContent()
+  }
+
+  const content = getContent()
 
   if (isMobileWidth) {
     return <MobileResultBottomPanel open={isMobilePanelOpen}>{content}</MobileResultBottomPanel>
