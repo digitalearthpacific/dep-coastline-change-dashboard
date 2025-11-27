@@ -1,6 +1,7 @@
 import type {
   CustomCountryBboxType,
   DateSelectOptions,
+  GlossaryTerms,
   PacificCountry,
   RatesOfChangeYear,
 } from '../types'
@@ -94,3 +95,46 @@ export const DATE_SELECT_OPTIONS: DateSelectOptions[] = [
   { id: 'before', value: 'before', label: 'Before' },
   { id: 'after', value: 'after', label: 'After' },
 ] as const
+
+export const GLOSSARY_TERMS: GlossaryTerms[] = [
+  {
+    term: 'Coastline Change',
+    definition: 'The movement of the coastline over time, including areas of retreat and growth',
+  },
+  {
+    term: 'Term 2',
+    definition: 'description',
+  },
+  {
+    term: 'Term 3',
+    definition: 'description',
+  },
+  {
+    term: 'Term 4',
+    definition: 'description',
+  },
+  {
+    term: 'Term 5',
+    definition: 'description',
+  },
+  {
+    term: 'Term 6',
+    definition: 'description',
+  },
+  {
+    term: 'Term 7',
+    definition: 'description',
+  },
+  {
+    term: 'Term 8',
+    definition: 'description',
+  },
+  {
+    term: 'Term 9',
+    definition: 'description',
+  },
+  {
+    term: 'Term 10',
+    definition: 'description',
+  },
+]

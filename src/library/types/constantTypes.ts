@@ -30,3 +30,8 @@ export type DateSelectOptions = {
   readonly label: string
   readonly value: DateSelectType
 }
+
+export type GlossaryTerms = {
+  readonly term: string
+  readonly definition: string
+}
