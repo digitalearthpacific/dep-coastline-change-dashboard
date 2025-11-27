@@ -16,9 +16,13 @@ export const GlossaryView = ({ goBackToResultView }: { goBackToResultView: () =>
           {GLOSSARY_TERMS.map(({ term, definition }) => (
             <Table.Row key={term}>
               <Table.RowHeaderCell>
-                <Text weight='bold'>{term}</Text>
+                <Text size='3' weight='bold'>
+                  {term}
+                </Text>
               </Table.RowHeaderCell>
-              <Table.Cell>{definition}</Table.Cell>
+              <Table.Cell>
+                <Text size='3'>{definition}</Text>
+              </Table.Cell>
             </Table.Row>
           ))}
         </Table.Body>
