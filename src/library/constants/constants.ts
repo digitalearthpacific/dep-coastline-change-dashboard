@@ -102,39 +102,39 @@ export const GLOSSARY_TERMS: GlossaryTerms[] = [
     definition: 'The movement of the coastline over time, including areas of retreat and growth',
   },
   {
-    term: 'Term',
+    term: 'Term 2',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 3',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 4',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 5',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 6',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 7',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 8',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 9',
     definition: 'description',
   },
   {
-    term: 'Term',
+    term: 'Term 10',
     definition: 'description',
   },
 ]
