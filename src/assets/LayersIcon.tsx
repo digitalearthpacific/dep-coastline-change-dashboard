@@ -1,4 +1,6 @@
-export const LayersIcon = ({ color = 'currentColor', className = '' }) => (
+import type { IconType } from '../library/types'
+
+export const LayersIcon = ({ color = 'currentColor', className = '' }: IconType) => (
   <svg
     className={className}
     width='16'

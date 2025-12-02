@@ -1,4 +1,6 @@
-export const DrawIcon = ({ color = 'currentColor', className = '' }) => (
+import type { IconType } from '../library/types'
+
+export const DrawIcon = ({ color = 'currentColor', className = '' }: IconType) => (
   <svg
     className={className}
     width='16'

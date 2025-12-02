@@ -1,3 +1,9 @@
+// Icon types
+export type IconType = {
+  readonly color?: string
+  readonly className?: string
+}
+
 // Country types
 export type PacificCountry = {
   readonly id: string

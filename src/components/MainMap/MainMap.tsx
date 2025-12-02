@@ -4,7 +4,7 @@ import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
 import { IconButton, Tooltip } from '@radix-ui/themes'
-import { Cross1Icon, ReloadIcon } from '@radix-ui/react-icons'
+import { Cross1Icon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { MaplibreMeasureControl } from '@watergis/maplibre-gl-terradraw'
@@ -50,6 +50,7 @@ import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
 import { MapLegend } from '../MapLegend'
 import DrawIcon from '../../assets/DrawIcon'
+import RefreshIcon from '../../assets/RefreshIcon'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -772,7 +773,7 @@ export const MainMap = ({
 
         <Tooltip content='Reset to country view' side='left'>
           <IconButton onClick={handleResetToCountryView} aria-label='Reset to country view'>
-            <ReloadIcon />
+            <RefreshIcon />
           </IconButton>
         </Tooltip>
 
