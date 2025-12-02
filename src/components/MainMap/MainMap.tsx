@@ -4,7 +4,7 @@ import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
 import { IconButton, Tooltip } from '@radix-ui/themes'
-import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
+import { Cross1Icon, ReloadIcon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import { MaplibreMeasureControl } from '@watergis/maplibre-gl-terradraw'
@@ -15,6 +15,7 @@ import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
 import { StraightenRoundedIcon } from '../../assets/StraightenRoundedIcon'
 import { WaterRoundedIcon } from '../../assets/WaterRoundedIcon'
+import { LayersIcon } from '../../assets/LayersIcon'
 
 import {
   DEFAULT_BBOX,
@@ -48,6 +49,7 @@ import {
 import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
 import { MapLegend } from '../MapLegend'
+import DrawIcon from '../../assets/DrawIcon'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -81,6 +83,9 @@ export const MainMap = ({
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
   const [isLegendExpanded, setIsLegendExpanded] = useState(true)
+  const [mapInitialViewBox, setMapInitialViewBox] = useState<
+    [[number, number], [number, number]] | []
+  >([])
   const baseMapRef = useRef(baseMap)
 
   // Computed values
@@ -605,6 +610,12 @@ export const MainMap = ({
     }
   }
 
+  const handleResetToCountryView = () => {
+    if (!mapRef.current || !mapInitialViewBox.length) return
+
+    mapRef.current.fitBounds(mapInitialViewBox, { duration: FLY_TO_DURATION })
+  }
+
   // Effects
   // Update map size and fit to country bounds on load or when selected country changes
   useEffect(() => {
@@ -618,6 +629,7 @@ export const MainMap = ({
     }
 
     const bounds = createBoundingBox()
+    setMapInitialViewBox(bounds)
     mapRef.current?.fitBounds(bounds, { duration: FLY_TO_DURATION })
   }, [isMapLoaded, createBoundingBox])
 
@@ -738,15 +750,35 @@ export const MainMap = ({
       )}
 
       <div className={styles.customMapTools}>
-        <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
-          <IconButton onClick={handleMeasureTool} aria-label='Measure'>
-            <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
-          </IconButton>
-        </Tooltip>
+        <div className={styles.mapDrawMeasureGroup}>
+          <Tooltip content='Draw' side='left'>
+            <IconButton onClick={() => {}} aria-label='Draw'>
+              <DrawIcon />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
+            <IconButton onClick={handleMeasureTool} aria-label='Measure'>
+              <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
+            </IconButton>
+          </Tooltip>
+        </div>
 
         <Tooltip content='Adjust Coastlines' side='left'>
           <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines'>
             <WaterRoundedIcon className={clsx(isDateRangePopupOpen && styles.activeButton)} />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip content='Reset to country view' side='left'>
+          <IconButton onClick={handleResetToCountryView} aria-label='Reset to country view'>
+            <ReloadIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip content='Change basemap or add layers' side='left'>
+          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
+            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
@@ -759,12 +791,6 @@ export const MainMap = ({
               src={isFullscreen ? ExitFullScreenIcon : EnterFullScreenIcon}
               alt={isFullscreen ? 'Exit Fullscreen Icon' : 'Fullscreen Icon'}
             />
-          </IconButton>
-        </Tooltip>
-
-        <Tooltip content='Change basemap or add layers' side='left'>
-          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
-            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 

@@ -17,7 +17,7 @@
 /* ===== MAPLIBRE ZOOM CONTROLS ===== */
 :root {
   --navigation-control-margin-right: 24px;
-  --navigation-control-margin-bottom: 165px;
+  --navigation-control-margin-bottom: 216px;
   --scale-control-margin-left: 170px;
 
   @include mobile-only {
@@ -93,16 +93,30 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2, 8px);
+  gap: var(--space-1, 4px);
 
   @include mobile-only {
-    top: 82px;
+    top: 78px;
     bottom: auto;
     right: var(--space-4, 16px);
   }
 
   button {
     @include button-styles;
+  }
+}
+
+.mapDrawMeasureGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  button:first-child {
+    border-radius: var(--radius-2, 4px) var(--radius-2, 4px) 0 0;
+  }
+
+  button:last-child {
+    border-radius: 0 0 var(--radius-2, 4px) var(--radius-2, 4px);
   }
 }
 
