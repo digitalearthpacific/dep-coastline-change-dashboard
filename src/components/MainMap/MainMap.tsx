@@ -7,7 +7,7 @@ import { IconButton, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { MaplibreMeasureControl } from '@watergis/maplibre-gl-terradraw'
+import { MaplibreMeasureControl, MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw'
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css'
 
 import styles from './MainMap.module.scss'
@@ -51,6 +51,7 @@ import { DateRangePopup } from '../DateRangePopup'
 import { MapLegend } from '../MapLegend'
 import DrawIcon from '../../assets/DrawIcon'
 import RefreshIcon from '../../assets/RefreshIcon'
+import { MapDrawPopup } from '../MapDrawPopup'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -58,6 +59,25 @@ type MainMapProps = {
   onFullscreenExit: () => void
   selectedHotspotData: ContiguousHotspotProperties | null
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
+}
+
+type TerraDrawFinishListener = (
+  id: string | number,
+  context: { mode: string; action: string },
+) => void
+
+// Remove existing TerraDraw features so subsequent draws start with a clean slate
+const removeTerraDrawFeatures = (
+  terraDrawInstance: ReturnType<MaplibreTerradrawControl['getTerraDrawInstance']>,
+) => {
+  const existingIds = terraDrawInstance
+    .getSnapshot()
+    .map((feature) => feature.id)
+    .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
+
+  if (existingIds.length) {
+    terraDrawInstance.removeFeatures(existingIds)
+  }
 }
 
 export const MainMap = ({
@@ -69,6 +89,8 @@ export const MainMap = ({
 }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const drawRef = useRef<MaplibreMeasureControl>(null)
+  const polygonDrawRef = useRef<MaplibreTerradrawControl | null>(null)
+  const polygonFinishHandlerRef = useRef<TerraDrawFinishListener | null>(null)
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
@@ -79,6 +101,10 @@ export const MainMap = ({
   const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [isMeasuring, setIsMeasuring] = useState(false)
+  const [activeDrawMode, setActiveDrawMode] = useState<'polygon' | 'rectangle' | 'circle' | null>(
+    null,
+  )
+  const [isMapDrawToolPopupOpen, setIsMapDrawToolPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
@@ -426,6 +452,24 @@ export const MainMap = ({
     addContiguousHotspot(map)
     addShorelineChangeLayer(map)
 
+    // Add terradraw for different polygon drawing tools
+    const polygonDrawControl = new MaplibreTerradrawControl({
+      modes: ['polygon', 'rectangle', 'circle', 'render', 'select', 'delete', 'delete-selection'],
+      open: false,
+      adapterOptions: { prefixId: 'polygon-draw' },
+    })
+    map.addControl(polygonDrawControl, 'bottom-right')
+    polygonDrawRef.current = polygonDrawControl
+
+    const polygonTerraDraw = polygonDrawControl.getTerraDrawInstance()
+    const finishHandler: TerraDrawFinishListener = () => {
+      setActiveDrawMode(null)
+      const terraDraw = polygonDrawControl.getTerraDrawInstance()
+      terraDraw.setMode('render')
+    }
+    polygonTerraDraw.on('finish', finishHandler)
+    polygonFinishHandlerRef.current = finishHandler
+
     // Add terradraw for measure tools
     const draw = new MaplibreMeasureControl({
       modes: ['linestring'],
@@ -436,6 +480,7 @@ export const MainMap = ({
       areaPrecision: 2,
       forceAreaUnit: 'auto',
       computeElevation: true,
+      adapterOptions: { prefixId: 'measure-draw' },
     })
     map.addControl(draw, 'bottom-right')
     drawRef.current = draw
@@ -451,6 +496,14 @@ export const MainMap = ({
       if (group) {
         group.classList.add('measure-control-group')
         group.style.margin = '0'
+      }
+
+      const polygonGroup = mapRef.current
+        ?.getContainer()
+        .querySelector('.maplibregl-terradraw-add-control')
+        ?.closest('.maplibregl-ctrl') as HTMLElement | null
+      if (polygonGroup) {
+        polygonGroup.style.display = 'none'
       }
     })
 
@@ -535,24 +588,34 @@ export const MainMap = ({
   }, [isMangrovesLayerVisible, toggleLayerVisibility])
 
   const handleBaseMapPopupToggle = useCallback(() => {
-    setIsDateRangePopupOpen(false)
     setIsBaseMapPopupOpen((prev) => !prev)
-  }, [])
+    setIsDateRangePopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
+  }, [isBaseMapPopupOpen])
 
   const handleDateRangePopupToggle = useCallback(() => {
-    setIsBaseMapPopupOpen(false)
     setIsDateRangePopupOpen((prev) => !prev)
-  }, [])
+    setIsBaseMapPopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
+  }, [isDateRangePopupOpen])
+
+  const handleMapDrawToolPopupToggle = useCallback(() => {
+    setIsMapDrawToolPopupOpen((prev) => !prev)
+    setIsBaseMapPopupOpen(false)
+    setIsDateRangePopupOpen(false)
+  }, [isMapDrawToolPopupOpen])
 
   const handleCloseAllPopups = useCallback(() => {
     setIsDateRangePopupOpen(false)
     setIsBaseMapPopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
   }, [])
 
   const handleLegendToggle = useCallback(() => {
     setIsLegendExpanded((prev) => !prev)
   }, [])
 
+  // Toggle the measure control and clear any sketches to hide its labels when closing
   const handleMeasureTool = useCallback(() => {
     if (!drawRef.current) return
 
@@ -576,6 +639,63 @@ export const MainMap = ({
       drawRef.current.deactivate()
     }
   }, [isMeasuring])
+
+  // Activate a single TerraDraw mode at a time across polygon, rectangle, and circle tools
+  const activateDrawMode = useCallback(
+    (mode: 'polygon' | 'rectangle' | 'circle') => {
+      const polygonControl = polygonDrawRef.current
+      if (!polygonControl) return
+
+      const terraDrawInstance = polygonControl.getTerraDrawInstance()
+
+      if (activeDrawMode === mode) {
+        terraDrawInstance.setMode('render')
+        polygonControl.resetActiveMode()
+        polygonControl.deactivate()
+        setActiveDrawMode(null)
+        return
+      }
+
+      if (activeDrawMode) {
+        terraDrawInstance.setMode('render')
+        polygonControl.resetActiveMode()
+        polygonControl.deactivate()
+      }
+
+      removeTerraDrawFeatures(terraDrawInstance)
+
+      polygonControl.activate()
+      terraDrawInstance.setMode(mode)
+      setActiveDrawMode(mode)
+    },
+    [activeDrawMode],
+  )
+
+  // Convenience handlers to wire UI buttons to their respective draw modes
+  const handlePolygonDraw = useCallback(() => {
+    activateDrawMode('polygon')
+  }, [activateDrawMode])
+
+  const handleRectangleDraw = useCallback(() => {
+    activateDrawMode('rectangle')
+  }, [activateDrawMode])
+
+  const handleCircleDraw = useCallback(() => {
+    activateDrawMode('circle')
+  }, [activateDrawMode])
+
+  // Clear any drawn geometries and return the polygon control to an idle state
+  const handleDeleteDraw = useCallback(() => {
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) return
+
+    const terraDrawInstance = polygonControl.getTerraDrawInstance()
+    removeTerraDrawFeatures(terraDrawInstance)
+    terraDrawInstance.setMode('render')
+    polygonControl.resetActiveMode()
+    polygonControl.deactivate()
+    setActiveDrawMode(null)
+  }, [])
 
   const handleMapChange = () => {
     const map = mapRef.current?.getMap()
@@ -611,6 +731,7 @@ export const MainMap = ({
     }
   }
 
+  // Return the viewport to the currently selected country's bounding box
   const handleResetToCountryView = () => {
     if (!mapRef.current || !mapInitialViewBox.length) return
 
@@ -638,6 +759,25 @@ export const MainMap = ({
   useEffect(() => {
     baseMapRef.current = baseMap
   }, [baseMap])
+
+  // Detach TerraDraw listeners and controls when the component unmounts. Without this cleanup,
+  // lingering event listeners and duplicate controls would keep reacting the next time the map mounts.
+  useEffect(() => {
+    return () => {
+      const polygonControl = polygonDrawRef.current
+      if (!polygonControl) return
+
+      const terraDrawInstance = polygonControl.getTerraDrawInstance()
+      if (polygonFinishHandlerRef.current) {
+        terraDrawInstance.off('finish', polygonFinishHandlerRef.current)
+      }
+
+      const map = mapRef.current?.getMap()
+      if (map) {
+        map.removeControl(polygonControl)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     selectedHotspotDataRef.current = selectedHotspotData
@@ -750,11 +890,11 @@ export const MainMap = ({
         </div>
       )}
 
-      <div className={styles.customMapTools}>
+      <div className={styles.customMapTools} onClick={(e) => e.stopPropagation()}>
         <div className={styles.mapDrawMeasureGroup}>
           <Tooltip content='Draw' side='left'>
-            <IconButton onClick={() => {}} aria-label='Draw'>
-              <DrawIcon />
+            <IconButton onClick={handleMapDrawToolPopupToggle} aria-label='Draw'>
+              <DrawIcon className={clsx(isMapDrawToolPopupOpen && styles.activeButton)} />
             </IconButton>
           </Tooltip>
 
@@ -795,12 +935,13 @@ export const MainMap = ({
           </IconButton>
         </Tooltip>
 
-        {/* Invisible overlay that captures clicks outside popups to close them */}
-        {(isDateRangePopupOpen || isBaseMapPopupOpen) && (
-          <div
-            className={styles.popupBackdrop}
-            onClick={handleCloseAllPopups}
-            aria-label='Close popup by clicking outside'
+        {isMapDrawToolPopupOpen && (
+          <MapDrawPopup
+            activeDrawMode={activeDrawMode}
+            onPolygonDraw={handlePolygonDraw}
+            onRectangleDraw={handleRectangleDraw}
+            onCircleDraw={handleCircleDraw}
+            onDeleteDraw={handleDeleteDraw}
           />
         )}
 
@@ -817,6 +958,15 @@ export const MainMap = ({
           />
         )}
       </div>
+
+      {/* Invisible overlay that captures clicks outside popups to close them, but excludes the map tools area */}
+      {(isDateRangePopupOpen || isBaseMapPopupOpen) && (
+        <div
+          className={styles.popupBackdrop}
+          onClick={handleCloseAllPopups}
+          aria-label='Close popup by clicking outside'
+        />
+      )}
     </div>
   )
 }
