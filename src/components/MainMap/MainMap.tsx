@@ -1,8 +1,15 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import Map, { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl/maplibre'
-import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
+import type { MapLayerMouseEvent, Map as MapLibreMap, MapGeoJSONFeature } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
+
+import type { GeoJSONStoreFeatures } from 'terra-draw'
+import bbox from '@turf/bbox'
+import bboxPolygon from '@turf/bbox-polygon'
+import booleanIntersects from '@turf/boolean-intersects'
+import booleanWithin from '@turf/boolean-within'
+import type { Feature, FeatureCollection, BBox, Polygon, MultiPolygon } from 'geojson'
 import { IconButton, Tooltip } from '@radix-ui/themes'
 import { Cross1Icon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
@@ -66,6 +73,13 @@ type TerraDrawFinishListener = (
   context: { mode: string; action: string },
 ) => void
 
+type BoundingBox = [number, number, number, number]
+
+const isValidBoundingBox = (bounds: BBox): bounds is BoundingBox =>
+  Array.isArray(bounds) &&
+  bounds.length === 4 &&
+  bounds.every((value) => typeof value === 'number' && !Number.isNaN(value))
+
 // Remove existing TerraDraw features so subsequent draws start with a clean slate
 const removeTerraDrawFeatures = (
   terraDrawInstance: ReturnType<MaplibreTerradrawControl['getTerraDrawInstance']>,
@@ -104,6 +118,32 @@ export const MainMap = ({
   const [activeDrawMode, setActiveDrawMode] = useState<'polygon' | 'rectangle' | 'circle' | null>(
     null,
   )
+  // Cache drawn polygon geometries outside TerraDraw's internal store
+  const [polygonFeatures, setPolygonFeatures] = useState<GeoJSONStoreFeatures[]>([])
+  // Derive a bounding box to constrain hotspot queries when custom geometry is present
+  const polygonBoundingBox = useMemo<BoundingBox | null>(() => {
+    if (!polygonFeatures.length) return null
+
+    const collection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: polygonFeatures as unknown as Feature[],
+    }
+
+    const bounds = bbox(collection) as BBox
+    return isValidBoundingBox(bounds) ? bounds : null
+  }, [polygonFeatures])
+  const selectionPolygons = useMemo<Feature<Polygon | MultiPolygon>[]>(() => {
+    return polygonFeatures
+      .map((feature) => feature as unknown as Feature)
+      .filter((feature): feature is Feature<Polygon | MultiPolygon> => {
+        const type = feature.geometry?.type
+        return type === 'Polygon' || type === 'MultiPolygon'
+      })
+  }, [polygonFeatures])
+  const polygonBoundingBoxFeature = useMemo<Feature<Polygon> | null>(() => {
+    if (!polygonBoundingBox) return null
+    return bboxPolygon(polygonBoundingBox)
+  }, [polygonBoundingBox])
   const [isMapDrawToolPopupOpen, setIsMapDrawToolPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
@@ -215,7 +255,6 @@ export const MainMap = ({
 
     // Validate bbox format
     if (!Array.isArray(bbox) || bbox.length !== 4) {
-      console.error('Invalid bbox format:', bbox)
       return DEFAULT_BBOX
     }
 
@@ -463,8 +502,9 @@ export const MainMap = ({
 
     const polygonTerraDraw = polygonDrawControl.getTerraDrawInstance()
     const finishHandler: TerraDrawFinishListener = () => {
-      setActiveDrawMode(null)
       const terraDraw = polygonDrawControl.getTerraDrawInstance()
+      setPolygonFeatures(terraDraw.getSnapshot())
+      setActiveDrawMode(null)
       terraDraw.setMode('render')
     }
     polygonTerraDraw.on('finish', finishHandler)
@@ -548,6 +588,7 @@ export const MainMap = ({
     addMangrovesLayer,
     addContiguousHotspot,
     handleHotspotDataChange,
+    setPolygonFeatures,
   ])
 
   const handleBaseMapSelection = useCallback(
@@ -591,19 +632,19 @@ export const MainMap = ({
     setIsBaseMapPopupOpen((prev) => !prev)
     setIsDateRangePopupOpen(false)
     setIsMapDrawToolPopupOpen(false)
-  }, [isBaseMapPopupOpen])
+  }, [])
 
   const handleDateRangePopupToggle = useCallback(() => {
     setIsDateRangePopupOpen((prev) => !prev)
     setIsBaseMapPopupOpen(false)
     setIsMapDrawToolPopupOpen(false)
-  }, [isDateRangePopupOpen])
+  }, [])
 
   const handleMapDrawToolPopupToggle = useCallback(() => {
     setIsMapDrawToolPopupOpen((prev) => !prev)
     setIsBaseMapPopupOpen(false)
     setIsDateRangePopupOpen(false)
-  }, [isMapDrawToolPopupOpen])
+  }, [])
 
   const handleCloseAllPopups = useCallback(() => {
     setIsDateRangePopupOpen(false)
@@ -663,12 +704,13 @@ export const MainMap = ({
       }
 
       removeTerraDrawFeatures(terraDrawInstance)
+      setPolygonFeatures([])
 
       polygonControl.activate()
       terraDrawInstance.setMode(mode)
       setActiveDrawMode(mode)
     },
-    [activeDrawMode],
+    [activeDrawMode, setPolygonFeatures],
   )
 
   // Convenience handlers to wire UI buttons to their respective draw modes
@@ -691,13 +733,56 @@ export const MainMap = ({
 
     const terraDrawInstance = polygonControl.getTerraDrawInstance()
     removeTerraDrawFeatures(terraDrawInstance)
+    setPolygonFeatures([])
     terraDrawInstance.setMode('render')
     polygonControl.resetActiveMode()
     polygonControl.deactivate()
     setActiveDrawMode(null)
-  }, [])
+  }, [setPolygonFeatures])
 
-  const handleMapChange = () => {
+  const isFeatureInsideSelection = useCallback(
+    (featureJson: Feature): boolean => {
+      if (!featureJson.geometry || selectionPolygons.length === 0) {
+        return false
+      }
+
+      const geometryType = featureJson.geometry.type
+      if (geometryType !== 'Polygon' && geometryType !== 'MultiPolygon') {
+        return false
+      }
+
+      try {
+        const featureBounds = bbox(featureJson) as BBox
+        if (!isValidBoundingBox(featureBounds)) {
+          return false
+        }
+
+        if (polygonBoundingBoxFeature) {
+          const featureBoundingPolygon = bboxPolygon(featureBounds)
+          if (!booleanIntersects(polygonBoundingBoxFeature, featureBoundingPolygon)) {
+            return false
+          }
+        }
+
+        const polygonFeature = featureJson as Feature<Polygon | MultiPolygon>
+
+        return selectionPolygons.some((selectionPolygon) => {
+          try {
+            return booleanWithin(polygonFeature, selectionPolygon)
+          } catch (containmentError) {
+            console.error('Error evaluating polygon containment:', containmentError)
+            return false
+          }
+        })
+      } catch (error) {
+        console.error('Error computing feature bounds:', error)
+        return false
+      }
+    },
+    [selectionPolygons, polygonBoundingBoxFeature],
+  )
+
+  const handleMapChange = useCallback(() => {
     const map = mapRef.current?.getMap()
     if (!map) {
       return
@@ -713,10 +798,20 @@ export const MainMap = ({
       const sourceFeatures = map.queryRenderedFeatures(undefined, {
         layers: [LAYER_IDS.HOTSPOT_FILL],
         filter: ['==', ['get', 'ISO_Ter1'], selectedCountryFeature.properties?.id],
-      })
+      }) as MapGeoJSONFeature[]
+
+      let featuresWithinDraw = sourceFeatures
+
+      if (polygonBoundingBoxFeature) {
+        featuresWithinDraw = selectionPolygons.length
+          ? sourceFeatures.filter((feature) =>
+              isFeatureInsideSelection(feature.toJSON() as Feature),
+            )
+          : sourceFeatures
+      }
 
       // Extract and enrich features with _pbf data
-      const enrichedFeatures = sourceFeatures.map(
+      const enrichedFeatures = featuresWithinDraw.map(
         (feature) => feature.properties as ContiguousHotspotProperties,
       )
 
@@ -729,7 +824,14 @@ export const MainMap = ({
       console.error('Error processing map features:', error)
       setContiguousHotspotFeatures([])
     }
-  }
+  }, [
+    selectedCountryFeature,
+    setContiguousHotspotFeatures,
+    polygonBoundingBoxFeature,
+    selectionPolygons,
+    isFeatureInsideSelection,
+    hotspotRadio,
+  ])
 
   // Return the viewport to the currently selected country's bounding box
   const handleResetToCountryView = () => {
@@ -755,6 +857,11 @@ export const MainMap = ({
     mapRef.current?.fitBounds(bounds, { duration: FLY_TO_DURATION })
   }, [isMapLoaded, createBoundingBox])
 
+  useEffect(() => {
+    if (!isMapLoaded) return
+    handleMapChange()
+  }, [isMapLoaded, handleMapChange])
+
   // Update the ref (separate effect)
   useEffect(() => {
     baseMapRef.current = baseMap
@@ -763,21 +870,29 @@ export const MainMap = ({
   // Detach TerraDraw listeners and controls when the component unmounts. Without this cleanup,
   // lingering event listeners and duplicate controls would keep reacting the next time the map mounts.
   useEffect(() => {
-    return () => {
-      const polygonControl = polygonDrawRef.current
-      if (!polygonControl) return
+    if (!isMapLoaded) {
+      return
+    }
 
-      const terraDrawInstance = polygonControl.getTerraDrawInstance()
-      if (polygonFinishHandlerRef.current) {
-        terraDrawInstance.off('finish', polygonFinishHandlerRef.current)
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) {
+      return
+    }
+
+    const terraDrawInstance = polygonControl.getTerraDrawInstance()
+    const finishHandler = polygonFinishHandlerRef.current
+    const mapInstance = mapRef.current?.getMap()
+
+    return () => {
+      if (finishHandler) {
+        terraDrawInstance.off('finish', finishHandler)
       }
 
-      const map = mapRef.current?.getMap()
-      if (map) {
-        map.removeControl(polygonControl)
+      if (mapInstance) {
+        mapInstance.removeControl(polygonControl)
       }
     }
-  }, [])
+  }, [isMapLoaded])
 
   useEffect(() => {
     selectedHotspotDataRef.current = selectedHotspotData
