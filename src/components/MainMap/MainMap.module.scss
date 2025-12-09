@@ -94,7 +94,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1, 4px);
-  z-index: 999;
+  z-index: 600;
 
   @include mobile-only {
     top: 78px;
@@ -202,6 +202,6 @@
   right: 0;
   bottom: 0;
   background: transparent;
-  z-index: 999;
+  z-index: 500;
   cursor: pointer;
 }
