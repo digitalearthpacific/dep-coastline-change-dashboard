@@ -1,11 +1,13 @@
 import useResponsive from '../../hooks/useResponsive'
-import { Flex, Grid, Text } from '@radix-ui/themes'
+import { Flex, Grid, Text, Button, DropdownMenu } from '@radix-ui/themes'
+import { DownloadIcon } from '@radix-ui/react-icons'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
 import { useMapData } from '../../hooks/useGlobalContext'
+import styles from './CountryResultView.module.scss'
 
 type CountryResultViewProps = {
   goToBackgroundInfoView: () => void
@@ -32,9 +34,41 @@ export const CountryResultView = ({
     0,
   )
 
+  const handleExportPDF = () => {
+    // TODO: Implement PDF export functionality
+    console.log('Export as PDF')
+  }
+
+  const handleExportJPG = () => {
+    // TODO: Implement JPG export functionality
+    console.log('Export as JPG')
+  }
+
   return (
     <>
-      <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
+      <Flex
+        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
+        gap='4'
+        py='3'
+        align='center'
+      >
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant='soft' color='gray'>
+              EXPORT RESULTS
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content className={styles.exportMenu}>
+            <DropdownMenu.Item className={styles.exportMenuItem} onClick={handleExportPDF}>
+              PDF
+              <DownloadIcon />
+            </DropdownMenu.Item>
+            <DropdownMenu.Item className={styles.exportMenuItem} onClick={handleExportJPG}>
+              JPG
+              <DownloadIcon />
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
         <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
           GLOSSARY
         </TextButton>

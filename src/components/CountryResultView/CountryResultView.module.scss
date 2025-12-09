@@ -1,0 +1,11 @@
+@use '../../styles/mixins' as *;
+
+.exportMenu {
+  min-width: var(--radix-dropdown-menu-trigger-width);
+}
+
+.exportMenuItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
