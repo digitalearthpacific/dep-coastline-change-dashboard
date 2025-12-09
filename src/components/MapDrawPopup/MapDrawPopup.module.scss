@@ -17,8 +17,9 @@
   }
 
   @include mobile-only {
-    top: 2px;
+    top: 1px;
     bottom: inherit;
+    right: 96px;
   }
 }
 
