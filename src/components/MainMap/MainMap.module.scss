@@ -94,7 +94,7 @@
   flex-direction: column;
   align-items: center;
   gap: var(--space-1, 4px);
-  z-index: 1001; /* Higher than popup backdrop to allow clicking through */
+  z-index: 999;
 
   @include mobile-only {
     top: 78px;
