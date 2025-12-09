@@ -596,17 +596,69 @@ export const MainMap = ({
       setBaseMap(baseMapKey)
       setIsBaseMapPopupOpen(false)
 
+      // Clear polygon state immediately
+      setPolygonFeatures([])
+      setActiveDrawMode(null)
+
+      // Clear measure tool state immediately
+      setIsMeasuring(false)
+
       const map = mapRef.current?.getMap()
       if (map) {
         map.once('styledata', () => {
+          // Re-add all layers first
           addBuildingsLayer(map)
           addMangrovesLayer(map)
           addShorelineChangeLayer(map)
           addContiguousHotspot(map, baseMapKey)
+
+          // Then clean up TerraDraw after layers are restored
+          const polygonControl = polygonDrawRef.current
+          if (polygonControl) {
+            try {
+              const terraDrawInstance = polygonControl.getTerraDrawInstance()
+              if (terraDrawInstance) {
+                removeTerraDrawFeatures(terraDrawInstance)
+                terraDrawInstance.setMode('render')
+                polygonControl.resetActiveMode()
+                polygonControl.deactivate()
+              }
+            } catch (error) {
+              console.warn('Error cleaning up TerraDraw features after style load:', error)
+            }
+          }
+
+          // Clean up measure tool after layers are restored
+          const measureControl = drawRef.current
+          if (measureControl) {
+            try {
+              const measureTerraDrawInstance = measureControl.getTerraDrawInstance()
+              if (measureTerraDrawInstance) {
+                // Remove measure features to clear labels
+                const featureIds = measureTerraDrawInstance
+                  .getSnapshot()
+                  .map((f) => f.id)
+                  .filter((id): id is string => typeof id === 'string')
+                measureTerraDrawInstance.removeFeatures(featureIds)
+
+                measureControl.resetActiveMode()
+                measureControl.deactivate()
+              }
+            } catch (error) {
+              console.warn('Error cleaning up measure tool features after style load:', error)
+            }
+          }
         })
       }
     },
-    [addBuildingsLayer, addMangrovesLayer, addShorelineChangeLayer, addContiguousHotspot],
+    [
+      addBuildingsLayer,
+      addMangrovesLayer,
+      addShorelineChangeLayer,
+      addContiguousHotspot,
+      setPolygonFeatures,
+      setActiveDrawMode,
+    ],
   )
 
   const toggleLayerVisibility = useCallback((layerId: string, newVisibility: boolean) => {
@@ -687,28 +739,39 @@ export const MainMap = ({
       const polygonControl = polygonDrawRef.current
       if (!polygonControl) return
 
-      const terraDrawInstance = polygonControl.getTerraDrawInstance()
+      try {
+        const terraDrawInstance = polygonControl.getTerraDrawInstance()
+        if (!terraDrawInstance) {
+          console.warn('TerraDraw instance not available')
+          return
+        }
 
-      if (activeDrawMode === mode) {
-        terraDrawInstance.setMode('render')
-        polygonControl.resetActiveMode()
-        polygonControl.deactivate()
+        if (activeDrawMode === mode) {
+          terraDrawInstance.setMode('render')
+          polygonControl.resetActiveMode()
+          polygonControl.deactivate()
+          setActiveDrawMode(null)
+          return
+        }
+
+        if (activeDrawMode) {
+          terraDrawInstance.setMode('render')
+          polygonControl.resetActiveMode()
+          polygonControl.deactivate()
+        }
+
+        removeTerraDrawFeatures(terraDrawInstance)
+        setPolygonFeatures([])
+
+        polygonControl.activate()
+        terraDrawInstance.setMode(mode)
+        setActiveDrawMode(mode)
+      } catch (error) {
+        console.warn('Error activating draw mode:', error)
+        // Reset state on error
         setActiveDrawMode(null)
-        return
+        setPolygonFeatures([])
       }
-
-      if (activeDrawMode) {
-        terraDrawInstance.setMode('render')
-        polygonControl.resetActiveMode()
-        polygonControl.deactivate()
-      }
-
-      removeTerraDrawFeatures(terraDrawInstance)
-      setPolygonFeatures([])
-
-      polygonControl.activate()
-      terraDrawInstance.setMode(mode)
-      setActiveDrawMode(mode)
     },
     [activeDrawMode, setPolygonFeatures],
   )
