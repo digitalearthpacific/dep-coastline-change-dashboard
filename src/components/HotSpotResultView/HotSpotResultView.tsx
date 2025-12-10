@@ -8,6 +8,7 @@ import type { ContiguousHotspotProperties } from '../../library/types'
 import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 import { BackButton } from '../BackButton'
+import { ExportButton } from '../ExportButton'
 
 type HotSpotResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
@@ -93,16 +94,23 @@ export const HotSpotResultView = ({
   return (
     <>
       <BackButton onClick={goToCountryView} />
-      <Flex direction={isMobileWidth ? 'column' : 'row'} justify='between' align='center' gap='2'>
+      <Flex
+        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
+        gap='4'
+        py='3'
+        align='center'
+        className='hide-on-export'
+      >
+        <ExportButton />
+        <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+          GLOSSARY
+        </TextButton>
+        <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
+          VIEW BACKGROUND INFORMATION
+        </TextButton>
+      </Flex>
+      <Flex>
         <HotSpotBadge rateOfChange={rateOfChange} />
-        <Flex direction={isMobileWidth ? 'column' : 'row'} gap='4' py={isMobileWidth ? '3' : '3'}>
-          <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
-            VIEW BACKGROUND INFORMATION
-          </TextButton>
-          <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
-            GLOSSARY
-          </TextButton>
-        </Flex>
       </Flex>
       <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
         Hotspots are coastal areas experiencing high levels of change. The estimated population,

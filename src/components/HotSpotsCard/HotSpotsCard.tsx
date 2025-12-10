@@ -11,7 +11,7 @@ export const HotSpotsCard = () => {
 
   const renderExportRadioIndicator = (isChecked: boolean) => (
     <span
-      className={`export-only ${styles.exportRadioIndicator}${
+      className={`show-on-export ${styles.exportRadioIndicator}${
         isChecked ? ` ${styles.exportRadioIndicatorChecked}` : ''
       }`}
       aria-hidden='true'
@@ -50,7 +50,7 @@ export const HotSpotsCard = () => {
                 value='high'
                 checked={hotspotRadio === 'high'}
                 onClick={() => onRadioStateChange('high')}
-                element-hide-export='true'
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.high_change_km)).toLocaleString() ??
@@ -74,7 +74,7 @@ export const HotSpotsCard = () => {
                 value='moderate'
                 checked={hotspotRadio === 'moderate'}
                 onClick={() => onRadioStateChange('moderate')}
-                element-hide-export='true'
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.medium_change_km)).toLocaleString() ??
@@ -94,7 +94,7 @@ export const HotSpotsCard = () => {
                 value='low'
                 checked={hotspotRadio === 'low'}
                 onClick={() => onRadioStateChange('low')}
-                element-hide-export='true'
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.low_change_km)).toLocaleString() ??

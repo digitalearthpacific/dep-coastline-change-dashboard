@@ -1,4 +1,5 @@
 import { Button, DropdownMenu, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useState, useEffect } from 'react'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
@@ -41,7 +42,7 @@ export const SearchBar = ({
   }
 
   return (
-    <div className={styles.searchBar} element-hide-export='true'>
+    <div className={clsx(styles.searchBar, 'hide-on-export')}>
       <img src={DEPLogo} alt='Digital Earth Pacific' className={styles.logo} />
       <Text size='2'>Select a location to explore coastline changes</Text>
       <DropdownMenu.Root>

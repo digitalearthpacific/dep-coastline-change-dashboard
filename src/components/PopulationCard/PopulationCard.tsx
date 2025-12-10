@@ -1,7 +1,7 @@
 import { Flex, Text } from '@radix-ui/themes'
 import { CustomPopover } from '../CustomPopover'
 import { formatCount } from '../../library/utils/formatCount'
-import styles from '../../styles/common.module.scss'
+import commonStyles from '../../styles/common.module.scss'
 
 type PopulationCardProps = {
   totalPopulation: number | null
@@ -12,7 +12,7 @@ const POPULATION_INFO =
 
 export const PopulationCard = ({ totalPopulation }: PopulationCardProps) => {
   return (
-    <div className={styles.appCard}>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='5'>
         <header style={{ height: '80px' }}>
           <Flex justify='between' align='start'>

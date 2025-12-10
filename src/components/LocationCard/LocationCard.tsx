@@ -2,7 +2,7 @@ import { Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils'
-import styles from '../../styles/common.module.scss'
+import commonStyles from '../../styles/common.module.scss'
 
 export const LocationCard = () => {
   const { isMobileWidth } = useResponsive()
@@ -11,7 +11,7 @@ export const LocationCard = () => {
   const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 
   return (
-    <div className={styles.appCard}>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='2' justify='between'>
         <Flex justify='between' align='start'>
           {isMobileWidth ? (

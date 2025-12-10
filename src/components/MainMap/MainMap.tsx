@@ -418,11 +418,9 @@ export const MainMap = ({
       const navControl = Array.from(
         container?.querySelectorAll('.maplibregl-ctrl-group') ?? [],
       ).find((group) => group.querySelector('[aria-label="Zoom in"]'))
-      navControl?.setAttribute('element-hide-export', 'true')
+      navControl?.classList.add('hide-on-export')
 
-      container
-        ?.querySelector('.maplibregl-ctrl-attrib')
-        ?.setAttribute('element-hide-export', 'true')
+      container?.querySelector('.maplibregl-ctrl-attrib')?.classList.add('hide-on-export')
     })
 
     const map = mapRef.current?.getMap()
@@ -761,7 +759,7 @@ export const MainMap = ({
         </div>
       )}
 
-      <div className={styles.customMapTools} element-hide-export='true'>
+      <div className={clsx(styles.customMapTools, 'hide-on-export')}>
         <div className={styles.mapDrawMeasureGroup}>
           <Tooltip content='Draw' side='left'>
             <IconButton onClick={() => {}} aria-label='Draw'>
