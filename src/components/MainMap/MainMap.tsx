@@ -868,12 +868,10 @@ export const MainMap = ({
 
       let featuresWithinDraw = sourceFeatures
 
-      if (polygonBoundingBoxFeature) {
-        featuresWithinDraw = selectionPolygons.length
-          ? sourceFeatures.filter((feature) =>
-              isFeatureInsideSelection(feature.toJSON() as Feature),
-            )
-          : sourceFeatures
+      if (polygonBoundingBoxFeature && selectionPolygons.length > 0) {
+        featuresWithinDraw = sourceFeatures.filter((feature) =>
+          isFeatureInsideSelection(feature.toJSON() as Feature),
+        )
       }
 
       // Extract and enrich features with _pbf data
