@@ -66,6 +66,11 @@ pre,
 }
 
 /* Hide elements during export */
-.is-exporting [element-hide-export='true'] {
+.is-exporting [element-hide-export='true'],
+.export-only {
   display: none !important;
+}
+
+.is-exporting .export-only {
+  display: inline-flex !important;
 }
