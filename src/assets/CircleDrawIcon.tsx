@@ -1,0 +1,19 @@
+import type { IconType } from '../library/types'
+
+export const CircleDrawIcon = ({ color = 'currentColor', className = '' }: IconType) => (
+  <svg
+    className={className}
+    xmlns='http://www.w3.org/2000/svg'
+    width='16'
+    height='16'
+    viewBox='0 0 16 16'
+    fill='none'
+  >
+    <path
+      d='M8.00004 1.3335C4.32004 1.3335 1.33337 4.32016 1.33337 8.00016C1.33337 11.6802 4.32004 14.6668 8.00004 14.6668C11.68 14.6668 14.6667 11.6802 14.6667 8.00016C14.6667 4.32016 11.68 1.3335 8.00004 1.3335ZM8.00004 13.3335C5.05337 13.3335 2.66671 10.9468 2.66671 8.00016C2.66671 5.0535 5.05337 2.66683 8.00004 2.66683C10.9467 2.66683 13.3334 5.0535 13.3334 8.00016C13.3334 10.9468 10.9467 13.3335 8.00004 13.3335Z'
+      fill={color}
+    />
+  </svg>
+)
+
+export default CircleDrawIcon
