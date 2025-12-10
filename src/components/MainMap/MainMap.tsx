@@ -407,12 +407,22 @@ export const MainMap = ({
 
   // Event handlers
   const handleMapLoad = useCallback(() => {
-    // Remove native tooltips
+    // Remove native tooltips, add custom attributes and navigation controls for export hiding
     requestAnimationFrame(() => {
       const controls = mapRef.current
         ?.getContainer()
         .querySelectorAll('.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out')
       controls?.forEach((control) => control.removeAttribute('title'))
+
+      const container = mapRef.current?.getContainer()
+      const navControl = Array.from(
+        container?.querySelectorAll('.maplibregl-ctrl-group') ?? [],
+      ).find((group) => group.querySelector('[aria-label="Zoom in"]'))
+      navControl?.setAttribute('element-hide-export', 'true')
+
+      container
+        ?.querySelector('.maplibregl-ctrl-attrib')
+        ?.setAttribute('element-hide-export', 'true')
     })
 
     const map = mapRef.current?.getMap()
@@ -720,6 +730,7 @@ export const MainMap = ({
         onLoad={handleMapLoad}
         attributionControl={false}
         onIdle={handleMapChange}
+        canvasContextAttributes={{ preserveDrawingBuffer: true }}
       >
         <AttributionControl position='bottom-right' compact />
         <ScaleControl
@@ -750,7 +761,7 @@ export const MainMap = ({
         </div>
       )}
 
-      <div className={styles.customMapTools}>
+      <div className={styles.customMapTools} element-hide-export='true'>
         <div className={styles.mapDrawMeasureGroup}>
           <Tooltip content='Draw' side='left'>
             <IconButton onClick={() => {}} aria-label='Draw'>

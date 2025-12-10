@@ -41,7 +41,7 @@ export const SearchBar = ({
   }
 
   return (
-    <div className={styles.searchBar}>
+    <div className={styles.searchBar} element-hide-export='true'>
       <img src={DEPLogo} alt='Digital Earth Pacific' className={styles.logo} />
       <Text size='2'>Select a location to explore coastline changes</Text>
       <DropdownMenu.Root>

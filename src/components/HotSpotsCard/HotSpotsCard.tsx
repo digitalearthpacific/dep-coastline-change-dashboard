@@ -1,6 +1,7 @@
-import { Card, Flex, Radio, Text } from '@radix-ui/themes'
+import { Flex, Radio, Text } from '@radix-ui/themes'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover'
+import styles from '../../styles/common.module.scss'
 
 export const HotSpotsCard = () => {
   const { selectedCountryFeature } = useMapData()
@@ -8,7 +9,7 @@ export const HotSpotsCard = () => {
   const shorelineChangeMagnitude = selectedCountryFeature?.properties?.shoreline_change_magnitude
 
   return (
-    <Card>
+    <div className={styles.appCard}>
       <Flex direction='column' gap='3'>
         <Flex direction='column' align='stretch' style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
@@ -91,6 +92,6 @@ export const HotSpotsCard = () => {
           </Flex>
         </Flex>
       </Flex>
-    </Card>
+    </div>
   )
 }

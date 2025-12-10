@@ -64,3 +64,8 @@ pre,
   border-radius: 4px;
   background-color: var(--gray-7);
 }
+
+/* Hide elements during export */
+.is-exporting [element-hide-export='true'] {
+  display: none !important;
+}

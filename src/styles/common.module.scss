@@ -1,0 +1,8 @@
+@use './mixins.scss' as *;
+
+.appCard {
+  @include app-card;
+
+  // Keep it purely presentational; no layout assumptions
+  display: block;
+}
