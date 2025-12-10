@@ -951,7 +951,7 @@ export const MainMap = ({
     const mapInstance = mapRef.current?.getMap()
 
     return () => {
-      if (finishHandler) {
+      if (terraDrawInstance && finishHandler) {
         terraDrawInstance.off('finish', finishHandler)
       }
 
