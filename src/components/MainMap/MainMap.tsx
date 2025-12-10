@@ -122,7 +122,9 @@ export const MainMap = ({
   const [polygonFeatures, setPolygonFeatures] = useState<GeoJSONStoreFeatures[]>([])
   // Derive a bounding box to constrain hotspot queries when custom geometry is present
   const polygonBoundingBox = useMemo<BoundingBox | null>(() => {
-    if (!polygonFeatures.length) return null
+    if (!polygonFeatures.length) {
+      return null
+    }
 
     const collection: FeatureCollection = {
       type: 'FeatureCollection',
@@ -132,6 +134,7 @@ export const MainMap = ({
     const bounds = bbox(collection) as BBox
     return isValidBoundingBox(bounds) ? bounds : null
   }, [polygonFeatures])
+
   const selectionPolygons = useMemo<Feature<Polygon | MultiPolygon>[]>(() => {
     return polygonFeatures
       .map((feature) => feature as unknown as Feature)
@@ -140,10 +143,14 @@ export const MainMap = ({
         return type === 'Polygon' || type === 'MultiPolygon'
       })
   }, [polygonFeatures])
+
   const polygonBoundingBoxFeature = useMemo<Feature<Polygon> | null>(() => {
-    if (!polygonBoundingBox) return null
+    if (!polygonBoundingBox) {
+      return null
+    }
     return bboxPolygon(polygonBoundingBox)
   }, [polygonBoundingBox])
+
   const [isMapDrawToolPopupOpen, setIsMapDrawToolPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
@@ -713,7 +720,9 @@ export const MainMap = ({
 
   // Toggle the measure control and clear any sketches to hide its labels when closing
   const handleMeasureTool = useCallback(() => {
-    if (!drawRef.current) return
+    if (!drawRef.current) {
+      return
+    }
 
     if (!isMeasuring) {
       setIsMeasuring(true)
@@ -740,7 +749,9 @@ export const MainMap = ({
   const activateDrawMode = useCallback(
     (mode: 'polygon' | 'rectangle' | 'circle') => {
       const polygonControl = polygonDrawRef.current
-      if (!polygonControl) return
+      if (!polygonControl) {
+        return
+      }
 
       try {
         const terraDrawInstance = polygonControl.getTerraDrawInstance()
@@ -795,7 +806,9 @@ export const MainMap = ({
   // Clear any drawn geometries and return the polygon control to an idle state
   const handleDeleteDraw = useCallback(() => {
     const polygonControl = polygonDrawRef.current
-    if (!polygonControl) return
+    if (!polygonControl) {
+      return
+    }
 
     const terraDrawInstance = polygonControl.getTerraDrawInstance()
     removeTerraDrawFeatures(terraDrawInstance)
@@ -899,7 +912,9 @@ export const MainMap = ({
 
   // Return the viewport to the currently selected country's bounding box
   const handleResetToCountryView = () => {
-    if (!mapRef.current || !mapInitialViewBox.length) return
+    if (!mapRef.current || !mapInitialViewBox.length) {
+      return
+    }
 
     mapRef.current.fitBounds(mapInitialViewBox, { duration: FLY_TO_DURATION })
   }
@@ -907,7 +922,9 @@ export const MainMap = ({
   // Effects
   // Update map size and fit to country bounds on load or when selected country changes
   useEffect(() => {
-    if (!isMapLoaded) return
+    if (!isMapLoaded) {
+      return
+    }
 
     const mapContainer = mapRef.current?.getContainer().parentElement
     if (mapContainer) {
@@ -922,8 +939,21 @@ export const MainMap = ({
   }, [isMapLoaded, createBoundingBox])
 
   useEffect(() => {
-    if (!isMapLoaded) return
+    if (!isMapLoaded) {
+      return
+    }
+
+    const map = mapRef.current?.getMap()
+    if (!map) {
+      return
+    }
+
+    map.on('idle', handleMapChange)
     handleMapChange()
+
+    return () => {
+      map.off('idle', handleMapChange)
+    }
   }, [isMapLoaded, handleMapChange])
 
   // Update the ref (separate effect)
@@ -964,10 +994,14 @@ export const MainMap = ({
 
   // Clear drawn polygons when switching to mobile width to avoid tool UI issues on small screens
   useEffect(() => {
-    if (!isMobileWidth) return
+    if (!isMobileWidth) {
+      return
+    }
 
     const polygonControl = polygonDrawRef.current
-    if (!polygonControl) return
+    if (!polygonControl) {
+      return
+    }
 
     try {
       const terraDrawInstance = polygonControl.getTerraDrawInstance()
@@ -987,7 +1021,9 @@ export const MainMap = ({
   // Update shoreline layer visibility and filters
   useEffect(() => {
     const map = mapRef.current?.getMap()
-    if (!map) return
+    if (!map) {
+      return
+    }
 
     const shorelineLayers = [
       { id: LAYER_IDS.SHORELINE_UNCERTAIN, filter: SHORELINE_FILTERS.UNCERTAIN },
@@ -1008,7 +1044,9 @@ export const MainMap = ({
   // Update hotspot selection
   useEffect(() => {
     const map = mapRef.current?.getMap()
-    if (!map) return
+    if (!map) {
+      return
+    }
 
     const hotspotSelectedColorExpression = getHotspotSelectedColorExpression(baseMapRef.current)
     const selectedUid = selectedHotspotData?.uid || ''
