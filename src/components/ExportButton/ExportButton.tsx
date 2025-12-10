@@ -3,15 +3,20 @@ import { useCallback, useState } from 'react'
 import html2canvas from 'html2canvas-pro'
 import { jsPDF } from 'jspdf'
 
+import { useMapData } from '../../hooks/useGlobalContext'
 import { DownloadIcon } from '@radix-ui/react-icons'
 import { Button, DropdownMenu } from '@radix-ui/themes'
 import { EXPORT_CLASS_NAME } from '../../library/constants'
 import styles from './ExportButton.module.scss'
 import useResponsive from '../../hooks/useResponsive'
+import { getNameByCountryCode } from '../../library/utils'
 
 export const ExportButton = () => {
   const { isMobileWidth } = useResponsive()
   const [isExporting, setIsExporting] = useState(false)
+  const { selectedCountryFeature } = useMapData()
+
+  const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 
   const captureExportCanvas = useCallback(async () => {
     const exportTarget = document.getElementById('root')
@@ -42,14 +47,12 @@ export const ExportButton = () => {
     }
   }, [])
 
-  const createDownloadFileName = useCallback((extension: 'pdf' | 'jpg') => {
-    const timestamp = new Date()
-      .toISOString()
-      .replace(/[-:T.]/g, '')
-      .slice(0, 14)
-
-    return `dep-coastline-results-${timestamp}.${extension}`
-  }, [])
+  const createDownloadFileName = useCallback(
+    (extension: 'pdf' | 'jpg') => {
+      return `${countryName}-coastline-results.${extension}`
+    },
+    [countryName],
+  )
 
   const handleExport = useCallback(
     async (format: 'pdf' | 'jpg') => {
