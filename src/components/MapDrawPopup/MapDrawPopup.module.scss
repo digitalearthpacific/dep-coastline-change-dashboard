@@ -1,0 +1,28 @@
+@use '../../styles/mixins' as *;
+
+.popupContainer {
+  position: absolute;
+  width: 40px;
+  right: 128px;
+  bottom: 175px;
+  display: flex;
+  z-index: 1000;
+
+  button:first-child {
+    border-radius: var(--radius-2, 4px) 0 0 var(--radius-2, 4px);
+  }
+
+  button:last-child {
+    border-radius: 0 var(--radius-2, 4px) var(--radius-2, 4px) 0;
+  }
+
+  @include mobile-only {
+    top: 1px;
+    bottom: inherit;
+    right: 96px;
+  }
+}
+
+.activeButton {
+  color: var(--blue-9);
+}
