@@ -638,7 +638,9 @@ export const MainMap = ({
                 const featureIds = measureTerraDrawInstance
                   .getSnapshot()
                   .map((f) => f.id)
-                  .filter((id): id is string => typeof id === 'string')
+                  .filter(
+                    (id): id is string | number => typeof id === 'string' || typeof id === 'number',
+                  )
                 measureTerraDrawInstance.removeFeatures(featureIds)
 
                 measureControl.resetActiveMode()
@@ -658,6 +660,7 @@ export const MainMap = ({
       addContiguousHotspot,
       setPolygonFeatures,
       setActiveDrawMode,
+      setIsMeasuring,
     ],
   )
 
@@ -725,7 +728,7 @@ export const MainMap = ({
       const featureIds = terraDrawInstance
         .getSnapshot()
         .map((f) => f.id)
-        .filter((id): id is string => typeof id === 'string')
+        .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
       terraDrawInstance.removeFeatures(featureIds)
 
       drawRef.current.resetActiveMode()
