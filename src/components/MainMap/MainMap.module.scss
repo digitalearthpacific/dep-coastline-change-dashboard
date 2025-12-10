@@ -119,6 +119,12 @@
   button:last-child {
     border-radius: 0 0 var(--radius-2, 4px) var(--radius-2, 4px);
   }
+
+  @include mobile-only {
+    button:first-child {
+      border-radius: var(--radius-2, 4px);
+    }
+  }
 }
 
 .activeButton {

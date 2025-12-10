@@ -930,6 +930,10 @@ export const MainMap = ({
     baseMapRef.current = baseMap
   }, [baseMap])
 
+  useEffect(() => {
+    selectedHotspotDataRef.current = selectedHotspotData
+  }, [selectedHotspotData])
+
   // Detach TerraDraw listeners and controls when the component unmounts. Without this cleanup,
   // lingering event listeners and duplicate controls would keep reacting the next time the map mounts.
   useEffect(() => {
@@ -957,9 +961,27 @@ export const MainMap = ({
     }
   }, [isMapLoaded])
 
+  // Clear drawn polygons when switching to mobile width to avoid tool UI issues on small screens
   useEffect(() => {
-    selectedHotspotDataRef.current = selectedHotspotData
-  }, [selectedHotspotData])
+    if (!isMobileWidth) return
+
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) return
+
+    try {
+      const terraDrawInstance = polygonControl.getTerraDrawInstance()
+      // Remove any existing features and reset draw state
+      removeTerraDrawFeatures(terraDrawInstance)
+      setPolygonFeatures([])
+      terraDrawInstance.setMode('render')
+      polygonControl.resetActiveMode()
+      polygonControl.deactivate()
+      setActiveDrawMode(null)
+      setIsMapDrawToolPopupOpen(false)
+    } catch (error) {
+      console.warn('Error clearing TerraDraw features when switching to mobile:', error)
+    }
+  }, [isMobileWidth, setPolygonFeatures])
 
   // Update shoreline layer visibility and filters
   useEffect(() => {
@@ -1070,11 +1092,13 @@ export const MainMap = ({
 
       <div className={styles.customMapTools} onClick={(e) => e.stopPropagation()}>
         <div className={styles.mapDrawMeasureGroup}>
-          <Tooltip content='Draw' side='left'>
-            <IconButton onClick={handleMapDrawToolPopupToggle} aria-label='Draw'>
-              <DrawIcon className={clsx(isMapDrawToolPopupOpen && styles.activeButton)} />
-            </IconButton>
-          </Tooltip>
+          {!isMobileWidth && (
+            <Tooltip content='Draw' side='left'>
+              <IconButton onClick={handleMapDrawToolPopupToggle} aria-label='Draw'>
+                <DrawIcon className={clsx(isMapDrawToolPopupOpen && styles.activeButton)} />
+              </IconButton>
+            </Tooltip>
+          )}
 
           <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
             <IconButton onClick={handleMeasureTool} aria-label='Measure'>

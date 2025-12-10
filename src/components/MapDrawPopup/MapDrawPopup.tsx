@@ -1,11 +1,14 @@
-import styles from './MapDrawPopup.module.scss'
+{
+  /* Drawing is not fully supported on touch devices
+    See: https://github.com/JamesLMilner/terra-draw/blob/main/guides/4.MODES.md#touch-device-support */
+}
+import clsx from 'clsx'
 import { IconButton, Tooltip } from '@radix-ui/themes'
 import { PolygonDrawIcon } from '../../assets/PolygonDrawIcon'
 import { SquareDrawIcon } from '../../assets/SquareDrawIcon'
 import { CircleDrawIcon } from '../../assets/CircleDrawIcon'
 import { DeleteDrawIcon } from '../../assets/DeleteDrawIcon'
-import clsx from 'clsx'
-import useResponsive from '../../hooks/useResponsive'
+import styles from './MapDrawPopup.module.scss'
 
 type MapDrawPopupProps = {
   activeDrawMode: 'polygon' | 'rectangle' | 'circle' | null
@@ -22,8 +25,6 @@ export const MapDrawPopup = ({
   onCircleDraw,
   onDeleteDraw,
 }: MapDrawPopupProps) => {
-  const { isMobileWidth } = useResponsive()
-
   return (
     <div className={styles.popupContainer} onClick={(e) => e.stopPropagation()}>
       <Tooltip content='Polygon'>
@@ -37,15 +38,11 @@ export const MapDrawPopup = ({
         </IconButton>
       </Tooltip>
 
-      {/* Circle drawing is not fully supported on touch devices
-          See: https://github.com/JamesLMilner/terra-draw/blob/main/guides/4.MODES.md#touch-device-support */}
-      {!isMobileWidth && (
-        <Tooltip content='Circle'>
-          <IconButton onClick={onCircleDraw} radius='none' aria-label='Circle'>
-            <CircleDrawIcon className={clsx(activeDrawMode === 'circle' && styles.activeButton)} />
-          </IconButton>
-        </Tooltip>
-      )}
+      <Tooltip content='Circle'>
+        <IconButton onClick={onCircleDraw} radius='none' aria-label='Circle'>
+          <CircleDrawIcon className={clsx(activeDrawMode === 'circle' && styles.activeButton)} />
+        </IconButton>
+      </Tooltip>
       <Tooltip content='Delete'>
         <IconButton onClick={onDeleteDraw} aria-label='Delete'>
           <DeleteDrawIcon />
