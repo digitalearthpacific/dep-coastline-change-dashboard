@@ -32,8 +32,8 @@ export const MapDrawPopup = ({
           <PolygonDrawIcon className={clsx(activeDrawMode === 'polygon' && styles.activeButton)} />
         </IconButton>
       </Tooltip>
-      <Tooltip content='Square'>
-        <IconButton onClick={onRectangleDraw} radius='none' aria-label='Square'>
+      <Tooltip content='Rectangle'>
+        <IconButton onClick={onRectangleDraw} radius='none' aria-label='Rectangle'>
           <SquareDrawIcon className={clsx(activeDrawMode === 'rectangle' && styles.activeButton)} />
         </IconButton>
       </Tooltip>
