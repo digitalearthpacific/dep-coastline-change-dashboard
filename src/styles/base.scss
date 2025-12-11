@@ -71,6 +71,9 @@ pre,
   display: none !important;
 }
 
+/* Use a CSS variable for display so it can be overridden per element.
+  Example (JSX + clsx): <div className={clsx('show-on-export', style={{ ['--show-on-export-display']: 'block' }} />
+*/
 .is-exporting .show-on-export {
-  display: inline-flex !important;
+  display: var(--show-on-export-display, inline-flex) !important;
 }

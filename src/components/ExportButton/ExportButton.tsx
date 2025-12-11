@@ -5,6 +5,7 @@ import { jsPDF } from 'jspdf'
 
 import { useMapData } from '../../hooks/useGlobalContext'
 import { DownloadIcon } from '@radix-ui/react-icons'
+import * as Toast from '@radix-ui/react-toast'
 import { Button, DropdownMenu } from '@radix-ui/themes'
 import { EXPORT_CLASS_NAME } from '../../library/constants'
 import styles from './ExportButton.module.scss'
@@ -15,6 +16,9 @@ export const ExportButton = () => {
   const { isMobileWidth } = useResponsive()
   const [isExporting, setIsExporting] = useState(false)
   const { selectedCountryFeature } = useMapData()
+
+  const [toastOpen, setToastOpen] = useState(false)
+  const [toastMessage, setToastMessage] = useState('')
 
   const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 
@@ -87,7 +91,9 @@ export const ExportButton = () => {
         pdf.addImage(imgData, 'JPEG', offsetX, offsetY, renderWidth, renderHeight)
         pdf.save(createDownloadFileName('pdf'))
       } catch (error) {
-        console.error('Failed to export results', error)
+        const message = error instanceof Error ? error.message : String(error)
+        setToastMessage(`Failed to export results: ${message}`)
+        setToastOpen(true)
       } finally {
         setIsExporting(false)
       }
@@ -105,31 +111,50 @@ export const ExportButton = () => {
 
   return (
     !isMobileWidth && (
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <Button variant='soft' color='gray'>
-            EXPORT RESULTS
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content className={styles.exportMenu}>
-          <DropdownMenu.Item
-            className={styles.exportMenuItem}
-            onSelect={handleExportPDF}
-            disabled={isExporting}
-          >
-            PDF
-            <DownloadIcon />
-          </DropdownMenu.Item>
-          <DropdownMenu.Item
-            className={styles.exportMenuItem}
-            onSelect={handleExportJPG}
-            disabled={isExporting}
-          >
-            JPG
-            <DownloadIcon />
-          </DropdownMenu.Item>
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+      <Toast.Provider swipeDirection='down'>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button variant='soft' color='gray' loading={isExporting}>
+              EXPORT RESULTS
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content className={styles.exportMenu}>
+            <DropdownMenu.Item
+              className={styles.exportMenuItem}
+              onSelect={handleExportPDF}
+              disabled={isExporting}
+            >
+              PDF
+              <DownloadIcon />
+            </DropdownMenu.Item>
+            <DropdownMenu.Item
+              className={styles.exportMenuItem}
+              onSelect={handleExportJPG}
+              disabled={isExporting}
+            >
+              JPG
+              <DownloadIcon />
+            </DropdownMenu.Item>
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+
+        <Toast.Root
+          open={toastOpen}
+          onOpenChange={setToastOpen}
+          duration={5000}
+          className={styles.toastRoot}
+        >
+          <Toast.Title>Export failed</Toast.Title>
+          <Toast.Description>{toastMessage}</Toast.Description>
+          <Toast.Close asChild>
+            <button type='button' className={styles.toastClose}>
+              Close
+            </button>
+          </Toast.Close>
+        </Toast.Root>
+
+        <Toast.Viewport className={styles.toastViewport} />
+      </Toast.Provider>
     )
   )
 }

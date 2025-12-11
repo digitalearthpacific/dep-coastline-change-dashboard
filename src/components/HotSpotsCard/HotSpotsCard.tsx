@@ -1,7 +1,7 @@
 import { Flex, Radio, Text } from '@radix-ui/themes'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover'
-import commonStay from '../../styles/common.module.scss'
+import commonStyles from '../../styles/common.module.scss'
 import styles from './HotSpotsCard.module.scss'
 
 export const HotSpotsCard = () => {
@@ -19,7 +19,7 @@ export const HotSpotsCard = () => {
   )
 
   return (
-    <div className={commonStay.appCard}>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='3'>
         <Flex direction='column' align='stretch' style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
