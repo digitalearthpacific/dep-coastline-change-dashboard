@@ -1,14 +1,25 @@
-import { Card, Flex, Radio, Text } from '@radix-ui/themes'
+import { Flex, Radio, Text } from '@radix-ui/themes'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
 import { CustomPopover } from '../CustomPopover'
+import commonStyles from '../../styles/common.module.scss'
+import styles from './HotSpotsCard.module.scss'
 
 export const HotSpotsCard = () => {
   const { selectedCountryFeature } = useMapData()
   const { hotspotRadio, onRadioStateChange } = useMapVisualization()
   const shorelineChangeMagnitude = selectedCountryFeature?.properties?.shoreline_change_magnitude
 
+  const renderExportRadioIndicator = (isChecked: boolean) => (
+    <span
+      className={`show-on-export ${styles.exportRadioIndicator}${
+        isChecked ? ` ${styles.exportRadioIndicatorChecked}` : ''
+      }`}
+      aria-hidden='true'
+    />
+  )
+
   return (
-    <Card>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='3'>
         <Flex direction='column' align='stretch' style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
@@ -33,11 +44,13 @@ export const HotSpotsCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', paddingBottom: 'var(--space-1)' }}
           >
             <Flex align='center' gap='2'>
+              {renderExportRadioIndicator(hotspotRadio === 'high')}
               <Radio
                 name='hotspotRadio'
                 value='high'
                 checked={hotspotRadio === 'high'}
                 onClick={() => onRadioStateChange('high')}
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.high_change_km)).toLocaleString() ??
@@ -55,11 +68,13 @@ export const HotSpotsCard = () => {
             style={{ borderBottom: '1px solid var(--gray-6)', padding: 'var(--space-1) 0' }}
           >
             <Flex align='center' gap='2'>
+              {renderExportRadioIndicator(hotspotRadio === 'moderate')}
               <Radio
                 name='hotspotRadio'
                 value='moderate'
                 checked={hotspotRadio === 'moderate'}
                 onClick={() => onRadioStateChange('moderate')}
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.medium_change_km)).toLocaleString() ??
@@ -73,11 +88,13 @@ export const HotSpotsCard = () => {
           </Flex>
           <Flex justify='between' align='center' style={{ paddingTop: 'var(--space-1)' }}>
             <Flex align='center' gap='2'>
+              {renderExportRadioIndicator(hotspotRadio === 'low')}
               <Radio
                 name='hotspotRadio'
                 value='low'
                 checked={hotspotRadio === 'low'}
                 onClick={() => onRadioStateChange('low')}
+                className='hide-on-export'
               />
               <Text size='4' weight='bold'>
                 {Math.round(Number(shorelineChangeMagnitude?.low_change_km)).toLocaleString() ??
@@ -91,6 +108,6 @@ export const HotSpotsCard = () => {
           </Flex>
         </Flex>
       </Flex>
-    </Card>
+    </div>
   )
 }

@@ -1,11 +1,13 @@
-import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid, Text } from '@radix-ui/themes'
+
+import useResponsive from '../../hooks/useResponsive'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
 import { useMapData } from '../../hooks/useGlobalContext'
+import { ExportButton } from '../ExportButton'
 
 type CountryResultViewProps = {
   goToBackgroundInfoView: () => void
@@ -34,7 +36,14 @@ export const CountryResultView = ({
 
   return (
     <>
-      <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
+      <Flex
+        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
+        gap='4'
+        py='3'
+        align='center'
+        className='hide-on-export'
+      >
+        <ExportButton />
         <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
           GLOSSARY
         </TextButton>

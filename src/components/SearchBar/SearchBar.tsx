@@ -1,4 +1,5 @@
 import { Button, DropdownMenu, Text } from '@radix-ui/themes'
+import clsx from 'clsx'
 import { useState, useEffect } from 'react'
 import styles from './SearchBar.module.scss'
 import DEPLogo from '../../assets/DEP-logo.jpg'
@@ -41,27 +42,29 @@ export const SearchBar = ({
   }
 
   return (
-    <div className={styles.searchBar}>
+    <div className={clsx(styles.searchBar)}>
       <img src={DEPLogo} alt='Digital Earth Pacific' className={styles.logo} />
-      <Text size='2'>Select a location to explore coastline changes</Text>
-      <DropdownMenu.Root>
-        <DropdownMenu.Trigger>
-          <Button className={styles.dropdownButton}>
-            {dropdownValue}
-            <DropdownMenu.TriggerIcon />
-          </Button>
-        </DropdownMenu.Trigger>
-        <DropdownMenu.Content className={styles.dropdownContent}>
-          {countryApiData.map((country) => (
-            <DropdownMenu.Item
-              key={country.properties.id}
-              onSelect={() => handleSelectCountry(country)}
-            >
-              {getNameByCountryCode(country)}
-            </DropdownMenu.Item>
-          ))}
-        </DropdownMenu.Content>
-      </DropdownMenu.Root>
+      <div className={clsx(styles.searchInput, 'hide-on-export')}>
+        <Text size='2'>Select a location to explore coastline changes</Text>
+        <DropdownMenu.Root>
+          <DropdownMenu.Trigger>
+            <Button className={styles.dropdownButton}>
+              {dropdownValue}
+              <DropdownMenu.TriggerIcon />
+            </Button>
+          </DropdownMenu.Trigger>
+          <DropdownMenu.Content className={styles.dropdownContent}>
+            {countryApiData.map((country) => (
+              <DropdownMenu.Item
+                key={country.properties.id}
+                onSelect={() => handleSelectCountry(country)}
+              >
+                {getNameByCountryCode(country)}
+              </DropdownMenu.Item>
+            ))}
+          </DropdownMenu.Content>
+        </DropdownMenu.Root>
+      </div>
     </div>
   )
 }

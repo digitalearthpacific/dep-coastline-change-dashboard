@@ -1,6 +1,7 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
+import { Flex, Text } from '@radix-ui/themes'
 import { CustomPopover } from '../CustomPopover'
 import { formatCount } from '../../library/utils/formatCount'
+import commonStyles from '../../styles/common.module.scss'
 
 type BuildingsCardProps = {
   numberOfBuildings: number | null
@@ -11,7 +12,7 @@ const BUILDINGS_INFO =
 
 export const BuildingsCard = ({ numberOfBuildings }: BuildingsCardProps) => {
   return (
-    <Card>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='5'>
         <header style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
@@ -29,6 +30,6 @@ export const BuildingsCard = ({ numberOfBuildings }: BuildingsCardProps) => {
           {formatCount(numberOfBuildings)}
         </Text>
       </Flex>
-    </Card>
+    </div>
   )
 }
