@@ -87,7 +87,7 @@ export const HotSpotResultView = ({
   goToGlossaryView,
   goToUserGuideView,
 }: HotSpotResultViewProps) => {
-  const { isMobileWidth } = useResponsive()
+  const { isMobileWidth, isSmallerDesktopWidth } = useResponsive()
   const totalPopulation = selectedHotspotData?.total_population ?? null
   const numberOfBuildings = selectedHotspotData?.building_counts ?? null
   const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
@@ -99,10 +99,10 @@ export const HotSpotResultView = ({
       <BackButton onClick={goToCountryView} />
       <LocationCard />
       <Flex
-        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
-        gap='4'
+        direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
+        gap={isSmallerDesktopWidth && !isMobileWidth ? '1' : '4'}
         py='3'
-        align='center'
+        align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
         className='hide-on-export'
       >
         <ExportButton />

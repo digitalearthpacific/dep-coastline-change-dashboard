@@ -18,6 +18,7 @@ export type CustomCountryBboxType = Record<
 // Responsive types
 export type ResponsiveState = {
   isMobileWidth: boolean
+  isSmallerDesktopWidth: boolean
 }
 
 export type RatesOfChangeYear = {

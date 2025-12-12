@@ -21,7 +21,7 @@ export const CountryResultView = ({
   goToGlossaryView,
   goToUserGuideView,
 }: CountryResultViewProps) => {
-  const { isMobileWidth } = useResponsive()
+  const { isMobileWidth, isSmallerDesktopWidth } = useResponsive()
   const { contiguousHotspotFeatures } = useMapData()
 
   const totalPopulationFromHotspot = contiguousHotspotFeatures.reduce(
@@ -41,10 +41,10 @@ export const CountryResultView = ({
     <>
       <LocationCard />
       <Flex
-        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
-        gap='4'
+        direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
+        gap={isSmallerDesktopWidth && !isMobileWidth ? '1' : '4'}
         py='3'
-        align='center'
+        align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
         className='hide-on-export'
       >
         <ExportButton />
