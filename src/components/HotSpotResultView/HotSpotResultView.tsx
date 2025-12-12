@@ -9,12 +9,14 @@ import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 import { BackButton } from '../BackButton'
 import { ExportButton } from '../ExportButton'
+import { LocationCard } from '../LocationCard'
 
 type HotSpotResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
   goToCountryView: () => void
   goToBackgroundInfoView: () => void
   goToGlossaryView: () => void
+  goToUserGuideView: () => void
 }
 
 const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
@@ -83,6 +85,7 @@ export const HotSpotResultView = ({
   goToCountryView,
   goToBackgroundInfoView,
   goToGlossaryView,
+  goToUserGuideView,
 }: HotSpotResultViewProps) => {
   const { isMobileWidth } = useResponsive()
   const totalPopulation = selectedHotspotData?.total_population ?? null
@@ -94,6 +97,7 @@ export const HotSpotResultView = ({
   return (
     <>
       <BackButton onClick={goToCountryView} />
+      <LocationCard />
       <Flex
         direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
         gap='4'
@@ -104,6 +108,9 @@ export const HotSpotResultView = ({
         <ExportButton />
         <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
           GLOSSARY
+        </TextButton>
+        <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+          USER GUIDE
         </TextButton>
         <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
           VIEW BACKGROUND INFORMATION

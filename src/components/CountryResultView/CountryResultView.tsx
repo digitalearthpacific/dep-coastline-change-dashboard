@@ -8,15 +8,18 @@ import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { ExportButton } from '../ExportButton'
+import { LocationCard } from '../LocationCard'
 
 type CountryResultViewProps = {
   goToBackgroundInfoView: () => void
   goToGlossaryView: () => void
+  goToUserGuideView: () => void
 }
 
 export const CountryResultView = ({
   goToBackgroundInfoView,
   goToGlossaryView,
+  goToUserGuideView,
 }: CountryResultViewProps) => {
   const { isMobileWidth } = useResponsive()
   const { contiguousHotspotFeatures } = useMapData()
@@ -36,6 +39,7 @@ export const CountryResultView = ({
 
   return (
     <>
+      <LocationCard />
       <Flex
         direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
         gap='4'
@@ -46,6 +50,9 @@ export const CountryResultView = ({
         <ExportButton />
         <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
           GLOSSARY
+        </TextButton>
+        <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+          USER GUIDE
         </TextButton>
         <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
           VIEW BACKGROUND INFORMATION
