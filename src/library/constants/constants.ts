@@ -1,7 +1,7 @@
 import type {
   CustomCountryBboxType,
   DateSelectOptions,
-  GlossaryTerms,
+  TerminologyType,
   PacificCountry,
   RatesOfChangeYear,
 } from '../types'
@@ -97,7 +97,7 @@ export const DATE_SELECT_OPTIONS: DateSelectOptions[] = [
   { id: 'after', value: 'after', label: 'After' },
 ] as const
 
-export const GLOSSARY_TERMS: GlossaryTerms[] = [
+export const GLOSSARY_TERMS: TerminologyType[] = [
   {
     term: 'Annual coastline position',
     definition:
@@ -185,5 +185,39 @@ export const GLOSSARY_TERMS: GlossaryTerms[] = [
     term: 'Tidal modelling',
     definition:
       'Models used to estimate tidal height at a specific point in time, which helps estimate the position of the coastline relative to mean sea level.',
+  },
+]
+
+export const USER_GUIDE_TERMINOLOGY: TerminologyType[] = [
+  {
+    term: 'Annual coastline position ',
+    definition:
+      'The estimated location of the coastline in a given year, derived from satellite imagery that has been filtered to near-mean sea level using  tidal modelling.',
+  },
+  {
+    term: 'Buffer',
+    definition:
+      'A shape drawn around a point or points, representing areas within a certain distance of them.',
+  },
+  {
+    term: 'Coastline change',
+    definition: 'The movement of the coastline over time, including areas of retreat or growth.',
+  },
+  {
+    term: 'Growth',
+    definition: 'Areas where land is expanding due to natural or artificial processes.',
+  },
+  {
+    term: 'Hotspot',
+    definition: 'Coastal areas experiencing high levels of change, either retreat or growth.',
+  },
+  {
+    term: 'Metres per year',
+    definition:
+      'The unit that describes the rate of coastline change, showing how much the coastline shifts each year.',
+  },
+  {
+    term: 'Retreat',
+    definition: 'Areas where the coastline is moving inland.',
   },
 ]
