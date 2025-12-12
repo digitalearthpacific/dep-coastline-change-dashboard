@@ -99,43 +99,91 @@ export const DATE_SELECT_OPTIONS: DateSelectOptions[] = [
 
 export const GLOSSARY_TERMS: GlossaryTerms[] = [
   {
-    term: 'Coastline Change',
-    definition: 'The movement of the coastline over time, including areas of retreat and growth',
+    term: 'Annual coastline position',
+    definition:
+      'The estimated location of the coastline in a given year, derived from satellite imagery that has been filtered to near-mean sea level using  tidal modelling.',
   },
   {
-    term: 'Term 2',
-    definition: 'description',
+    term: 'Beta product',
+    definition: 'A dataset or tool still in the testing phase, with potential gaps or limitations.',
   },
   {
-    term: 'Term 3',
-    definition: 'description',
+    term: 'Buffer',
+    definition:
+      'A shape drawn around a point or points, representing areas within a certain distance of them.',
   },
   {
-    term: 'Term 4',
-    definition: 'description',
+    term: 'Coastline change',
+    definition: 'The movement of the coastline over time, including areas of retreat or growth.',
   },
   {
-    term: 'Term 5',
-    definition: 'description',
+    term: 'Constrained WorldPop HDX',
+    definition:
+      'A  population dataset used for mapping population distribution in specific countries.',
   },
   {
-    term: 'Term 6',
-    definition: 'description',
+    term: 'Digital Earth Pacific mangroves dataset',
+    definition:
+      'A dataset defining mangrove areas across the Pacific, used to measure mangrove extent in hotspot areas.',
   },
   {
-    term: 'Term 7',
-    definition: 'description',
+    term: 'Experimental GIS Fiji population grid',
+    definition:
+      'A Fiji-specific population dataset used for detailed population estimates within hotspot areas.',
   },
   {
-    term: 'Term 8',
-    definition: 'description',
+    term: 'Growth',
+    definition: 'Areas where land is expanding due to natural or artificial processes.',
   },
   {
-    term: 'Term 9',
-    definition: 'description',
+    term: 'High certainty / significant change',
+    definition:
+      'Criteria used to identify hotspot points with reliable and meaningful change rates.',
   },
   {
-    term: 'Term 10',
-    definition: 'description',
+    term: 'Hotspot',
+    definition: 'Coastal areas experiencing high levels of change, either retreat or growth.',
+  },
+  {
+    term: 'Landsat surface reflectance data',
+    definition: 'The satellite imagery data used to map annual coastline locations.',
+  },
+  {
+    term: 'Linear regression',
+    definition:
+      'The statistical method used to calculate rates of coastline change by comparing coastline positions over time at the same locations.',
+  },
+  {
+    term: 'Mean sea level',
+    definition:
+      'The average level of the ocean’s surface, used as a reference for measuring coastline position from year to year.',
+  },
+  {
+    term: 'Metres per year',
+    definition:
+      'The unit that describes the rate of coastline change, showing how much the coastline shifts each year.',
+  },
+  {
+    term: 'OpenStreetMap (OSM)',
+    definition:
+      'A collaborative mapping project providing building and infrastructure data. OpenStreetMap buildings data are used in this dashboard.',
+  },
+  {
+    term: 'Point dataset',
+    definition: 'A dataset where information is represented as individual points on a map.',
+  },
+  {
+    term: 'Raster dataset',
+    definition:
+      'Data represented as a continuous grid of cells (pixels), with values for each cell.',
+  },
+  {
+    term: 'Retreat',
+    definition: 'Areas where the coastline is moving inland.',
+  },
+  {
+    term: 'Tidal modelling',
+    definition:
+      'Models used to estimate tidal height at a specific point in time, which helps estimate the position of the coastline relative to mean sea level.',
   },
 ]
