@@ -100,21 +100,27 @@ export const HotSpotResultView = ({
       <LocationCard />
       <Flex
         direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
-        gap={isSmallerDesktopWidth && !isMobileWidth ? '1' : '4'}
         py='3'
         align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        justify='between'
         className='hide-on-export'
       >
         <ExportButton />
-        <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
-          GLOSSARY
-        </TextButton>
-        <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
-          USER GUIDE
-        </TextButton>
-        <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
-          VIEW BACKGROUND INFORMATION
-        </TextButton>
+        <Flex
+          gap={isSmallerDesktopWidth ? '1' : '4'}
+          direction={isSmallerDesktopWidth ? 'column' : 'row'}
+          align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        >
+          <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
+            VIEW BACKGROUND INFORMATION
+          </TextButton>
+          <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+            USER GUIDE
+          </TextButton>
+          <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+            GLOSSARY
+          </TextButton>
+        </Flex>
       </Flex>
       <Flex>
         <HotSpotBadge rateOfChange={rateOfChange} />

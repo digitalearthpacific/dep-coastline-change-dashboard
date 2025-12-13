@@ -1,4 +1,4 @@
-import { AspectRatio, Flex, Separator, Table, Text } from '@radix-ui/themes'
+import { AspectRatio, Flex, Link, Separator, Table, Text } from '@radix-ui/themes'
 import { BackButton } from '../BackButton'
 import useResponsive from '../../hooks/useResponsive'
 import { USER_GUIDE_TERMINOLOGY } from '../../library/constants'
@@ -491,7 +491,7 @@ const SupportFeedbackSection = () => (
     </Text>
     <Text size='3'>
       For help, feedback, or bug reports contact us at{' '}
-      <a href='mailto:askdepacific@spc.int'>askdepacific@spc.int</a>
+      <Link href='mailto:askdepacific@spc.int'>askdepacific@spc.int</Link>
     </Text>
   </Flex>
 )
