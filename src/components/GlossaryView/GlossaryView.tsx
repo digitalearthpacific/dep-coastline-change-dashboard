@@ -13,18 +13,35 @@ export const GlossaryView = ({ goBackToResultView }: { goBackToResultView: () =>
       </Text>
       <Table.Root variant='surface' style={{ width: '100%' }}>
         <Table.Body>
-          {GLOSSARY_TERMS.map(({ term, definition }) => (
-            <Table.Row key={term}>
-              <Table.RowHeaderCell>
-                <Text size='3' weight='bold'>
-                  {term}
-                </Text>
-              </Table.RowHeaderCell>
-              <Table.Cell>
-                <Text size='3'>{definition}</Text>
-              </Table.Cell>
-            </Table.Row>
-          ))}
+          {GLOSSARY_TERMS.map(({ term, definition }) => {
+            if (isMobileWidth) {
+              return (
+                <Table.Row key={term}>
+                  <Table.Cell>
+                    <Flex direction='column'>
+                      <Text size='3' weight='bold'>
+                        {term}
+                      </Text>
+                      <Text size='3'>{definition}</Text>
+                    </Flex>
+                  </Table.Cell>
+                </Table.Row>
+              )
+            }
+
+            return (
+              <Table.Row key={term}>
+                <Table.RowHeaderCell>
+                  <Text size='3' weight='bold'>
+                    {term}
+                  </Text>
+                </Table.RowHeaderCell>
+                <Table.Cell>
+                  <Text size='3'>{definition}</Text>
+                </Table.Cell>
+              </Table.Row>
+            )
+          })}
         </Table.Body>
       </Table.Root>
     </Flex>

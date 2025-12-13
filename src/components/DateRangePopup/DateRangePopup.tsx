@@ -168,7 +168,7 @@ export const DateRangePopup = () => {
           </Text>
           <Text as='div' size='2'>
             Changing the date updates which coastline layers are visible on the map. It does not
-            modify or filter the underlying data.
+            modify the hotspot areas or summary data.
           </Text>
           <Flex align='center' gap='2'>
             <Switch

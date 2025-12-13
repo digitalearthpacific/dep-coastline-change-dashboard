@@ -9,12 +9,14 @@ import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 import { BackButton } from '../BackButton'
 import { ExportButton } from '../ExportButton'
+import { LocationCard } from '../LocationCard'
 
 type HotSpotResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
   goToCountryView: () => void
   goToBackgroundInfoView: () => void
   goToGlossaryView: () => void
+  goToUserGuideView: () => void
 }
 
 const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
@@ -83,8 +85,9 @@ export const HotSpotResultView = ({
   goToCountryView,
   goToBackgroundInfoView,
   goToGlossaryView,
+  goToUserGuideView,
 }: HotSpotResultViewProps) => {
-  const { isMobileWidth } = useResponsive()
+  const { isMobileWidth, isSmallerDesktopWidth } = useResponsive()
   const totalPopulation = selectedHotspotData?.total_population ?? null
   const numberOfBuildings = selectedHotspotData?.building_counts ?? null
   const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
@@ -94,20 +97,30 @@ export const HotSpotResultView = ({
   return (
     <>
       <BackButton onClick={goToCountryView} />
+      <LocationCard />
       <Flex
-        direction={isMobileWidth ? 'column-reverse' : 'row-reverse'}
-        gap='4'
+        direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
         py='3'
-        align='center'
+        align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        justify='between'
         className='hide-on-export'
       >
         <ExportButton />
-        <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
-          GLOSSARY
-        </TextButton>
-        <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
-          VIEW BACKGROUND INFORMATION
-        </TextButton>
+        <Flex
+          gap={isSmallerDesktopWidth ? '1' : '4'}
+          direction={isSmallerDesktopWidth ? 'column' : 'row'}
+          align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        >
+          <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
+            VIEW BACKGROUND INFORMATION
+          </TextButton>
+          <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+            USER GUIDE
+          </TextButton>
+          <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+            GLOSSARY
+          </TextButton>
+        </Flex>
       </Flex>
       <Flex>
         <HotSpotBadge rateOfChange={rateOfChange} />

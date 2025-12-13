@@ -2,13 +2,12 @@
   background: none !important;
   color: var(--gray-11, #646464);
   cursor: pointer !important;
-  text-decoration: underline !important;
 
   // Only apply hover effects on devices that can hover (desktop/laptop)
   @media (hover: hover) {
     &:hover,
     &:focus-visible {
-      color: var(--gray-8, #e0e0e0);
+      color: var(--blue-9, #0097d2);
     }
 
     &:disabled {

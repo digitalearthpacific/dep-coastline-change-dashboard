@@ -40,9 +40,8 @@ import {
   TILE_URLS,
   RETREAT_VALUES,
   GROWTH_VALUES,
-  CUSTOM_COUNTRY_BBOXES,
 } from '../../library/constants'
-import type { MapStyleType } from '../../library/types'
+import type { CountryGeoJSONFeature, MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
@@ -92,6 +91,20 @@ const removeTerraDrawFeatures = (
   if (existingIds.length) {
     terraDrawInstance.removeFeatures(existingIds)
   }
+}
+
+const normalizeBbox = (
+  selectedCountryFeature: CountryGeoJSONFeature,
+): [number, number, number, number] => {
+  const countryId = selectedCountryFeature?.properties?.id
+  let countryBbox = selectedCountryFeature?.bbox
+
+  // Adjust for countries crossing the antimeridian
+  if (countryId === 'FJI' || countryId === 'KIR') {
+    countryBbox = [countryBbox[0] + 360, countryBbox[1], countryBbox[2] - 360, countryBbox[3]]
+  }
+
+  return countryBbox
 }
 
 export const MainMap = ({
@@ -254,11 +267,7 @@ export const MainMap = ({
       return DEFAULT_BBOX
     }
 
-    const countryId = selectedCountryFeature.properties.id
-
-    // Use custom bbox if available, otherwise fall back to feature bbox
-    const customBbox = CUSTOM_COUNTRY_BBOXES[countryId]
-    const bbox = customBbox || selectedCountryFeature.bbox
+    const bbox = normalizeBbox(selectedCountryFeature)
 
     // Validate bbox format
     if (!Array.isArray(bbox) || bbox.length !== 4) {
@@ -924,7 +933,10 @@ export const MainMap = ({
       return
     }
 
-    mapRef.current.fitBounds(mapInitialViewBox, { duration: FLY_TO_DURATION })
+    mapRef.current.fitBounds(mapInitialViewBox, {
+      duration: FLY_TO_DURATION,
+      padding: 20,
+    })
   }
 
   // Effects
@@ -943,7 +955,10 @@ export const MainMap = ({
 
     const bounds = createBoundingBox()
     setMapInitialViewBox(bounds)
-    mapRef.current?.fitBounds(bounds, { duration: FLY_TO_DURATION })
+    mapRef.current?.fitBounds(bounds, {
+      duration: FLY_TO_DURATION,
+      padding: 20,
+    })
   }, [isMapLoaded, createBoundingBox])
 
   useEffect(() => {

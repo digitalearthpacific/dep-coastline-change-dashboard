@@ -10,14 +10,10 @@ export type PacificCountry = {
   readonly name: string
 }
 
-export type CustomCountryBboxType = Record<
-  PacificCountry['id'],
-  [number, number, number, number] | null
->
-
 // Responsive types
 export type ResponsiveState = {
   isMobileWidth: boolean
+  isSmallerDesktopWidth: boolean
 }
 
 export type RatesOfChangeYear = {
@@ -37,7 +33,7 @@ export type DateSelectOptions = {
   readonly value: DateSelectType
 }
 
-export type GlossaryTerms = {
+export type TerminologyType = {
   readonly term: string
   readonly definition: string
 }

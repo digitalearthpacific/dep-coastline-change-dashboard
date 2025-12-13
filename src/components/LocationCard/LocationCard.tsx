@@ -31,7 +31,7 @@ export const LocationCard = () => {
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
-            Estimated coastline change from data collected between 1999 and 2023
+            Summary of areas affected by coastline change
           </Text>
         </Flex>
       </Flex>
