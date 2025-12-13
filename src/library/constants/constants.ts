@@ -165,7 +165,7 @@ export const GLOSSARY_TERMS: TerminologyType[] = [
 
 export const USER_GUIDE_TERMINOLOGY: TerminologyType[] = [
   {
-    term: 'Annual coastline position ',
+    term: 'Annual coastline position',
     definition:
       'The estimated location of the coastline in a given year, derived from satellite imagery that has been filtered to near-mean sea level using  tidal modelling.',
   },
