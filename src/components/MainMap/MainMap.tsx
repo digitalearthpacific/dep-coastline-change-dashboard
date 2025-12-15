@@ -618,6 +618,7 @@ export const MainMap = ({
   const handleBaseMapSelection = useCallback(
     (baseMapKey: MapStyleType) => {
       setBaseMap(baseMapKey)
+      baseMapRef.current = baseMapKey // Update ref immediately
       setIsBaseMapPopupOpen(false)
 
       // Clear polygon state immediately
@@ -628,53 +629,118 @@ export const MainMap = ({
       setIsMeasuring(false)
 
       const map = mapRef.current?.getMap()
-      if (map) {
-        map.once('styledata', () => {
-          // Re-add all layers first
+      if (!map) return
+
+      // Compute the new basemap style (URL or object)
+      const nextStyle = getBaseMapStyle(baseMapKey)
+
+      let styleChangeHandled = false
+      let retryCount = 0
+      const maxRetries = 3
+      const retryDelay = 500
+
+      const addLayersWithRetry = () => {
+        if (styleChangeHandled) return
+
+        try {
+          // Verify map is ready and style is loaded
+          if (!map.isStyleLoaded()) {
+            if (retryCount < maxRetries) {
+              retryCount++
+              setTimeout(addLayersWithRetry, retryDelay)
+              return
+            } else {
+              console.warn(
+                'Max retries reached, style still not loaded. Consider changing to different style or reloading the map.  ',
+              )
+              return
+            }
+          }
+
+          styleChangeHandled = true
+
+          // Re-add all layers with proper baseMap parameter
           addBuildingsLayer(map)
           addMangrovesLayer(map)
           addShorelineChangeLayer(map)
           addContiguousHotspot(map, baseMapKey)
 
-          // Then clean up TerraDraw after layers are restored
-          const polygonControl = polygonDrawRef.current
-          if (polygonControl) {
-            try {
-              const terraDrawInstance = polygonControl.getTerraDrawInstance()
-              if (terraDrawInstance) {
-                removeTerraDrawFeatures(terraDrawInstance)
-                terraDrawInstance.setMode('render')
-                polygonControl.resetActiveMode()
-                polygonControl.deactivate()
+          // Clean up drawing tools after layers are restored
+          requestAnimationFrame(() => {
+            // Clean up TerraDraw
+            const polygonControl = polygonDrawRef.current
+            if (polygonControl) {
+              try {
+                const terraDrawInstance = polygonControl.getTerraDrawInstance()
+                if (terraDrawInstance) {
+                  removeTerraDrawFeatures(terraDrawInstance)
+                  terraDrawInstance.setMode('render')
+                  polygonControl.resetActiveMode()
+                  polygonControl.deactivate()
+                }
+              } catch (error) {
+                console.warn('Error cleaning up TerraDraw features:', error)
               }
-            } catch (error) {
-              console.warn('Error cleaning up TerraDraw features after style load:', error)
             }
-          }
 
-          // Clean up measure tool after layers are restored
-          const measureControl = drawRef.current
-          if (measureControl) {
-            try {
-              const measureTerraDrawInstance = measureControl.getTerraDrawInstance()
-              if (measureTerraDrawInstance) {
-                // Remove measure features to clear labels
-                const featureIds = measureTerraDrawInstance
-                  .getSnapshot()
-                  .map((f) => f.id)
-                  .filter(
-                    (id): id is string | number => typeof id === 'string' || typeof id === 'number',
-                  )
-                measureTerraDrawInstance.removeFeatures(featureIds)
-
-                measureControl.resetActiveMode()
-                measureControl.deactivate()
+            // Clean up measure tool
+            const measureControl = drawRef.current
+            if (measureControl) {
+              try {
+                const measureTerraDrawInstance = measureControl.getTerraDrawInstance()
+                if (measureTerraDrawInstance) {
+                  const featureIds = measureTerraDrawInstance
+                    .getSnapshot()
+                    .map((f) => f.id)
+                    .filter(
+                      (id): id is string | number =>
+                        typeof id === 'string' || typeof id === 'number',
+                    )
+                  measureTerraDrawInstance.removeFeatures(featureIds)
+                  measureControl.resetActiveMode()
+                  measureControl.deactivate()
+                }
+              } catch (error) {
+                console.warn('Error cleaning up measure tool features:', error)
               }
-            } catch (error) {
-              console.warn('Error cleaning up measure tool features after style load:', error)
             }
+          })
+        } catch (error) {
+          console.error('Error adding layers:', error)
+          if (retryCount < maxRetries) {
+            retryCount++
+            setTimeout(addLayersWithRetry, retryDelay)
           }
-        })
+        }
+      }
+
+      try {
+        // Set up multiple event listeners for better reliability
+        const handleStyleData = () => {
+          // Small delay to ensure style is fully processed
+          setTimeout(addLayersWithRetry, 100)
+        }
+
+        const handleStyleLoad = () => {
+          addLayersWithRetry()
+        }
+
+        // Listen to both events for better reliability
+        map.once('styledata', handleStyleData)
+        map.once('style.load', handleStyleLoad)
+
+        // Set the style
+        map.setStyle(nextStyle)
+
+        // Fallback: if neither event fires within reasonable time
+        setTimeout(() => {
+          if (!styleChangeHandled) {
+            addLayersWithRetry()
+          }
+        }, 2000)
+      } catch (err) {
+        console.error('Error setting basemap style:', err)
+        return
       }
     },
     [
@@ -885,6 +951,13 @@ export const MainMap = ({
     }
 
     if (!selectedCountryFeature) {
+      setContiguousHotspotFeatures([])
+      return
+    }
+
+    // Check if hotspot layer exists before querying
+    if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
+      console.warn(`Layer '${LAYER_IDS.HOTSPOT_FILL}' does not exist yet, skipping query`)
       setContiguousHotspotFeatures([])
       return
     }
