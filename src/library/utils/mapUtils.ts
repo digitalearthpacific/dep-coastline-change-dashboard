@@ -5,11 +5,11 @@ import {
   HOTSPOT_SELECTED_COLOR_EXPRESSION_LIGHT,
   HOTSPOT_SELECTED_COLOR_EXPRESSION_DARK,
 } from '../constants'
-import type { MapStyleType } from '../types'
+import type { MapStyleType, BaseMapStyleUrl } from '../types'
 
-export function getBaseMapStyle(baseMap: MapStyleType): string {
+export function getBaseMapStyle(baseMap: MapStyleType): BaseMapStyleUrl {
   const map = BASE_MAPS.find((bm) => bm.key === baseMap)
-  return map?.styleUrl ?? BASE_MAPS[0].styleUrl
+  return (map?.styleUrl ?? BASE_MAPS[0].styleUrl) as BaseMapStyleUrl
 }
 
 export function getHotspotSelectedColorExpression(
