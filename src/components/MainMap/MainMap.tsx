@@ -930,7 +930,29 @@ export const MainMap = ({
 
         return selectionPolygons.some((selectionPolygon) => {
           try {
-            return booleanWithin(polygonFeature, selectionPolygon)
+            // Handle MultiPolygon by checking each polygon separately
+            if (polygonFeature.geometry.type === 'MultiPolygon') {
+              // For MultiPolygon, check if any of the individual polygons are within the selection
+              return polygonFeature.geometry.coordinates.some((coords) => {
+                const singlePolygon: Feature<Polygon> = {
+                  type: 'Feature',
+                  properties: polygonFeature.properties,
+                  geometry: {
+                    type: 'Polygon',
+                    coordinates: coords,
+                  },
+                }
+                try {
+                  return booleanWithin(singlePolygon, selectionPolygon)
+                } catch (err) {
+                  console.warn('Error checking individual polygon within MultiPolygon:', err)
+                  return false
+                }
+              })
+            } else {
+              // Handle regular Polygon
+              return booleanWithin(polygonFeature, selectionPolygon)
+            }
           } catch (containmentError) {
             console.error('Error evaluating polygon containment:', containmentError)
             return false
