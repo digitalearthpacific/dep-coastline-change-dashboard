@@ -140,7 +140,9 @@ export const BackgroundInformationView = ({
       <Callout.Root size='3' className={styles.backgroundInformationIntroCallout}>
         <Callout.Text>
           Explore how coastlines are changing and potential risks. Your feedback helps us improve
-          the data and make this tool even more accurate and valuable for everyone.
+          the data and make this tool even more accurate and valuable for everyone. If you have any
+          feedback or suggestions, please get in touch at{' '}
+          <Link href='mailto:askdepacific@spc.int'>askdepacific@spc.int</Link>
         </Callout.Text>
       </Callout.Root>
       <Separator orientation='horizontal' size='4' />
