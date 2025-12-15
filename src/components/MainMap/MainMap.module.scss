@@ -80,6 +80,16 @@
   }
 }
 
+/* ===== ATTRIBUTION CONTROL ===== */
+:global(.maplibregl-ctrl-attrib) {
+  font-size: 9px !important;
+}
+
+/* Ensure attribution text shows ellipsis */
+:global(.maplibregl-ctrl-attrib-inner) {
+  white-space: nowrap !important;
+}
+
 /* ===== CUSTOM MAP TOOLS ===== */
 /* Target only the measure control group (class added via JS) */
 :global(.measure-control-group) {
