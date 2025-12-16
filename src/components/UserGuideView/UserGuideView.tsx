@@ -2,7 +2,8 @@ import { AspectRatio, Flex, Link, Separator, Table, Text } from '@radix-ui/theme
 import { BackButton } from '../BackButton'
 import useResponsive from '../../hooks/useResponsive'
 import { USER_GUIDE_TERMINOLOGY } from '../../library/constants'
-import DashboardLayout from '../../assets/dashboard-layout.png'
+import DashboardOverview from '../../assets/coastline-dashboard-overview.png'
+import NavigatingDashboard from '../../assets/navigating-dashboard.png'
 
 const IntroductionSection = () => (
   <Flex direction='column' gap='3'>
@@ -36,20 +37,19 @@ const AboutDashboardSection = () => (
         </Text>
         <ul>
           <li>
-            <Text size='3'>Identification of hotspots for coastal growth and retreat.</Text>
+            <Text size='3'>Identification of hotspots for coastal growth and retreat</Text>
           </li>
           <li>
-            <Text size='3'>Clear easy to understand statistics.</Text>
+            <Text size='3'>Clear easy to understand statistics</Text>
           </li>
           <li>
             <Text size='3'>
-              A user friendly interface for exploring coastline changes without technical expertise.
+              A user friendly interface for exploring coastline changes without technical expertise
             </Text>
           </li>
           <li>
             <Text size='3'>
-              Reliable information to support planning, advocacy, reporting, and resource
-              allocation.
+              Reliable information to support planning, advocacy, reporting, and resource allocation
             </Text>
           </li>
         </ul>
@@ -110,7 +110,7 @@ const DashboardLayoutOverviewSection = () => (
       </Text>
       <AspectRatio ratio={16 / 9}>
         <img
-          src={DashboardLayout}
+          src={DashboardOverview}
           alt='Dashboard Layout Overview'
           style={{
             objectFit: 'cover',
@@ -127,7 +127,7 @@ const DashboardLayoutOverviewSection = () => (
         </Text>
         <ul>
           <li>
-            <Text size='3'>Navigation menu to select a location.</Text>
+            <Text size='3'>Navigation menu to select a location</Text>
           </li>
           <li>
             <Text size='3'>
@@ -166,7 +166,7 @@ const DashboardLayoutOverviewSection = () => (
           <li>
             <Text size='3'>
               Statistics and information panels for insights, background information and glossary of
-              terms.
+              terms
             </Text>
           </li>
         </ul>
@@ -208,8 +208,8 @@ const NavigatingTheDashboardSection = () => (
     </Text>
     <AspectRatio ratio={16 / 9}>
       <img
-        src={DashboardLayout}
-        alt='Dashboard Layout Overview'
+        src={NavigatingDashboard}
+        alt='Navigating the Dashboard '
         style={{
           objectFit: 'cover',
           width: '100%',
@@ -362,13 +362,13 @@ const UsingMapToolsSection = () => (
       <ul>
         <li>
           <Text size='3'>
-            By default low change (&gt;2 m per year) hotspots are visible on the map.
+            By default low change (&gt;2 m per year) hotspots are visible on the map
           </Text>
         </li>
         <li>
           <Text size='3'>
             You can filter hotspots to show high, moderate, or low levels of change for retreat and
-            growth hotspots on the map.
+            growth hotspots on the map
           </Text>
         </li>
       </ul>
@@ -379,12 +379,12 @@ const UsingMapToolsSection = () => (
         <li>
           <Text size='3'>
             When you select a location, the panel displays country level estimates for population,
-            buildings, and mangroves within coastal areas.
+            buildings, and mangroves within coastal areas
           </Text>
         </li>
         <li>
           <Text size='3'>
-            Statistics update dynamically based on the current map view as you zoom or pan.
+            Statistics update dynamically based on the current map view as you zoom or pan
           </Text>
         </li>
       </ul>
