@@ -52,6 +52,13 @@ const AboutDashboardSection = () => (
               Reliable information to support planning, advocacy, reporting, and resource allocation
             </Text>
           </li>
+          <li>
+            <Text size='3'>
+              Integrated risk insights, ability to view coastal change data alongside mangrove
+              coverage, building footprints, and population statistics to support comprehensive risk
+              management and resilience planning
+            </Text>
+          </li>
         </ul>
       </Flex>
     </Flex>
@@ -66,7 +73,9 @@ const WhoDashboardForSection = () => (
       </Text>
       <Text size='3'>
         The dashboard is designed for users who need to understand and act on coastline change data
-        without requiring technical GIS expertise.
+        without requiring technical GIS expertise. change to The dashboard is designed for users who
+        need to understand and act on coastline change geospatial data without requiring technical
+        GIS expertise.
       </Text>
       <Flex direction='column'>
         <Text size='3' weight='bold'>
@@ -88,12 +97,23 @@ const WhoDashboardForSection = () => (
           <li>
             <Text size='3'>
               SPC directors, managers, and technical staff coordinating regional programs and using
+              coastline data to support evidence based decisions. change to Regional institution
+              directors, managers, and technical staff coordinating regional programs and using
               coastline data to support evidence based decisions.
             </Text>
           </li>
           <li>
             <Text size='3'>
               Community leaders involved in local planning, advocacy, and resilience initiatives.
+              change to Community members involved in local planning, advocacy, and resilience
+              initiatives.
+            </Text>
+          </li>
+          <li>
+            <Text size='3'>
+              Education and training Institutions – to support teaching, research, and capacity
+              building by providing accessible data and insights for teaching and learning about
+              environmental topics, while advancing research in coastal management.
             </Text>
           </li>
         </ul>
@@ -505,7 +525,7 @@ export const UserGuideView = ({ goBackToResultView }: { goBackToResultView: () =
       <Text size={isMobileWidth ? '6' : '7'} weight='bold'>
         User Guide
       </Text>
-      <Text>Last Updated: dd/mm/yyyy</Text>
+      <Text>Last Updated: 17/12/2025</Text>
       <IntroductionSection />
       <Separator orientation='horizontal' size='4' />
       <AboutDashboardSection />
