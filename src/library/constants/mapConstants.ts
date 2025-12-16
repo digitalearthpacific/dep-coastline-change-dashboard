@@ -75,13 +75,9 @@ export const BASE_MAPS = [
           tileSize: 256,
           attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
         },
-        esri_world_reference: {
-          type: 'raster',
-          tiles: [
-            'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
-          ],
-          tileSize: 256,
-          attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
+        maptiler_labels: {
+          type: 'vector',
+          tiles: [`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${MAP_TILER_API_KEY}`],
         },
       },
       layers: [
@@ -91,9 +87,21 @@ export const BASE_MAPS = [
           source: 'esri_world_imagery',
         },
         {
-          id: 'esri-world-reference',
-          type: 'raster',
-          source: 'esri_world_reference',
+          id: 'place-labels',
+          type: 'symbol',
+          source: 'maptiler_labels',
+          'source-layer': 'place',
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 12,
+            'text-anchor': 'center',
+          },
+          paint: {
+            'text-color': '#ffffff',
+            'text-halo-color': '#000000',
+            'text-halo-width': 2,
+          },
         },
       ],
     },
