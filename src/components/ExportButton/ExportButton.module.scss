@@ -1,7 +1,7 @@
 @use '../../styles/mixins' as *;
 
 .exportMenu {
-  min-width: var(--radix-dropdown-menu-trigger-width);
+  max-width: 230px;
 }
 
 .exportMenuItem {
