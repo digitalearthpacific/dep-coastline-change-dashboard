@@ -75,12 +75,25 @@ export const BASE_MAPS = [
           tileSize: 256,
           attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
         },
+        esri_world_reference: {
+          type: 'raster',
+          tiles: [
+            'https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+          attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
+        },
       },
       layers: [
         {
           id: 'esri-world-imagery',
           type: 'raster',
           source: 'esri_world_imagery',
+        },
+        {
+          id: 'esri-world-reference',
+          type: 'raster',
+          source: 'esri_world_reference',
         },
       ],
     },
