@@ -2,8 +2,8 @@ import { AspectRatio, Flex, Link, Separator, Table, Text } from '@radix-ui/theme
 import { BackButton } from '../BackButton'
 import useResponsive from '../../hooks/useResponsive'
 import { USER_GUIDE_TERMINOLOGY } from '../../library/constants'
-import DashboardOverview from '../../assets/coastline-dashboard-overview.png'
-import NavigatingDashboard from '../../assets/navigating-dashboard.png'
+import DashboardOverview from '../../assets/main-screen.jpg'
+import NavigatingDashboard from '../../assets/screen-annotation.jpg'
 
 const IntroductionSection = () => (
   <Flex direction='column' gap='3'>
