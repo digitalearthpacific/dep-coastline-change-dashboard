@@ -69,13 +69,11 @@ const WhoDashboardForSection = () => (
   <Flex direction='column' gap='3'>
     <Flex direction='column' gap='2'>
       <Text size='4' weight='bold'>
-        3. Who the Dashboard is for
+        3. Who the Dashboard is For
       </Text>
       <Text size='3'>
-        The dashboard is designed for users who need to understand and act on coastline change data
-        without requiring technical GIS expertise. change to The dashboard is designed for users who
-        need to understand and act on coastline change geospatial data without requiring technical
-        GIS expertise.
+        The dashboard is designed for users who need to understand and act on coastline change
+        geospatial data without requiring technical GIS expertise.
       </Text>
       <Flex direction='column'>
         <Text size='3' weight='bold'>
@@ -96,17 +94,13 @@ const WhoDashboardForSection = () => (
           </li>
           <li>
             <Text size='3'>
-              SPC directors, managers, and technical staff coordinating regional programs and using
-              coastline data to support evidence based decisions. change to Regional institution
-              directors, managers, and technical staff coordinating regional programs and using
-              coastline data to support evidence based decisions.
+              Regional institution directors, managers, and technical staff coordinating regional
+              programs and using coastline data to support evidence based decisions.
             </Text>
           </li>
           <li>
             <Text size='3'>
-              Community leaders involved in local planning, advocacy, and resilience initiatives.
-              change to Community members involved in local planning, advocacy, and resilience
-              initiatives.
+              Community members involved in local planning, advocacy, and resilience initiatives.
             </Text>
           </li>
           <li>
@@ -128,7 +122,7 @@ const DashboardLayoutOverviewSection = () => (
       <Text size='4' weight='bold'>
         4. Dashboard Layout Overview
       </Text>
-      <AspectRatio ratio={16 / 9}>
+      <AspectRatio ratio={17 / 10}>
         <img
           src={DashboardOverview}
           alt='Dashboard Layout Overview'
@@ -226,7 +220,7 @@ const NavigatingTheDashboardSection = () => (
     <Text size='4' weight='bold'>
       6. Navigating the Dashboard
     </Text>
-    <AspectRatio ratio={16 / 9}>
+    <AspectRatio ratio={17 / 10}>
       <img
         src={NavigatingDashboard}
         alt='Navigating the Dashboard '

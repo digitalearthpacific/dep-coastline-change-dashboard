@@ -17,6 +17,8 @@ const CoastlineChangeSection = () => (
         It is currently a beta product generated for the years 1999-2023. However, data may not
         exist prior to 2013 or later for some locations, since Landsat satellite coverage was not
         complete for Pacific Countries and Territories prior to the launch of Landsat 8 in 2013.
+        Coastlines labeled “Low Quality” indicate few clear satellite images or high variability
+        across available images for a given year.
       </Text>
     </Flex>
     <Flex direction='column' gap='2'>
