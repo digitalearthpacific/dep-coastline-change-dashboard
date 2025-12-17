@@ -63,7 +63,48 @@ export const BASE_MAPS = [
     key: 'satellite',
     label: 'Satellite',
     thumbnail: SatelliteMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
+    styleUrl: {
+      version: 8,
+      name: 'Esri World Imagery (MapServer)',
+      sources: {
+        esri_world_imagery: {
+          type: 'raster',
+          tiles: [
+            'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+          attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
+        },
+        maptiler_labels: {
+          type: 'vector',
+          tiles: [`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${MAP_TILER_API_KEY}`],
+        },
+      },
+      layers: [
+        {
+          id: 'esri-world-imagery',
+          type: 'raster',
+          source: 'esri_world_imagery',
+        },
+        {
+          id: 'place-labels',
+          type: 'symbol',
+          source: 'maptiler_labels',
+          'source-layer': 'place',
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 12,
+            'text-anchor': 'center',
+          },
+          paint: {
+            'text-color': '#ffffff',
+            'text-halo-color': '#000000',
+            'text-halo-width': 2,
+          },
+        },
+      ],
+    },
   },
   {
     key: 'basic',

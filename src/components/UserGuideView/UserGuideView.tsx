@@ -2,7 +2,8 @@ import { AspectRatio, Flex, Link, Separator, Table, Text } from '@radix-ui/theme
 import { BackButton } from '../BackButton'
 import useResponsive from '../../hooks/useResponsive'
 import { USER_GUIDE_TERMINOLOGY } from '../../library/constants'
-import DashboardLayout from '../../assets/dashboard-layout.png'
+import DashboardOverview from '../../assets/main-screen.jpg'
+import NavigatingDashboard from '../../assets/screen-annotation.jpg'
 
 const IntroductionSection = () => (
   <Flex direction='column' gap='3'>
@@ -36,20 +37,26 @@ const AboutDashboardSection = () => (
         </Text>
         <ul>
           <li>
-            <Text size='3'>Identification of hotspots for coastal growth and retreat.</Text>
+            <Text size='3'>Identification of hotspots for coastal growth and retreat</Text>
           </li>
           <li>
-            <Text size='3'>Clear easy to understand statistics.</Text>
+            <Text size='3'>Clear easy to understand statistics</Text>
           </li>
           <li>
             <Text size='3'>
-              A user friendly interface for exploring coastline changes without technical expertise.
+              A user friendly interface for exploring coastline changes without technical expertise
             </Text>
           </li>
           <li>
             <Text size='3'>
-              Reliable information to support planning, advocacy, reporting, and resource
-              allocation.
+              Reliable information to support planning, advocacy, reporting, and resource allocation
+            </Text>
+          </li>
+          <li>
+            <Text size='3'>
+              Integrated risk insights, ability to view coastal change data alongside mangrove
+              coverage, building footprints, and population statistics to support comprehensive risk
+              management and resilience planning
             </Text>
           </li>
         </ul>
@@ -62,11 +69,11 @@ const WhoDashboardForSection = () => (
   <Flex direction='column' gap='3'>
     <Flex direction='column' gap='2'>
       <Text size='4' weight='bold'>
-        3. Who the Dashboard is for
+        3. Who the Dashboard is For
       </Text>
       <Text size='3'>
-        The dashboard is designed for users who need to understand and act on coastline change data
-        without requiring technical GIS expertise.
+        The dashboard is designed for users who need to understand and act on coastline change
+        geospatial data without requiring technical GIS expertise.
       </Text>
       <Flex direction='column'>
         <Text size='3' weight='bold'>
@@ -87,13 +94,20 @@ const WhoDashboardForSection = () => (
           </li>
           <li>
             <Text size='3'>
-              SPC directors, managers, and technical staff coordinating regional programs and using
-              coastline data to support evidence based decisions.
+              Regional institution directors, managers, and technical staff coordinating regional
+              programs and using coastline data to support evidence based decisions.
             </Text>
           </li>
           <li>
             <Text size='3'>
-              Community leaders involved in local planning, advocacy, and resilience initiatives.
+              Community members involved in local planning, advocacy, and resilience initiatives.
+            </Text>
+          </li>
+          <li>
+            <Text size='3'>
+              Education and training Institutions – to support teaching, research, and capacity
+              building by providing accessible data and insights for teaching and learning about
+              environmental topics, while advancing research in coastal management.
             </Text>
           </li>
         </ul>
@@ -108,9 +122,9 @@ const DashboardLayoutOverviewSection = () => (
       <Text size='4' weight='bold'>
         4. Dashboard Layout Overview
       </Text>
-      <AspectRatio ratio={16 / 9}>
+      <AspectRatio ratio={17 / 10}>
         <img
-          src={DashboardLayout}
+          src={DashboardOverview}
           alt='Dashboard Layout Overview'
           style={{
             objectFit: 'cover',
@@ -127,7 +141,7 @@ const DashboardLayoutOverviewSection = () => (
         </Text>
         <ul>
           <li>
-            <Text size='3'>Navigation menu to select a location.</Text>
+            <Text size='3'>Navigation menu to select a location</Text>
           </li>
           <li>
             <Text size='3'>
@@ -166,7 +180,7 @@ const DashboardLayoutOverviewSection = () => (
           <li>
             <Text size='3'>
               Statistics and information panels for insights, background information and glossary of
-              terms.
+              terms
             </Text>
           </li>
         </ul>
@@ -206,10 +220,10 @@ const NavigatingTheDashboardSection = () => (
     <Text size='4' weight='bold'>
       6. Navigating the Dashboard
     </Text>
-    <AspectRatio ratio={16 / 9}>
+    <AspectRatio ratio={17 / 10}>
       <img
-        src={DashboardLayout}
-        alt='Dashboard Layout Overview'
+        src={NavigatingDashboard}
+        alt='Navigating the Dashboard '
         style={{
           objectFit: 'cover',
           width: '100%',
@@ -362,13 +376,13 @@ const UsingMapToolsSection = () => (
       <ul>
         <li>
           <Text size='3'>
-            By default low change (&gt;2 m per year) hotspots are visible on the map.
+            By default low change (&gt;2 m per year) hotspots are visible on the map
           </Text>
         </li>
         <li>
           <Text size='3'>
             You can filter hotspots to show high, moderate, or low levels of change for retreat and
-            growth hotspots on the map.
+            growth hotspots on the map
           </Text>
         </li>
       </ul>
@@ -379,12 +393,12 @@ const UsingMapToolsSection = () => (
         <li>
           <Text size='3'>
             When you select a location, the panel displays country level estimates for population,
-            buildings, and mangroves within coastal areas.
+            buildings, and mangroves within coastal areas
           </Text>
         </li>
         <li>
           <Text size='3'>
-            Statistics update dynamically based on the current map view as you zoom or pan.
+            Statistics update dynamically based on the current map view as you zoom or pan
           </Text>
         </li>
       </ul>
@@ -505,7 +519,7 @@ export const UserGuideView = ({ goBackToResultView }: { goBackToResultView: () =
       <Text size={isMobileWidth ? '6' : '7'} weight='bold'>
         User Guide
       </Text>
-      <Text>Last Updated: dd/mm/yyyy</Text>
+      <Text>Last Updated: 17/12/2025</Text>
       <IntroductionSection />
       <Separator orientation='horizontal' size='4' />
       <AboutDashboardSection />

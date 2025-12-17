@@ -6,7 +6,7 @@ import { jsPDF } from 'jspdf'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { DownloadIcon } from '@radix-ui/react-icons'
 import * as Toast from '@radix-ui/react-toast'
-import { Button, DropdownMenu } from '@radix-ui/themes'
+import { Button, DropdownMenu, Flex, Text } from '@radix-ui/themes'
 import { EXPORT_CLASS_NAME } from '../../library/constants'
 import styles from './ExportButton.module.scss'
 import useResponsive from '../../hooks/useResponsive'
@@ -119,22 +119,29 @@ export const ExportButton = () => {
             </Button>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content className={styles.exportMenu}>
-            <DropdownMenu.Item
-              className={styles.exportMenuItem}
-              onSelect={handleExportPDF}
-              disabled={isExporting}
-            >
-              PDF
-              <DownloadIcon />
-            </DropdownMenu.Item>
-            <DropdownMenu.Item
-              className={styles.exportMenuItem}
-              onSelect={handleExportJPG}
-              disabled={isExporting}
-            >
-              JPG
-              <DownloadIcon />
-            </DropdownMenu.Item>
+            <Flex direction='column' gap='2'>
+              <Flex px='3'>
+                <Text size='2'>Export results for the current map view shown on screen</Text>
+              </Flex>
+              <Flex direction='column'>
+                <DropdownMenu.Item
+                  className={styles.exportMenuItem}
+                  onSelect={handleExportPDF}
+                  disabled={isExporting}
+                >
+                  PDF
+                  <DownloadIcon />
+                </DropdownMenu.Item>
+                <DropdownMenu.Item
+                  className={styles.exportMenuItem}
+                  onSelect={handleExportJPG}
+                  disabled={isExporting}
+                >
+                  JPG
+                  <DownloadIcon />
+                </DropdownMenu.Item>
+              </Flex>
+            </Flex>
           </DropdownMenu.Content>
         </DropdownMenu.Root>
 
