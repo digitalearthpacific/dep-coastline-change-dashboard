@@ -2,10 +2,8 @@ import { AspectRatio, Flex, Link, Separator, Table, Text } from '@radix-ui/theme
 import { BackButton } from '../BackButton'
 import useResponsive from '../../hooks/useResponsive'
 import { USER_GUIDE_TERMINOLOGY } from '../../library/constants'
-import DashboardOverviewWebp from '../../assets/dashboard-overview.webp'
-import DashboardOverviewJpg from '../../assets/dashboard-overview.jpg'
-import NavigatingDashboardWebp from '../../assets/dashboard-guide.webp'
-import NavigatingDashboardJpg from '../../assets/dashboard-guide.jpg'
+import DashboardOverview from '../../assets/dashboard-overview.jpg'
+import NavigatingDashboard from '../../assets/dashboard-guide.jpg'
 
 const IntroductionSection = () => (
   <Flex direction='column' gap='3'>
@@ -125,20 +123,17 @@ const DashboardLayoutOverviewSection = () => (
         4. Dashboard Layout Overview
       </Text>
       <AspectRatio ratio={17 / 10}>
-        <picture>
-          <source srcSet={DashboardOverviewWebp} type='image/webp' />
-          <img
-            src={DashboardOverviewJpg}
-            alt='Dashboard Layout Overview'
-            style={{
-              objectFit: 'cover',
-              width: '100%',
-              height: '100%',
-              borderRadius: 'var(--radius-2)',
-              border: '1px solid var(--gray-6)',
-            }}
-          />
-        </picture>
+        <img
+          src={DashboardOverview}
+          alt='Dashboard Layout Overview'
+          style={{
+            objectFit: 'cover',
+            width: '100%',
+            height: '100%',
+            borderRadius: 'var(--radius-2)',
+            border: '1px solid var(--gray-6)',
+          }}
+        />
       </AspectRatio>
       <Flex direction='column'>
         <Text size='3' weight='bold'>
@@ -226,20 +221,17 @@ const NavigatingTheDashboardSection = () => (
       6. Navigating the Dashboard
     </Text>
     <AspectRatio ratio={17 / 10}>
-      <picture>
-        <source srcSet={NavigatingDashboardWebp} type='image/webp' />
-        <img
-          src={NavigatingDashboardJpg}
-          alt='Navigating the Dashboard '
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '100%',
-            borderRadius: 'var(--radius-2)',
-            border: '1px solid var(--gray-6)',
-          }}
-        />
-      </picture>
+      <img
+        src={NavigatingDashboard}
+        alt='Navigating the Dashboard '
+        style={{
+          objectFit: 'cover',
+          width: '100%',
+          height: '100%',
+          borderRadius: 'var(--radius-2)',
+          border: '1px solid var(--gray-6)',
+        }}
+      />
     </AspectRatio>
     <ol>
       <li>
