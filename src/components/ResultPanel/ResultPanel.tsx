@@ -32,6 +32,7 @@ export const ResultPanel = ({
       setIsMobilePanelOpen(true)
       setViewBackgroundInfo(false)
       setViewGlossary(false)
+      setViewUserGuide(false)
     } else {
       setIsMobilePanelOpen(false)
     }
