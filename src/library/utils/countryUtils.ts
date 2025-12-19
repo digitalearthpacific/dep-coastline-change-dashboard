@@ -17,5 +17,5 @@ export function findCountryIdByName(query: string): string | null {
 }
 
 export function findCountryCustomZoomByName(id: string): number | null {
-  return PACIFIC_COUNTRIES_NAMES.find((country) => country?.id === id)?.customZoomLevel || null
+  return PACIFIC_COUNTRIES_NAMES.find((country) => country.id === id)?.customZoomLevel || null
 }
