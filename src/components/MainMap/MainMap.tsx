@@ -51,6 +51,7 @@ import {
   getHotspotSelectedColorExpression,
   findFirstLabelLayerId,
   applyHotspotRadioFilter,
+  findCountryCustomZoomById,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
@@ -261,25 +262,29 @@ export const MainMap = ({
     ] as FilterSpecification
   }, [hotspotRadio, selectedCountryFeature?.properties?.id])
 
-  // Bounding box for country fitting
-  const createBoundingBox = useCallback(() => {
-    if (!selectedCountryFeature?.bbox || !selectedCountryFeature.properties?.id) {
-      return DEFAULT_BBOX
+  // Bounds and zoom option for country fitting
+  const getFitboundsOptions = useCallback(() => {
+    const countryId = selectedCountryFeature?.properties?.id
+    if (!selectedCountryFeature?.bbox || !countryId) {
+      return { bounds: DEFAULT_BBOX, zoomOptions: null }
     }
 
     const bbox = normalizeBbox(selectedCountryFeature)
 
     // Validate bbox format
     if (!Array.isArray(bbox) || bbox.length !== 4) {
-      return DEFAULT_BBOX
+      return { bounds: DEFAULT_BBOX, zoomOptions: null }
     }
 
     const [minX, minY, maxX, maxY] = bbox
-
-    return [
+    const bounds = [
       [minX, minY],
       [maxX, maxY],
     ] as [[number, number], [number, number]]
+
+    const customCountryZoom = findCountryCustomZoomById(countryId)
+
+    return { bounds, customCountryZoom }
   }, [selectedCountryFeature])
 
   // Layer management functions
@@ -1048,13 +1053,17 @@ export const MainMap = ({
       mapContainer.style.transition = ''
     }
 
-    const bounds = createBoundingBox()
+    const { bounds, customCountryZoom } = getFitboundsOptions()
+    const fitBoundsOptions = customCountryZoom
+      ? { padding: 10, zoom: customCountryZoom }
+      : { padding: 30 }
+
     setMapInitialViewBox(bounds)
     mapRef.current?.fitBounds(bounds, {
       duration: FLY_TO_DURATION,
-      padding: 20,
+      ...fitBoundsOptions,
     })
-  }, [isMapLoaded, createBoundingBox])
+  }, [isMapLoaded, getFitboundsOptions])
 
   useEffect(() => {
     if (!isMapLoaded) {

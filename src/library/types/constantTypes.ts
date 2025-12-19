@@ -8,6 +8,7 @@ export type IconType = {
 export type PacificCountry = {
   readonly id: string
   readonly name: string
+  readonly customZoomLevel?: number
 }
 
 // Responsive types

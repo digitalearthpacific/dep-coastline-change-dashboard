@@ -286,7 +286,13 @@ const UsingMapToolsSection = () => (
           <Text size='3'>Zoom: navigate the map to focus on areas of interest</Text>
         </li>
         <li>
-          <Text size='3'>Draw: draw specific areas for closer analysis</Text>
+          <Text as='div' size='3'>
+            Draw: draw specific areas for closer analysis
+          </Text>
+          <Text as='div' size='3'>
+            Note: some statistics may be zero if the selected area contains no relevant hotspots,
+            population, buildings, or mangroves, or is outside the active location
+          </Text>
         </li>
         <li>
           <Text size='3'>Measure: calculate distances directly on the map</Text>
