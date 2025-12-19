@@ -29,6 +29,7 @@ const CoastlineChangeSection = () => (
         href='https://www.sciencedirect.com/science/article/pii/S0034425721004545'
         target='_blank'
         rel='noopener noreferrer'
+        style={{ wordBreak: 'break-all' }}
       >
         https://www.sciencedirect.com/science/article/pii/S0034425721004545
       </Link>
