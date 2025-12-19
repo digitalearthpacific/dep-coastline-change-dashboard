@@ -282,9 +282,9 @@ export const MainMap = ({
       [maxX, maxY],
     ] as [[number, number], [number, number]]
 
-    const zoomOptions = findCountryCustomZoomByName(countryId)
+    const customZoomLevel = findCountryCustomZoomByName(countryId)
 
-    return { bounds, zoomOptions }
+    return { bounds, zoomOptions: customZoomLevel }
   }, [selectedCountryFeature])
 
   // Layer management functions
