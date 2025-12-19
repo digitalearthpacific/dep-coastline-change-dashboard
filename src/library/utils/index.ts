@@ -8,7 +8,7 @@ export {
 export {
   getNameByCountryCode,
   findCountryIdByName,
-  findCountryCustomZoomByName,
+  findCountryCustomZoomById,
 } from './countryUtils'
 export { getUniqueHotspotFeatures } from './getUniqueHotspotFeatures'
 export { applyHotspotRadioFilter } from './applyHotspotRadioFilter'

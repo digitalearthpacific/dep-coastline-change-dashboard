@@ -19,8 +19,3 @@ export function findCountryIdByName(query: string): string | null {
 export function findCountryCustomZoomById(id: string): number | null {
   return PACIFIC_COUNTRIES_NAMES.find((country) => country?.id === id)?.customZoomLevel || null
 }
-
-/**
- * @deprecated Use findCountryCustomZoomById instead.
- */
-export const findCountryCustomZoomByName = findCountryCustomZoomById

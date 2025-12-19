@@ -51,7 +51,7 @@ import {
   getHotspotSelectedColorExpression,
   findFirstLabelLayerId,
   applyHotspotRadioFilter,
-  findCountryCustomZoomByName,
+  findCountryCustomZoomById,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
@@ -282,9 +282,9 @@ export const MainMap = ({
       [maxX, maxY],
     ] as [[number, number], [number, number]]
 
-    const customZoomLevel = findCountryCustomZoomByName(countryId)
+    const customCountryZoom = findCountryCustomZoomById(countryId)
 
-    return { bounds, zoomOptions: customZoomLevel }
+    return { bounds, customCountryZoom }
   }, [selectedCountryFeature])
 
   // Layer management functions
@@ -1053,8 +1053,10 @@ export const MainMap = ({
       mapContainer.style.transition = ''
     }
 
-    const { bounds, zoomOptions } = getFitboundsOptions()
-    const fitBoundsOptions = zoomOptions ? { padding: 10, zoom: zoomOptions } : { padding: 30 }
+    const { bounds, customCountryZoom } = getFitboundsOptions()
+    const fitBoundsOptions = customCountryZoom
+      ? { padding: 10, zoom: customCountryZoom }
+      : { padding: 30 }
 
     setMapInitialViewBox(bounds)
     mapRef.current?.fitBounds(bounds, {
