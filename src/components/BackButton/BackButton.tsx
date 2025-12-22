@@ -7,7 +7,7 @@ type BackButtonProps = {
 }
 
 export const BackButton = ({ onClick, children = 'BACK' }: BackButtonProps) => (
-  <Flex pl='2'>
+  <Flex pl='2' className='hide-on-export'>
     <Button variant='ghost' aria-label='Back Button' onClick={onClick}>
       <ArrowLeftIcon />
       {children}

@@ -1,7 +1,8 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
+import { Flex, Text } from '@radix-ui/themes'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapData } from '../../hooks/useGlobalContext'
 import { getNameByCountryCode } from '../../library/utils'
+import commonStyles from '../../styles/common.module.scss'
 
 export const LocationCard = () => {
   const { isMobileWidth } = useResponsive()
@@ -10,7 +11,7 @@ export const LocationCard = () => {
   const countryName = selectedCountryFeature ? getNameByCountryCode(selectedCountryFeature) : '-'
 
   return (
-    <Card>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='2' justify='between'>
         <Flex justify='between' align='start'>
           {isMobileWidth ? (
@@ -30,10 +31,10 @@ export const LocationCard = () => {
         </Flex>
         <Flex>
           <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
-            Estimated coastline change from data collected between 1999 and 2023
+            Summary of areas affected by coastline change
           </Text>
         </Flex>
       </Flex>
-    </Card>
+    </div>
   )
 }

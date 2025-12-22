@@ -17,7 +17,7 @@
 /* ===== MAPLIBRE ZOOM CONTROLS ===== */
 :root {
   --navigation-control-margin-right: 24px;
-  --navigation-control-margin-bottom: 165px;
+  --navigation-control-margin-bottom: 216px;
   --scale-control-margin-left: 170px;
 
   @include mobile-only {
@@ -80,7 +80,22 @@
   }
 }
 
+/* ===== ATTRIBUTION CONTROL ===== */
+:global(.maplibregl-ctrl-attrib) {
+  font-size: 9px !important;
+}
+
+/* Ensure attribution text shows ellipsis */
+:global(.maplibregl-ctrl-attrib-inner) {
+  white-space: nowrap !important;
+}
+
 /* ===== CUSTOM MAP TOOLS ===== */
+/* Target only the measure control group (class added via JS) */
+:global(.measure-control-group) {
+  margin: 0 !important;
+}
+
 .customMapTools {
   position: absolute;
   right: var(--space-5, 24px);
@@ -88,16 +103,37 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: var(--space-2, 8px);
+  gap: var(--space-1, 4px);
+  z-index: 600;
 
   @include mobile-only {
-    top: 82px;
+    top: 78px;
     bottom: auto;
     right: var(--space-4, 16px);
   }
 
   button {
     @include button-styles;
+  }
+}
+
+.mapDrawMeasureGroup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  button:first-child {
+    border-radius: var(--radius-2, 4px) var(--radius-2, 4px) 0 0;
+  }
+
+  button:last-child {
+    border-radius: 0 0 var(--radius-2, 4px) var(--radius-2, 4px);
+  }
+
+  @include mobile-only {
+    button:first-child {
+      border-radius: var(--radius-2, 4px);
+    }
   }
 }
 
@@ -173,4 +209,15 @@
   &.lowGrowth {
     background-color: #97dfff;
   }
+}
+
+.popupBackdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: transparent;
+  z-index: 500;
+  cursor: pointer;
 }

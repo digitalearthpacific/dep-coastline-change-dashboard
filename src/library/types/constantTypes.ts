@@ -1,17 +1,20 @@
+// Icon types
+export type IconType = {
+  readonly color?: string
+  readonly className?: string
+}
+
 // Country types
 export type PacificCountry = {
   readonly id: string
   readonly name: string
+  readonly customZoomLevel?: number
 }
-
-export type CustomCountryBboxType = Record<
-  PacificCountry['id'],
-  [number, number, number, number] | null
->
 
 // Responsive types
 export type ResponsiveState = {
   isMobileWidth: boolean
+  isSmallerDesktopWidth: boolean
 }
 
 export type RatesOfChangeYear = {
@@ -22,3 +25,16 @@ export type RatesOfChangeYear = {
 export type DateType = 'start' | 'end'
 
 export type HotspotRadioState = 'high' | 'moderate' | 'low'
+
+export type DateSelectType = 'custom' | 'between' | 'before' | 'after'
+
+export type DateSelectOptions = {
+  readonly id: string
+  readonly label: string
+  readonly value: DateSelectType
+}
+
+export type TerminologyType = {
+  readonly term: string
+  readonly definition: string
+}

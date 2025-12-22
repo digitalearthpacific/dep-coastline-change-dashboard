@@ -5,3 +5,33 @@
 
   cursor: pointer !important;
 }
+
+.exportRadioIndicator {
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid var(--gray-a7, rgba(0, 0, 0, 0.19));
+  border-radius: 50%;
+  display: inline-flex;
+  height: var(--space-4, 16px);
+  justify-content: center;
+  position: relative;
+  width: var(--space-4, 16px);
+}
+
+/* inner dot placeholder */
+.exportRadioIndicator::after {
+  content: '';
+  position: absolute;
+  inset: 30%;
+  border-radius: 50%;
+  background-color: transparent;
+}
+
+/* checked state */
+.exportRadioIndicatorChecked {
+  background-color: var(--accent-indicator, var(--blue-9, #008ac5));
+}
+
+.exportRadioIndicatorChecked::after {
+  background-color: var(--accent-contrast, #ffffff);
+}

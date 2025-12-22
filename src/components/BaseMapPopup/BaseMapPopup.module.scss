@@ -12,11 +12,6 @@
   padding: var(--space-3, 12px);
   gap: var(--space-4, 16px);
   z-index: 1000;
-
-  @include mobile-only {
-    right: 0;
-    bottom: -248px;
-  }
 }
 
 .baseMapButton {

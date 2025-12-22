@@ -1,17 +1,18 @@
-import { Card, Flex, Text } from '@radix-ui/themes'
+import { Flex, Text } from '@radix-ui/themes'
 import { CustomPopover } from '../CustomPopover'
 import { formatCount } from '../../library/utils/formatCount'
+import commonStyles from '../../styles/common.module.scss'
 
 type MangrovesCardProps = {
   mangroveArea: number | null
 }
 
 const MANGROVES_INFO =
-  'Mangrove areas were defined by Digital Earth Pacific Mangroves dataset. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
+  'Mangrove areas were defined by the Digital Earth Pacific Mangroves dataset. Values are the total area of mangroves which overlap with the given hotspot or hotspots.'
 
 export const MangrovesCard = ({ mangroveArea }: MangrovesCardProps) => {
   return (
-    <Card>
+    <div className={commonStyles.appCard}>
       <Flex direction='column' gap='5'>
         <header style={{ height: '80px' }}>
           <Flex justify='between' align='start'>
@@ -29,6 +30,6 @@ export const MangrovesCard = ({ mangroveArea }: MangrovesCardProps) => {
           {formatCount(mangroveArea, 'ha')}
         </Text>
       </Flex>
-    </Card>
+    </div>
   )
 }

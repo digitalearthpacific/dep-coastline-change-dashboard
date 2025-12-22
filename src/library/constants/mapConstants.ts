@@ -45,6 +45,8 @@ export const SCALE_CONTROL_STYLES = {
   },
 } as const
 
+export const SELECT_CONTENT_STYLE = { maxHeight: '380px', overflowY: 'auto' } as const
+
 export const getScaleControlStyle = (isHotspotLayerVisible: boolean) =>
   isHotspotLayerVisible ? SCALE_CONTROL_STYLES.DEFAULT : SCALE_CONTROL_STYLES.MINIMAL
 
@@ -61,7 +63,48 @@ export const BASE_MAPS = [
     key: 'satellite',
     label: 'Satellite',
     thumbnail: SatelliteMapStyleThumbNail,
-    styleUrl: `https://api.maptiler.com/maps/hybrid/style.json?key=${MAP_TILER_API_KEY}`,
+    styleUrl: {
+      version: 8,
+      name: 'Esri World Imagery (MapServer)',
+      sources: {
+        esri_world_imagery: {
+          type: 'raster',
+          tiles: [
+            'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+          ],
+          tileSize: 256,
+          attribution: 'Source: Esri, Vantor, Earthstar Geographics, and the GIS User Community',
+        },
+        maptiler_labels: {
+          type: 'vector',
+          tiles: [`https://api.maptiler.com/tiles/v3/{z}/{x}/{y}.pbf?key=${MAP_TILER_API_KEY}`],
+        },
+      },
+      layers: [
+        {
+          id: 'esri-world-imagery',
+          type: 'raster',
+          source: 'esri_world_imagery',
+        },
+        {
+          id: 'place-labels',
+          type: 'symbol',
+          source: 'maptiler_labels',
+          'source-layer': 'place',
+          layout: {
+            'text-field': ['get', 'name'],
+            'text-font': ['Noto Sans Regular'],
+            'text-size': 12,
+            'text-anchor': 'center',
+          },
+          paint: {
+            'text-color': '#ffffff',
+            'text-halo-color': '#000000',
+            'text-halo-width': 2,
+          },
+        },
+      ],
+    },
   },
   {
     key: 'basic',
@@ -97,21 +140,63 @@ export const BASE_MAP_LABEL_PATTERNS = [
 ] as const
 
 export const LEGEND_ITEMS = [
-  { key: 'high-retreat', label: '>5 m', text: 'High', extraStyleClass: 'highRetreat' },
+  {
+    key: 'high-retreat',
+    label: 'High',
+    boldLabel: '>5 m',
+    extraStyleClass: 'highRetreat',
+  },
   {
     key: 'moderate-retreat',
-    label: '>3 m',
-    text: 'Moderate',
+    label: 'Moderate',
+    boldLabel: '>3 m',
     extraStyleClass: 'moderateRetreat',
   },
-  { key: 'low-retreat', label: '>2 m', text: 'Low', extraStyleClass: 'lowRetreat' },
-  { key: 'high-growth', label: '>5 m', text: 'High', extraStyleClass: 'highGrowth' },
-  { key: 'moderate-growth', label: '>3 m', text: 'Moderate', extraStyleClass: 'moderateGrowth' },
-  { key: 'low-growth', label: '>2 m', text: 'Low', extraStyleClass: 'lowGrowth' },
+  {
+    key: 'low-retreat',
+    label: 'Low',
+    boldLabel: '>2 m',
+    extraStyleClass: 'lowRetreat',
+  },
+  {
+    key: 'high-growth',
+    label: 'High',
+    boldLabel: '>5 m',
+    extraStyleClass: 'highGrowth',
+  },
+  {
+    key: 'moderate-growth',
+    label: 'Moderate',
+    boldLabel: '>3 m',
+    extraStyleClass: 'moderateGrowth',
+  },
+  {
+    key: 'low-growth',
+    label: 'Low',
+    boldLabel: '>2 m',
+    extraStyleClass: 'lowGrowth',
+  },
+  {
+    key: 'high-density',
+    label: 'High Density',
+    extraStyleClass: 'highDensity',
+  },
+  {
+    key: 'low-density',
+    label: 'Low Density',
+    extraStyleClass: 'lowDensity',
+  },
+  {
+    key: 'buildings',
+    label: 'Buildings',
+    extraStyleClass: 'buildings',
+  },
 ]
 
 export const RETREAT_LEGEND_ITEMS = LEGEND_ITEMS.slice(0, 3)
-export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3)
+export const GROWTH_LEGEND_ITEMS = LEGEND_ITEMS.slice(3, 6)
+export const DENSITY_LEGEND_ITEMS = LEGEND_ITEMS.slice(6, 8)
+export const BUILDINGS_LEGEND_ITEMS = LEGEND_ITEMS.slice(8, 9)
 
 export const MAP_LAYERS = {
   IDS: {

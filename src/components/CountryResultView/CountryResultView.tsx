@@ -1,26 +1,27 @@
-import useResponsive from '../../hooks/useResponsive'
 import { Flex, Grid, Text } from '@radix-ui/themes'
-// import { ShorelineChangeCard } from '../ShoreLineChangeCard'
+
+import useResponsive from '../../hooks/useResponsive'
 import { HotSpotsCard } from '../HotSpotsCard'
 import { PopulationCard } from '../PopulationCard'
 import { BuildingsCard } from '../BuildingsCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { TextButton } from '../TextButton'
-import type { ContiguousHotspotProperties } from '../../library/types'
 import { useMapData } from '../../hooks/useGlobalContext'
+import { ExportButton } from '../ExportButton'
+import { LocationCard } from '../LocationCard'
 
 type CountryResultViewProps = {
-  selectedHotspotData: ContiguousHotspotProperties | null
-  goToHotspotView: () => void
   goToBackgroundInfoView: () => void
+  goToGlossaryView: () => void
+  goToUserGuideView: () => void
 }
 
 export const CountryResultView = ({
-  selectedHotspotData,
-  goToHotspotView,
   goToBackgroundInfoView,
+  goToGlossaryView,
+  goToUserGuideView,
 }: CountryResultViewProps) => {
-  const { isMobileWidth } = useResponsive()
+  const { isMobileWidth, isSmallerDesktopWidth } = useResponsive()
   const { contiguousHotspotFeatures } = useMapData()
 
   const totalPopulationFromHotspot = contiguousHotspotFeatures.reduce(
@@ -38,18 +39,31 @@ export const CountryResultView = ({
 
   return (
     <>
-      <Flex direction={isMobileWidth ? 'column-reverse' : 'row-reverse'} gap='4' py='3'>
-        <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
-          VIEW BACKGROUND INFORMATION
-        </TextButton>
-        {selectedHotspotData && (
-          <TextButton ariaLabel='View Hotspot Information' onClick={goToHotspotView}>
-            HOTSPOT VIEW
+      <LocationCard />
+      <Flex
+        direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
+        py='3'
+        align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        justify='between'
+        className='hide-on-export'
+      >
+        <ExportButton />
+        <Flex
+          gap={isSmallerDesktopWidth ? '1' : '4'}
+          direction={isSmallerDesktopWidth ? 'column' : 'row'}
+          align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        >
+          <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
+            VIEW BACKGROUND INFORMATION
           </TextButton>
-        )}
+          <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+            USER GUIDE
+          </TextButton>
+          <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+            GLOSSARY
+          </TextButton>
+        </Flex>
       </Flex>
-      {/*<Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
-        <ShorelineChangeCard />*/}
       <Grid columns='1'>
         <HotSpotsCard />
       </Grid>

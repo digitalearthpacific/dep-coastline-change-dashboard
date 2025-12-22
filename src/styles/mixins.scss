@@ -21,3 +21,11 @@ $mobile-breakpoint: 768px;
   box-shadow: var(--shadow-2, 0 1px 3px 0 rgb(0 0 0 / 0.1));
   transition: all 0.2s ease;
 }
+
+@mixin app-card {
+  border-radius: var(--radius-4, 8px);
+  border: 1px solid var(--black-a3, rgba(0, 0, 0, 0.15));
+  background: var(--white, #fff);
+  box-sizing: border-box;
+  padding: var(--space-3, 16px);
+}

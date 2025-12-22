@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import type { ContiguousHotspotProperties, CountryGeoJSONFeature } from '../library/types'
 import { getNameByCountryCode, findCountryIdByName } from '../library/utils'
+import { SEARCHBAR_INITIAL_VALUE } from '../library/constants'
 import { MapDataContext } from './MapDataContext'
 
 interface MapDataProviderProps {
@@ -18,7 +19,7 @@ export const MapDataProvider = ({ children }: MapDataProviderProps) => {
   >([])
 
   useEffect(() => {
-    const countryParam = searchParams.get('country')
+    const countryParam = searchParams.get('country') || SEARCHBAR_INITIAL_VALUE
 
     if (countryParam) {
       const countryId = findCountryIdByName(countryParam)

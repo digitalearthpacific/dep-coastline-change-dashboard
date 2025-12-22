@@ -1,0 +1,1 @@
+export { GlossaryView } from './GlossaryView'

@@ -1,21 +1,28 @@
-import { useRef, useEffect, useState, useCallback } from 'react'
+import { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import Map, { AttributionControl, NavigationControl, ScaleControl } from 'react-map-gl/maplibre'
-import type { MapLayerMouseEvent, Map as MapLibreMap } from 'maplibre-gl'
+import type { MapLayerMouseEvent, Map as MapLibreMap, MapGeoJSONFeature } from 'maplibre-gl'
 import type { MapRef, MapMouseEvent } from 'react-map-gl/maplibre'
 import type { FilterSpecification } from 'maplibre-gl'
-import { Flex, IconButton, Text, Tooltip } from '@radix-ui/themes'
-import { Cross1Icon, LayersIcon } from '@radix-ui/react-icons'
+
+import type { GeoJSONStoreFeatures } from 'terra-draw'
+import bbox from '@turf/bbox'
+import bboxPolygon from '@turf/bbox-polygon'
+import booleanIntersects from '@turf/boolean-intersects'
+import booleanWithin from '@turf/boolean-within'
+import type { Feature, FeatureCollection, BBox, Polygon, MultiPolygon } from 'geojson'
+import { IconButton, Tooltip } from '@radix-ui/themes'
+import { Cross1Icon } from '@radix-ui/react-icons'
 import clsx from 'clsx'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import { MaplibreMeasureControl } from '@watergis/maplibre-gl-terradraw'
+import { MaplibreMeasureControl, MaplibreTerradrawControl } from '@watergis/maplibre-gl-terradraw'
 import '@watergis/maplibre-gl-terradraw/dist/maplibre-gl-terradraw.css'
 
 import styles from './MainMap.module.scss'
 import EnterFullScreenIcon from '../../assets/fullscreen.svg'
 import ExitFullScreenIcon from '../../assets/fullscreen-exit.svg'
-import LowQualityShorelineIcon from '../../assets/low-quality-shoreline.svg'
 import { StraightenRoundedIcon } from '../../assets/StraightenRoundedIcon'
 import { WaterRoundedIcon } from '../../assets/WaterRoundedIcon'
+import { LayersIcon } from '../../assets/LayersIcon'
 
 import {
   DEFAULT_BBOX,
@@ -31,13 +38,10 @@ import {
   HOTSPOT_FILL_COLOR_EXPRESSION,
   HOTSPOT_OUTLINE_COLOR_EXPRESSION,
   TILE_URLS,
-  RETREAT_LEGEND_ITEMS,
-  GROWTH_LEGEND_ITEMS,
   RETREAT_VALUES,
   GROWTH_VALUES,
-  CUSTOM_COUNTRY_BBOXES,
 } from '../../library/constants'
-import type { MapStyleType } from '../../library/types'
+import type { CountryGeoJSONFeature, MapStyleType } from '../../library/types'
 import type { ContiguousHotspotProperties } from '../../library/types'
 import useResponsive from '../../hooks/useResponsive'
 import { useMapVisualization, useMapData } from '../../hooks/useGlobalContext'
@@ -47,9 +51,14 @@ import {
   getHotspotSelectedColorExpression,
   findFirstLabelLayerId,
   applyHotspotRadioFilter,
+  findCountryCustomZoomById,
 } from '../../library/utils'
 import { BaseMapPopup } from '../BaseMapPopup'
 import { DateRangePopup } from '../DateRangePopup'
+import { MapLegend } from '../MapLegend'
+import DrawIcon from '../../assets/DrawIcon'
+import RefreshIcon from '../../assets/RefreshIcon'
+import { MapDrawPopup } from '../MapDrawPopup'
 
 type MainMapProps = {
   isFullscreen: boolean
@@ -59,68 +68,45 @@ type MainMapProps = {
   handleHotspotDataChange: (hotspotData: ContiguousHotspotProperties | null) => void
 }
 
-const MapLegend = () => (
-  <div className={styles.mapLegendContainer}>
-    <Flex direction='column' gap='2'>
-      <Flex direction='column'>
-        <Text size='2' weight='bold'>
-          Hotspots
-        </Text>
-        <Text size='1'>Levels of change</Text>
-      </Flex>
-      <Text size='1' weight='bold'>
-        Retreat
-      </Text>
-      <Flex
-        direction='column'
-        gap='1'
-        style={{
-          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
-          paddingBottom: 'var(--space-2, 8px)',
-        }}
-      >
-        {RETREAT_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-          <Flex key={key} gap='2'>
-            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-            <Text size='1'>
-              <strong>{label}</strong> {text}
-            </Text>
-          </Flex>
-        ))}
-      </Flex>
-      <Text size='1' weight='bold'>
-        Growth
-      </Text>
-      <Flex
-        direction='column'
-        gap='1'
-        style={{
-          borderBottom: '1px solid var(--gray-6, #d9d9d9)',
-          paddingBottom: 'var(--space-2, 8px)',
-        }}
-      >
-        {GROWTH_LEGEND_ITEMS.map(({ key, label, text, extraStyleClass }) => (
-          <Flex key={key} gap='2'>
-            <div className={clsx(styles.legendCircle, styles[extraStyleClass])}></div>
-            <Text size='1'>
-              <strong>{label}</strong> {text}
-            </Text>
-          </Flex>
-        ))}
-      </Flex>
-      <Flex direction='column'>
-        <Text size='1' weight='bold'>
-          Coastlines
-        </Text>
-        <Text size='1'>Dashed coastlines indicate low quality data</Text>
-      </Flex>
-      <Flex align='center' gap='2'>
-        <img src={LowQualityShorelineIcon} alt='Dashed line' />
-        <Text size='1'>Low Quality</Text>
-      </Flex>
-    </Flex>
-  </div>
-)
+type TerraDrawFinishListener = (
+  id: string | number,
+  context: { mode: string; action: string },
+) => void
+
+type BoundingBox = [number, number, number, number]
+
+const isValidBoundingBox = (bounds: BBox): bounds is BoundingBox =>
+  Array.isArray(bounds) &&
+  bounds.length === 4 &&
+  bounds.every((value) => typeof value === 'number' && !Number.isNaN(value))
+
+// Remove existing TerraDraw features so subsequent draws start with a clean slate
+const removeTerraDrawFeatures = (
+  terraDrawInstance: ReturnType<MaplibreTerradrawControl['getTerraDrawInstance']>,
+) => {
+  const existingIds = terraDrawInstance
+    .getSnapshot()
+    .map((feature) => feature.id)
+    .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
+
+  if (existingIds.length) {
+    terraDrawInstance.removeFeatures(existingIds)
+  }
+}
+
+const normalizeBbox = (
+  selectedCountryFeature: CountryGeoJSONFeature,
+): [number, number, number, number] => {
+  const countryId = selectedCountryFeature?.properties?.id
+  let countryBbox = selectedCountryFeature?.bbox
+
+  // Adjust for countries crossing the antimeridian
+  if (countryId === 'FJI' || countryId === 'KIR') {
+    countryBbox = [countryBbox[0] + 360, countryBbox[1], countryBbox[2] - 360, countryBbox[3]]
+  }
+
+  return countryBbox
+}
 
 export const MainMap = ({
   isFullscreen,
@@ -131,23 +117,66 @@ export const MainMap = ({
 }: MainMapProps) => {
   const mapRef = useRef<MapRef>(null)
   const drawRef = useRef<MaplibreMeasureControl>(null)
+  const polygonDrawRef = useRef<MaplibreTerradrawControl | null>(null)
+  const polygonFinishHandlerRef = useRef<TerraDrawFinishListener | null>(null)
   const selectedHotspotDataRef = useRef(selectedHotspotData)
   const { isMobileWidth } = useResponsive()
   const { selectedCountryFeature, setContiguousHotspotFeatures } = useMapData()
-  const { startDate, endDate, hotspotRadio } = useMapVisualization()
+  const { customDates, startDate, endDate, hotspotRadio, dateSelectType, hideCoastlines } =
+    useMapVisualization()
 
   // State
   const [isDateRangePopupOpen, setIsDateRangePopupOpen] = useState(false)
   const [isBaseMapPopupOpen, setIsBaseMapPopupOpen] = useState(false)
   const [isMeasuring, setIsMeasuring] = useState(false)
+  const [activeDrawMode, setActiveDrawMode] = useState<'polygon' | 'rectangle' | 'circle' | null>(
+    null,
+  )
+  // Cache drawn polygon geometries outside TerraDraw's internal store
+  const [polygonFeatures, setPolygonFeatures] = useState<GeoJSONStoreFeatures[]>([])
+  // Derive a bounding box to constrain hotspot queries when custom geometry is present
+  const polygonBoundingBox = useMemo<BoundingBox | null>(() => {
+    if (!polygonFeatures.length) {
+      return null
+    }
+
+    const collection: FeatureCollection = {
+      type: 'FeatureCollection',
+      features: polygonFeatures as unknown as Feature[],
+    }
+
+    const bounds = bbox(collection) as BBox
+    return isValidBoundingBox(bounds) ? bounds : null
+  }, [polygonFeatures])
+
+  const selectionPolygons = useMemo<Feature<Polygon | MultiPolygon>[]>(() => {
+    return polygonFeatures
+      .map((feature) => feature as unknown as Feature)
+      .filter((feature): feature is Feature<Polygon | MultiPolygon> => {
+        const type = feature.geometry?.type
+        return type === 'Polygon' || type === 'MultiPolygon'
+      })
+  }, [polygonFeatures])
+
+  const polygonBoundingBoxFeature = useMemo<Feature<Polygon> | null>(() => {
+    if (!polygonBoundingBox) {
+      return null
+    }
+    return bboxPolygon(polygonBoundingBox)
+  }, [polygonBoundingBox])
+
+  const [isMapDrawToolPopupOpen, setIsMapDrawToolPopupOpen] = useState(false)
   const [baseMap, setBaseMap] = useState<MapStyleType>('satellite')
   const [isBuildingsLayerVisible, setIsBuildingsLayerVisible] = useState(true)
   const [isMangrovesLayerVisible, setIsMangrovesLayerVisible] = useState(true)
   const [isMapLoaded, setIsMapLoaded] = useState(false)
+  const [isLegendExpanded, setIsLegendExpanded] = useState(true)
+  const [mapInitialViewBox, setMapInitialViewBox] = useState<
+    [[number, number], [number, number]] | []
+  >([])
   const baseMapRef = useRef(baseMap)
 
   // Computed values
-  const isShorelineLayerVisible = Boolean(startDate && endDate)
   const isHotspotLayerVisible = Boolean(selectedCountryFeature)
   const navigationControlKey = `nav-control-${isMobileWidth ? 'mobile' : 'desktop'}`
   const scaleControlKey = `scale-control-${isMobileWidth ? 'mobile' : 'desktop'}`
@@ -155,13 +184,24 @@ export const MainMap = ({
   // Build dynamic filters for shoreline based on start and end date selections
   const createShorelineFilterExpression = useCallback(
     (certaintyCriteria?: FilterSpecification): FilterSpecification => {
+      // If in custom mode with no selected years, return a filter that matches nothing
+      if (dateSelectType === 'custom' && customDates.length === 0) {
+        return ['==', ['get', 'year'], -1]
+      }
+
       const filters: FilterSpecification[] = []
 
       if (certaintyCriteria) {
         filters.push(certaintyCriteria)
       }
 
-      if (startDate && endDate) {
+      if (dateSelectType === 'custom' && customDates.length) {
+        const years = customDates.map((y) => parseInt(y))
+        const yearFilters: FilterSpecification[] = years.map((y) => ['==', ['get', 'year'], y])
+        filters.push(['any', ...yearFilters] as FilterSpecification)
+      }
+
+      if (dateSelectType !== 'custom' && startDate && endDate) {
         filters.push(
           ['>=', ['get', 'year'], parseInt(startDate)],
           ['<=', ['get', 'year'], parseInt(endDate)],
@@ -178,7 +218,7 @@ export const MainMap = ({
 
       return ['all', ...filters] as FilterSpecification
     },
-    [startDate, endDate],
+    [customDates, startDate, endDate, dateSelectType],
   )
 
   // Build dynamic filters for hotspots based on hotspot radio selection
@@ -222,30 +262,29 @@ export const MainMap = ({
     ] as FilterSpecification
   }, [hotspotRadio, selectedCountryFeature?.properties?.id])
 
-  // Bounding box for country fitting
-  const createBoundingBox = useCallback(() => {
-    if (!selectedCountryFeature?.bbox || !selectedCountryFeature.properties?.id) {
-      return DEFAULT_BBOX
+  // Bounds and zoom option for country fitting
+  const getFitboundsOptions = useCallback(() => {
+    const countryId = selectedCountryFeature?.properties?.id
+    if (!selectedCountryFeature?.bbox || !countryId) {
+      return { bounds: DEFAULT_BBOX, zoomOptions: null }
     }
 
-    const countryId = selectedCountryFeature.properties.id
-
-    // Use custom bbox if available, otherwise fall back to feature bbox
-    const customBbox = CUSTOM_COUNTRY_BBOXES[countryId]
-    const bbox = customBbox || selectedCountryFeature.bbox
+    const bbox = normalizeBbox(selectedCountryFeature)
 
     // Validate bbox format
     if (!Array.isArray(bbox) || bbox.length !== 4) {
-      console.error('Invalid bbox format:', bbox)
-      return DEFAULT_BBOX
+      return { bounds: DEFAULT_BBOX, zoomOptions: null }
     }
 
     const [minX, minY, maxX, maxY] = bbox
-
-    return [
+    const bounds = [
       [minX, minY],
       [maxX, maxY],
     ] as [[number, number], [number, number]]
+
+    const customCountryZoom = findCountryCustomZoomById(countryId)
+
+    return { bounds, customCountryZoom }
   }, [selectedCountryFeature])
 
   // Layer management functions
@@ -272,7 +311,7 @@ export const MainMap = ({
             minzoom: 6,
             layout: { visibility: isBuildingsLayerVisible ? 'visible' : 'none' },
             paint: {
-              'fill-color': '#FF751F',
+              'fill-color': '#A8B2B9',
               'fill-outline-color': '#4e4e4e',
               'fill-opacity': 0.8,
             },
@@ -359,7 +398,7 @@ export const MainMap = ({
               minzoom: 13,
               maxzoom: 22,
               filter,
-              layout: { visibility: isShorelineLayerVisible ? 'visible' : 'none' },
+              layout: { visibility: hideCoastlines ? 'none' : 'visible' },
               paint,
             },
             firstLabelLayerId,
@@ -379,7 +418,7 @@ export const MainMap = ({
             'text-field': '{year}',
             'symbol-placement': 'line',
             'text-size': 12,
-            visibility: isShorelineLayerVisible ? 'visible' : 'none',
+            visibility: hideCoastlines ? 'none' : 'visible',
           },
           paint: {
             'text-color': 'white',
@@ -389,7 +428,7 @@ export const MainMap = ({
         })
       }
     },
-    [createShorelineFilterExpression, isShorelineLayerVisible],
+    [createShorelineFilterExpression, hideCoastlines],
   )
 
   const addContiguousHotspot = useCallback(
@@ -454,12 +493,20 @@ export const MainMap = ({
 
   // Event handlers
   const handleMapLoad = useCallback(() => {
-    // Remove native tooltips
+    // Remove native tooltips, add custom attributes and navigation controls for export hiding
     requestAnimationFrame(() => {
       const controls = mapRef.current
         ?.getContainer()
         .querySelectorAll('.maplibregl-ctrl-zoom-in, .maplibregl-ctrl-zoom-out')
       controls?.forEach((control) => control.removeAttribute('title'))
+
+      const container = mapRef.current?.getContainer()
+      const navControl = Array.from(
+        container?.querySelectorAll('.maplibregl-ctrl-group') ?? [],
+      ).find((group) => group.querySelector('[aria-label="Zoom in"]'))
+      navControl?.classList.add('hide-on-export')
+
+      container?.querySelector('.maplibregl-ctrl-attrib')?.classList.add('hide-on-export')
     })
 
     const map = mapRef.current?.getMap()
@@ -473,6 +520,25 @@ export const MainMap = ({
     addContiguousHotspot(map)
     addShorelineChangeLayer(map)
 
+    // Add terradraw for different polygon drawing tools
+    const polygonDrawControl = new MaplibreTerradrawControl({
+      modes: ['polygon', 'rectangle', 'circle', 'render', 'select', 'delete', 'delete-selection'],
+      open: false,
+      adapterOptions: { prefixId: 'polygon-draw' },
+    })
+    map.addControl(polygonDrawControl, 'bottom-right')
+    polygonDrawRef.current = polygonDrawControl
+
+    const polygonTerraDraw = polygonDrawControl.getTerraDrawInstance()
+    const finishHandler: TerraDrawFinishListener = () => {
+      const terraDraw = polygonDrawControl.getTerraDrawInstance()
+      setPolygonFeatures(terraDraw.getSnapshot())
+      setActiveDrawMode(null)
+      terraDraw.setMode('render')
+    }
+    polygonTerraDraw.on('finish', finishHandler)
+    polygonFinishHandlerRef.current = finishHandler
+
     // Add terradraw for measure tools
     const draw = new MaplibreMeasureControl({
       modes: ['linestring'],
@@ -483,9 +549,32 @@ export const MainMap = ({
       areaPrecision: 2,
       forceAreaUnit: 'auto',
       computeElevation: true,
+      adapterOptions: { prefixId: 'measure-draw' },
     })
     map.addControl(draw, 'bottom-right')
     drawRef.current = draw
+
+    // Add class to the control group containing the measure button to target margins
+    requestAnimationFrame(() => {
+      const measureBtn = mapRef.current
+        ?.getContainer()
+        .querySelector('.maplibregl-terradraw-measure-add-linestring-button')
+      const group = measureBtn?.closest(
+        '.maplibregl-ctrl.maplibregl-ctrl-group',
+      ) as HTMLElement | null
+      if (group) {
+        group.classList.add('measure-control-group')
+        group.style.margin = '0'
+      }
+
+      const polygonGroup = mapRef.current
+        ?.getContainer()
+        .querySelector('.maplibregl-terradraw-add-control')
+        ?.closest('.maplibregl-ctrl') as HTMLElement | null
+      if (polygonGroup) {
+        polygonGroup.style.display = 'none'
+      }
+    })
 
     // Setup hotspot interactions
     const handleHotspotClick = (e: MapLayerMouseEvent) => {
@@ -528,24 +617,146 @@ export const MainMap = ({
     addMangrovesLayer,
     addContiguousHotspot,
     handleHotspotDataChange,
+    setPolygonFeatures,
   ])
 
   const handleBaseMapSelection = useCallback(
     (baseMapKey: MapStyleType) => {
       setBaseMap(baseMapKey)
+      baseMapRef.current = baseMapKey // Update ref immediately
       setIsBaseMapPopupOpen(false)
 
+      // Clear polygon state immediately
+      setPolygonFeatures([])
+      setActiveDrawMode(null)
+
+      // Clear measure tool state immediately
+      setIsMeasuring(false)
+
       const map = mapRef.current?.getMap()
-      if (map) {
-        map.once('styledata', () => {
+      if (!map) return
+
+      // Compute the new basemap style (URL or object)
+      const nextStyle = getBaseMapStyle(baseMapKey)
+
+      let styleChangeHandled = false
+      let retryCount = 0
+      const maxRetries = 3
+      const retryDelay = 500
+
+      const addLayersWithRetry = () => {
+        if (styleChangeHandled) return
+
+        try {
+          // Verify map is ready and style is loaded
+          if (!map.isStyleLoaded()) {
+            if (retryCount < maxRetries) {
+              retryCount++
+              setTimeout(addLayersWithRetry, retryDelay)
+              return
+            } else {
+              console.warn(
+                'Max retries reached, style still not loaded. Consider changing to different style or reloading the map.  ',
+              )
+              return
+            }
+          }
+
+          styleChangeHandled = true
+
+          // Re-add all layers with proper baseMap parameter
           addBuildingsLayer(map)
           addMangrovesLayer(map)
           addShorelineChangeLayer(map)
           addContiguousHotspot(map, baseMapKey)
-        })
+
+          // Clean up drawing tools after layers are restored
+          requestAnimationFrame(() => {
+            // Clean up TerraDraw
+            const polygonControl = polygonDrawRef.current
+            if (polygonControl) {
+              try {
+                const terraDrawInstance = polygonControl.getTerraDrawInstance()
+                if (terraDrawInstance) {
+                  removeTerraDrawFeatures(terraDrawInstance)
+                  terraDrawInstance.setMode('render')
+                  polygonControl.resetActiveMode()
+                  polygonControl.deactivate()
+                }
+              } catch (error) {
+                console.warn('Error cleaning up TerraDraw features:', error)
+              }
+            }
+
+            // Clean up measure tool
+            const measureControl = drawRef.current
+            if (measureControl) {
+              try {
+                const measureTerraDrawInstance = measureControl.getTerraDrawInstance()
+                if (measureTerraDrawInstance) {
+                  const featureIds = measureTerraDrawInstance
+                    .getSnapshot()
+                    .map((f) => f.id)
+                    .filter(
+                      (id): id is string | number =>
+                        typeof id === 'string' || typeof id === 'number',
+                    )
+                  measureTerraDrawInstance.removeFeatures(featureIds)
+                  measureControl.resetActiveMode()
+                  measureControl.deactivate()
+                }
+              } catch (error) {
+                console.warn('Error cleaning up measure tool features:', error)
+              }
+            }
+          })
+        } catch (error) {
+          console.error('Error adding layers:', error)
+          if (retryCount < maxRetries) {
+            retryCount++
+            setTimeout(addLayersWithRetry, retryDelay)
+          }
+        }
+      }
+
+      try {
+        // Set up multiple event listeners for better reliability
+        const handleStyleData = () => {
+          // Small delay to ensure style is fully processed
+          setTimeout(addLayersWithRetry, 100)
+        }
+
+        const handleStyleLoad = () => {
+          addLayersWithRetry()
+        }
+
+        // Listen to both events for better reliability
+        map.once('styledata', handleStyleData)
+        map.once('style.load', handleStyleLoad)
+
+        // Set the style
+        map.setStyle(nextStyle)
+
+        // Fallback: if neither event fires within reasonable time
+        setTimeout(() => {
+          if (!styleChangeHandled) {
+            addLayersWithRetry()
+          }
+        }, 2000)
+      } catch (err) {
+        console.error('Error setting basemap style:', err)
+        return
       }
     },
-    [addBuildingsLayer, addMangrovesLayer, addShorelineChangeLayer, addContiguousHotspot],
+    [
+      addBuildingsLayer,
+      addMangrovesLayer,
+      addShorelineChangeLayer,
+      addContiguousHotspot,
+      setPolygonFeatures,
+      setActiveDrawMode,
+      setIsMeasuring,
+    ],
   )
 
   const toggleLayerVisibility = useCallback((layerId: string, newVisibility: boolean) => {
@@ -568,17 +779,38 @@ export const MainMap = ({
   }, [isMangrovesLayerVisible, toggleLayerVisibility])
 
   const handleBaseMapPopupToggle = useCallback(() => {
-    setIsDateRangePopupOpen(false)
     setIsBaseMapPopupOpen((prev) => !prev)
+    setIsDateRangePopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
   }, [])
 
   const handleDateRangePopupToggle = useCallback(() => {
-    setIsBaseMapPopupOpen(false)
     setIsDateRangePopupOpen((prev) => !prev)
+    setIsBaseMapPopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
   }, [])
 
+  const handleMapDrawToolPopupToggle = useCallback(() => {
+    setIsMapDrawToolPopupOpen((prev) => !prev)
+    setIsBaseMapPopupOpen(false)
+    setIsDateRangePopupOpen(false)
+  }, [])
+
+  const handleCloseAllPopups = useCallback(() => {
+    setIsDateRangePopupOpen(false)
+    setIsBaseMapPopupOpen(false)
+    setIsMapDrawToolPopupOpen(false)
+  }, [])
+
+  const handleLegendToggle = useCallback(() => {
+    setIsLegendExpanded((prev) => !prev)
+  }, [])
+
+  // Toggle the measure control and clear any sketches to hide its labels when closing
   const handleMeasureTool = useCallback(() => {
-    if (!drawRef.current) return
+    if (!drawRef.current) {
+      return
+    }
 
     if (!isMeasuring) {
       setIsMeasuring(true)
@@ -593,7 +825,7 @@ export const MainMap = ({
       const featureIds = terraDrawInstance
         .getSnapshot()
         .map((f) => f.id)
-        .filter((id): id is string => typeof id === 'string')
+        .filter((id): id is string | number => typeof id === 'string' || typeof id === 'number')
       terraDrawInstance.removeFeatures(featureIds)
 
       drawRef.current.resetActiveMode()
@@ -601,7 +833,145 @@ export const MainMap = ({
     }
   }, [isMeasuring])
 
-  const handleMapChange = () => {
+  // Activate a single TerraDraw mode at a time across polygon, rectangle, and circle tools
+  const activateDrawMode = useCallback(
+    (mode: 'polygon' | 'rectangle' | 'circle') => {
+      const polygonControl = polygonDrawRef.current
+      if (!polygonControl) {
+        return
+      }
+
+      try {
+        const terraDrawInstance = polygonControl.getTerraDrawInstance()
+        if (!terraDrawInstance) {
+          console.warn('TerraDraw instance not available')
+          return
+        }
+
+        if (activeDrawMode === mode) {
+          terraDrawInstance.setMode('render')
+          polygonControl.resetActiveMode()
+          polygonControl.deactivate()
+          setActiveDrawMode(null)
+          return
+        }
+
+        if (activeDrawMode) {
+          terraDrawInstance.setMode('render')
+          polygonControl.resetActiveMode()
+          polygonControl.deactivate()
+        }
+
+        removeTerraDrawFeatures(terraDrawInstance)
+        setPolygonFeatures([])
+
+        polygonControl.activate()
+        terraDrawInstance.setMode(mode)
+        setActiveDrawMode(mode)
+      } catch (error) {
+        console.warn('Error activating draw mode:', error)
+        // Reset state on error
+        setActiveDrawMode(null)
+        setPolygonFeatures([])
+      }
+    },
+    [activeDrawMode, setPolygonFeatures],
+  )
+
+  // Convenience handlers to wire UI buttons to their respective draw modes
+  const handlePolygonDraw = useCallback(() => {
+    activateDrawMode('polygon')
+  }, [activateDrawMode])
+
+  const handleRectangleDraw = useCallback(() => {
+    activateDrawMode('rectangle')
+  }, [activateDrawMode])
+
+  const handleCircleDraw = useCallback(() => {
+    activateDrawMode('circle')
+  }, [activateDrawMode])
+
+  // Clear any drawn geometries and return the polygon control to an idle state
+  const handleDeleteDraw = useCallback(() => {
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) {
+      return
+    }
+
+    const terraDrawInstance = polygonControl.getTerraDrawInstance()
+    removeTerraDrawFeatures(terraDrawInstance)
+    setPolygonFeatures([])
+    terraDrawInstance.setMode('render')
+    polygonControl.resetActiveMode()
+    polygonControl.deactivate()
+    setActiveDrawMode(null)
+  }, [setPolygonFeatures])
+
+  const isFeatureInsideSelection = useCallback(
+    (featureJson: Feature): boolean => {
+      if (!featureJson.geometry || selectionPolygons.length === 0) {
+        return false
+      }
+
+      const geometryType = featureJson.geometry.type
+      if (geometryType !== 'Polygon' && geometryType !== 'MultiPolygon') {
+        return false
+      }
+
+      try {
+        const featureBounds = bbox(featureJson) as BBox
+        if (!isValidBoundingBox(featureBounds)) {
+          return false
+        }
+
+        if (polygonBoundingBoxFeature) {
+          const featureBoundingPolygon = bboxPolygon(featureBounds)
+          if (!booleanIntersects(polygonBoundingBoxFeature, featureBoundingPolygon)) {
+            return false
+          }
+        }
+
+        const polygonFeature = featureJson as Feature<Polygon | MultiPolygon>
+
+        return selectionPolygons.some((selectionPolygon) => {
+          try {
+            // Handle MultiPolygon by checking each polygon separately
+            if (polygonFeature.geometry.type === 'MultiPolygon') {
+              // For MultiPolygon, check if any of the individual polygons are within the selection
+              return polygonFeature.geometry.coordinates.some((coords) => {
+                const singlePolygon: Feature<Polygon> = {
+                  type: 'Feature',
+                  properties: polygonFeature.properties,
+                  geometry: {
+                    type: 'Polygon',
+                    coordinates: coords,
+                  },
+                }
+                try {
+                  return booleanWithin(singlePolygon, selectionPolygon)
+                } catch (err) {
+                  console.warn('Error checking individual polygon within MultiPolygon:', err)
+                  return false
+                }
+              })
+            } else {
+              // Handle regular Polygon
+              return booleanWithin(polygonFeature, selectionPolygon)
+            }
+          } catch (containmentError) {
+            console.error('Error evaluating polygon containment:', containmentError)
+            return false
+          }
+        })
+      } catch (error) {
+        console.error('Error computing feature bounds:', error)
+        return false
+      }
+    },
+    [selectionPolygons, polygonBoundingBoxFeature],
+  )
+
+  const handleMapChange = useCallback(() => {
     const map = mapRef.current?.getMap()
     if (!map) {
       return
@@ -612,15 +982,30 @@ export const MainMap = ({
       return
     }
 
+    // Check if hotspot layer exists before querying
+    if (!map.getLayer(LAYER_IDS.HOTSPOT_FILL)) {
+      console.warn(`Layer '${LAYER_IDS.HOTSPOT_FILL}' does not exist yet, skipping query`)
+      setContiguousHotspotFeatures([])
+      return
+    }
+
     try {
       // Query rendered features with country filter applied directly
       const sourceFeatures = map.queryRenderedFeatures(undefined, {
         layers: [LAYER_IDS.HOTSPOT_FILL],
         filter: ['==', ['get', 'ISO_Ter1'], selectedCountryFeature.properties?.id],
-      })
+      }) as MapGeoJSONFeature[]
+
+      let featuresWithinDraw = sourceFeatures
+
+      if (polygonBoundingBoxFeature && selectionPolygons.length > 0) {
+        featuresWithinDraw = sourceFeatures.filter((feature) =>
+          isFeatureInsideSelection(feature.toJSON() as Feature),
+        )
+      }
 
       // Extract and enrich features with _pbf data
-      const enrichedFeatures = sourceFeatures.map(
+      const enrichedFeatures = featuresWithinDraw.map(
         (feature) => feature.properties as ContiguousHotspotProperties,
       )
 
@@ -633,12 +1018,33 @@ export const MainMap = ({
       console.error('Error processing map features:', error)
       setContiguousHotspotFeatures([])
     }
+  }, [
+    selectedCountryFeature,
+    setContiguousHotspotFeatures,
+    polygonBoundingBoxFeature,
+    selectionPolygons,
+    isFeatureInsideSelection,
+    hotspotRadio,
+  ])
+
+  // Return the viewport to the currently selected country's bounding box
+  const handleResetToCountryView = () => {
+    if (!mapRef.current || !mapInitialViewBox.length) {
+      return
+    }
+
+    mapRef.current.fitBounds(mapInitialViewBox, {
+      duration: FLY_TO_DURATION,
+      padding: 20,
+    })
   }
 
   // Effects
   // Update map size and fit to country bounds on load or when selected country changes
   useEffect(() => {
-    if (!isMapLoaded) return
+    if (!isMapLoaded) {
+      return
+    }
 
     const mapContainer = mapRef.current?.getContainer().parentElement
     if (mapContainer) {
@@ -647,9 +1053,35 @@ export const MainMap = ({
       mapContainer.style.transition = ''
     }
 
-    const bounds = createBoundingBox()
-    mapRef.current?.fitBounds(bounds, { duration: FLY_TO_DURATION })
-  }, [isMapLoaded, createBoundingBox])
+    const { bounds, customCountryZoom } = getFitboundsOptions()
+    const fitBoundsOptions = customCountryZoom
+      ? { padding: 10, zoom: customCountryZoom }
+      : { padding: 30 }
+
+    setMapInitialViewBox(bounds)
+    mapRef.current?.fitBounds(bounds, {
+      duration: FLY_TO_DURATION,
+      ...fitBoundsOptions,
+    })
+  }, [isMapLoaded, getFitboundsOptions])
+
+  useEffect(() => {
+    if (!isMapLoaded) {
+      return
+    }
+
+    const map = mapRef.current?.getMap()
+    if (!map) {
+      return
+    }
+
+    map.on('idle', handleMapChange)
+    handleMapChange()
+
+    return () => {
+      map.off('idle', handleMapChange)
+    }
+  }, [isMapLoaded, handleMapChange])
 
   // Update the ref (separate effect)
   useEffect(() => {
@@ -660,10 +1092,65 @@ export const MainMap = ({
     selectedHotspotDataRef.current = selectedHotspotData
   }, [selectedHotspotData])
 
+  // Detach TerraDraw listeners and controls when the component unmounts. Without this cleanup,
+  // lingering event listeners and duplicate controls would keep reacting the next time the map mounts.
+  useEffect(() => {
+    if (!isMapLoaded) {
+      return
+    }
+
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) {
+      return
+    }
+
+    const terraDrawInstance = polygonControl.getTerraDrawInstance()
+    const finishHandler = polygonFinishHandlerRef.current
+    const mapInstance = mapRef.current?.getMap()
+
+    return () => {
+      if (terraDrawInstance && finishHandler) {
+        terraDrawInstance.off('finish', finishHandler)
+      }
+
+      if (mapInstance) {
+        mapInstance.removeControl(polygonControl)
+      }
+    }
+  }, [isMapLoaded])
+
+  // Clear drawn polygons when switching to mobile width to avoid tool UI issues on small screens
+  useEffect(() => {
+    if (!isMobileWidth) {
+      return
+    }
+
+    const polygonControl = polygonDrawRef.current
+    if (!polygonControl) {
+      return
+    }
+
+    try {
+      const terraDrawInstance = polygonControl.getTerraDrawInstance()
+      // Remove any existing features and reset draw state
+      removeTerraDrawFeatures(terraDrawInstance)
+      setPolygonFeatures([])
+      terraDrawInstance.setMode('render')
+      polygonControl.resetActiveMode()
+      polygonControl.deactivate()
+      setActiveDrawMode(null)
+      setIsMapDrawToolPopupOpen(false)
+    } catch (error) {
+      console.warn('Error clearing TerraDraw features when switching to mobile:', error)
+    }
+  }, [isMobileWidth, setPolygonFeatures])
+
   // Update shoreline layer visibility and filters
   useEffect(() => {
     const map = mapRef.current?.getMap()
-    if (!map) return
+    if (!map) {
+      return
+    }
 
     const shorelineLayers = [
       { id: LAYER_IDS.SHORELINE_UNCERTAIN, filter: SHORELINE_FILTERS.UNCERTAIN },
@@ -673,18 +1160,20 @@ export const MainMap = ({
 
     shorelineLayers.forEach(({ id, filter }) => {
       if (map.getLayer(id)) {
-        map.setLayoutProperty(id, 'visibility', isShorelineLayerVisible ? 'visible' : 'none')
-        if (isShorelineLayerVisible) {
+        map.setLayoutProperty(id, 'visibility', hideCoastlines ? 'none' : 'visible')
+        if (!hideCoastlines) {
           map.setFilter(id, createShorelineFilterExpression(filter))
         }
       }
     })
-  }, [createShorelineFilterExpression, isShorelineLayerVisible])
+  }, [createShorelineFilterExpression, hideCoastlines])
 
   // Update hotspot selection
   useEffect(() => {
     const map = mapRef.current?.getMap()
-    if (!map) return
+    if (!map) {
+      return
+    }
 
     const hotspotSelectedColorExpression = getHotspotSelectedColorExpression(baseMapRef.current)
     const selectedUid = selectedHotspotData?.uid || ''
@@ -737,6 +1226,7 @@ export const MainMap = ({
         onLoad={handleMapLoad}
         attributionControl={false}
         onIdle={handleMapChange}
+        canvasContextAttributes={{ preserveDrawingBuffer: true }}
       >
         <AttributionControl position='bottom-right' compact />
         <ScaleControl
@@ -753,7 +1243,9 @@ export const MainMap = ({
         />
       </Map>
 
-      {isHotspotLayerVisible && <MapLegend />}
+      {isHotspotLayerVisible && (
+        <MapLegend isExpanded={isLegendExpanded} onToggle={handleLegendToggle} />
+      )}
 
       {isFullscreen && !isMobileWidth && (
         <div className={styles.exitFullscreenContainer}>
@@ -765,16 +1257,41 @@ export const MainMap = ({
         </div>
       )}
 
-      <div className={styles.customMapTools}>
-        <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
-          <IconButton onClick={handleMeasureTool} aria-label='Measure'>
-            <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
-          </IconButton>
-        </Tooltip>
+      <div
+        className={clsx(styles.customMapTools, 'hide-on-export')}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className={styles.mapDrawMeasureGroup}>
+          {!isMobileWidth && (
+            <Tooltip content='Draw' side='left'>
+              <IconButton onClick={handleMapDrawToolPopupToggle} aria-label='Draw'>
+                <DrawIcon className={clsx(isMapDrawToolPopupOpen && styles.activeButton)} />
+              </IconButton>
+            </Tooltip>
+          )}
+
+          <Tooltip content={isMeasuring ? 'Stop Measuring' : 'Measure'} side='left'>
+            <IconButton onClick={handleMeasureTool} aria-label='Measure'>
+              <StraightenRoundedIcon className={clsx(isMeasuring && styles.activeButton)} />
+            </IconButton>
+          </Tooltip>
+        </div>
 
         <Tooltip content='Adjust Coastlines' side='left'>
           <IconButton onClick={handleDateRangePopupToggle} aria-label='Adjust Coastlines'>
             <WaterRoundedIcon className={clsx(isDateRangePopupOpen && styles.activeButton)} />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip content='Reset to country view' side='left'>
+          <IconButton onClick={handleResetToCountryView} aria-label='Reset to country view'>
+            <RefreshIcon />
+          </IconButton>
+        </Tooltip>
+
+        <Tooltip content='Change basemap or add layers' side='left'>
+          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
+            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
           </IconButton>
         </Tooltip>
 
@@ -790,11 +1307,15 @@ export const MainMap = ({
           </IconButton>
         </Tooltip>
 
-        <Tooltip content='Change basemap or add layers' side='left'>
-          <IconButton onClick={handleBaseMapPopupToggle} aria-label='Change basemap or add layers'>
-            <LayersIcon className={clsx(isBaseMapPopupOpen && styles.activeButton)} />
-          </IconButton>
-        </Tooltip>
+        {isMapDrawToolPopupOpen && (
+          <MapDrawPopup
+            activeDrawMode={activeDrawMode}
+            onPolygonDraw={handlePolygonDraw}
+            onRectangleDraw={handleRectangleDraw}
+            onCircleDraw={handleCircleDraw}
+            onDeleteDraw={handleDeleteDraw}
+          />
+        )}
 
         {isDateRangePopupOpen && <DateRangePopup />}
 
@@ -809,6 +1330,15 @@ export const MainMap = ({
           />
         )}
       </div>
+
+      {/* Invisible overlay that captures clicks outside popups to close them, but excludes the map tools area */}
+      {(isDateRangePopupOpen || isBaseMapPopupOpen) && (
+        <div
+          className={styles.popupBackdrop}
+          onClick={handleCloseAllPopups}
+          aria-label='Close popup by clicking outside'
+        />
+      )}
     </div>
   )
 }

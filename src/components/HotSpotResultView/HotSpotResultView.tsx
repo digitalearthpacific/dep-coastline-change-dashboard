@@ -1,5 +1,5 @@
 import useResponsive from '../../hooks/useResponsive'
-import { Badge, Flex, Grid } from '@radix-ui/themes'
+import { Badge, Flex, Grid, Text } from '@radix-ui/themes'
 import { PopulationCard } from '../PopulationCard'
 import { MangrovesCard } from '../MangrovesCard'
 import { BuildingsCard } from '../BuildingsCard'
@@ -8,11 +8,15 @@ import type { ContiguousHotspotProperties } from '../../library/types'
 import { HotspotAreaCard } from '../HotspotAreaCard/HotspotAreaCard'
 import { RETREAT_VALUES, GROWTH_VALUES } from '../../library/constants'
 import { BackButton } from '../BackButton'
+import { ExportButton } from '../ExportButton'
+import { LocationCard } from '../LocationCard'
 
 type HotSpotResultViewProps = {
   selectedHotspotData: ContiguousHotspotProperties | null
   goToCountryView: () => void
   goToBackgroundInfoView: () => void
+  goToGlossaryView: () => void
+  goToUserGuideView: () => void
 }
 
 const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
@@ -22,7 +26,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === RETREAT_VALUES.HIGH) {
     return (
       <Badge size='3' style={{ backgroundColor: '#CC5803', color: '#ffffff' }}>
-        Retreat High Change (&gt;5 m)
+        Retreat High Change (&gt;5 m per year)
       </Badge>
     )
   }
@@ -30,7 +34,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === RETREAT_VALUES.MODERATE) {
     return (
       <Badge size='3' style={{ backgroundColor: '#FF9E1B', color: '#ffffff' }}>
-        Retreat Moderate Change (&gt;3 m)
+        Retreat Moderate Change (&gt;3 m per year)
       </Badge>
     )
   }
@@ -38,7 +42,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === RETREAT_VALUES.LOW) {
     return (
       <Badge size='3' style={{ backgroundColor: '#FFD27F', color: '#773404' }}>
-        Retreat Low Change (&gt;2 m)
+        Retreat Low Change (&gt;2 m per year)
       </Badge>
     )
   }
@@ -47,7 +51,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === GROWTH_VALUES.HIGH) {
     return (
       <Badge size='3' style={{ backgroundColor: '#007BFF', color: '#ffffff' }}>
-        Growth High Change (&gt;5 m)
+        Growth High Change (&gt;5 m per year)
       </Badge>
     )
   }
@@ -55,7 +59,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === GROWTH_VALUES.MODERATE) {
     return (
       <Badge size='3' style={{ backgroundColor: '#59ACFF', color: '#ffffff' }}>
-        Growth Moderate Change (&gt;3 m)
+        Growth Moderate Change (&gt;3 m per year)
       </Badge>
     )
   }
@@ -63,7 +67,7 @@ const HotSpotBadge = ({ rateOfChange }: { rateOfChange: number | null }) => {
   if (rateOfChange === GROWTH_VALUES.LOW) {
     return (
       <Badge size='3' style={{ backgroundColor: '#97DFFF', color: '#00448C' }}>
-        Growth Low Change (&gt;2 m)
+        Growth Low Change (&gt;2 m per year)
       </Badge>
     )
   }
@@ -80,8 +84,10 @@ export const HotSpotResultView = ({
   selectedHotspotData,
   goToCountryView,
   goToBackgroundInfoView,
+  goToGlossaryView,
+  goToUserGuideView,
 }: HotSpotResultViewProps) => {
-  const { isMobileWidth } = useResponsive()
+  const { isMobileWidth, isSmallerDesktopWidth } = useResponsive()
   const totalPopulation = selectedHotspotData?.total_population ?? null
   const numberOfBuildings = selectedHotspotData?.building_counts ?? null
   const mangroveArea = selectedHotspotData?.mangrove_area_ha ?? null
@@ -91,14 +97,38 @@ export const HotSpotResultView = ({
   return (
     <>
       <BackButton onClick={goToCountryView} />
-      <Flex direction={isMobileWidth ? 'column' : 'row'} justify='between' align='center' gap='2'>
-        <HotSpotBadge rateOfChange={rateOfChange} />
-        <Flex direction={isMobileWidth ? 'column' : 'row'} gap='4' py={isMobileWidth ? '3' : '3'}>
+      <LocationCard />
+      <Flex
+        direction={isSmallerDesktopWidth ? 'column-reverse' : 'row-reverse'}
+        py='3'
+        align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        justify='between'
+        className='hide-on-export'
+      >
+        <ExportButton />
+        <Flex
+          gap={isSmallerDesktopWidth ? '1' : '4'}
+          direction={isSmallerDesktopWidth ? 'column' : 'row'}
+          align={isSmallerDesktopWidth && !isMobileWidth ? 'end' : 'center'}
+        >
           <TextButton ariaLabel='View Background Information' onClick={goToBackgroundInfoView}>
             VIEW BACKGROUND INFORMATION
           </TextButton>
+          <TextButton ariaLabel='View User Guide' onClick={goToUserGuideView}>
+            USER GUIDE
+          </TextButton>
+          <TextButton ariaLabel='View Glossary' onClick={goToGlossaryView}>
+            GLOSSARY
+          </TextButton>
         </Flex>
       </Flex>
+      <Flex>
+        <HotSpotBadge rateOfChange={rateOfChange} />
+      </Flex>
+      <Text as='div' size={isMobileWidth ? '2' : '3'} color='gray'>
+        Hotspots are coastal areas experiencing high levels of change. The estimated population,
+        buildings, and mangroves within the selected hotspot are shown below.
+      </Text>
       <Grid columns={isMobileWidth ? '1' : '2'} gap='4'>
         <HotspotAreaCard hotspotArea={hotspotArea} />
         <PopulationCard totalPopulation={totalPopulation} />
