@@ -49,7 +49,7 @@ export const PACIFIC_COUNTRIES_NAMES: PacificCountry[] = [
   { id: 'GUM', name: 'Guam', customZoomLevel: 10 },
   { id: 'KIR', name: 'Kiribati', customZoomLevel: 5 },
   { id: 'MHL', name: 'Marshall Islands' },
-  { id: 'NRU', name: 'Nauru', customZoomLevel: 12 },
+  { id: 'NRU', name: 'Naoero', customZoomLevel: 12 },
   { id: 'NCL', name: 'New Caledonia' },
   { id: 'NIU', name: 'Niue', customZoomLevel: 11 },
   { id: 'MNP', name: 'Northern Mariana Islands' },
