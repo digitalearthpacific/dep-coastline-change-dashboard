@@ -76,7 +76,7 @@ const PopulationSection = () => (
       </Text>
       <Text as='div'>
         Data for Cook Islands, Fiji, Federated States of Micronesia, Kiribati, Marshall Islands,
-        Niue, Nauru, Palau, Samoa, Solomon Islands, Tuvalu, Vanuatu, and Wallis and Futuna are from
+        Niue, Naoero, Palau, Samoa, Solomon Islands, Tuvalu, Vanuatu, and Wallis and Futuna are from
         the SPC Statistics for Development Division (SDD), obtained from the Pacific Data Hub (
         <Link href='https://pacificdata.org' target='_blank' rel='noopener noreferrer'>
           https://pacificdata.org
